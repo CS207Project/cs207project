@@ -41,17 +41,3 @@ class TimeSeries:
         components = reprlib.repr(list(itertools.islice(self._data, 0, 10)))
         components = components[components.find('['):]
         return '{}'.format(components)
-
-a = TimeSeries(range(0, 1000000))
-print("string: ", a)
-print("repr: ", repr(a))
-
-threes = TimeSeries(range(0,1000,3))
-fives = TimeSeries(range(0,1000,5))
-
-s = 0
-for i in range(0,1000):
-  if i in threes or i in fives:
-    s += i
-
-print("sum",s)
