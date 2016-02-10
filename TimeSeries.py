@@ -1,7 +1,6 @@
 import reprlib
 import itertools
 
-
 class TimeSeries:
     """
     A class for representing a time series, initiated with data stored as a list.
@@ -16,6 +15,23 @@ class TimeSeries:
     Methods
     -------
 
+    >>> threes = TimeSeries(range(0,10,3))
+    >>> len(threes)
+    4
+
+    >>> threes[1]
+    3
+
+    >>> threes[1000]
+    Traceback (most recent call last):
+        ...
+    IndexError: list index out of range
+
+    >>> threes
+    TimeSeries([0, 3, 6, 9])
+
+    >>> repr(threes)
+    'TimeSeries([0, 3, 6, 9])'
     """
 
     def __init__(self, data):
