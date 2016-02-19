@@ -20,11 +20,11 @@ class TimeSeries:
     len(a)
         returns 5
 
-    [v for v in TimeSeries([0,1,2],[1,3,5])] 
+    [v for v in TimeSeries([0,1,2],[1,3,5])]
         returns [1,3,5]
 
     str(a)
-        returns 
+        returns
 
     """
 
@@ -86,3 +86,5 @@ print(a[2.5])
 
 # This should return an error, because there is no time point at t=0
 # a[0]
+
+# blahblahblah
