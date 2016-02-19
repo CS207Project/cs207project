@@ -26,12 +26,27 @@ class TimeSeries:
     str(a)
         returns
 
+
+    experiment
+
     """
 
     def __init__(self, times, values):
         assert len(times) == len(values),"Array of Unequal Length"
         self._times = np.array(times)
         self._values = np.array(values)
+
+    @property
+    def values(self):
+        return self._values
+
+    @property
+    def times(self):
+        return self._times
+
+    @property
+    def items(self):
+        return zip(self._times,self._values)
 
     def __len__(self):
         return len(self._times)
@@ -57,6 +72,9 @@ class TimeSeries:
         except IndexError:
             return False
 
+    def __iter__(self):
+        return iter(self._values)
+
     def __repr__(self):
         class_name = type(self).__name__
         components = reprlib.repr(list(itertools.islice(self._times, 0, 10)))
@@ -66,7 +84,10 @@ class TimeSeries:
         return '{}({}, {})'.format(class_name, components, components2)
 
     def __str__(self):
-        """returns a shortened string representation of the time series"""
+        """
+        function that returns a shortened string representation of the time series
+        "[time1, time2, ...], [value1, value2, ...]"
+        """
         components = reprlib.repr(list(itertools.islice(self._times, 0, 10)))
         components2 = reprlib.repr(list(itertools.islice(self._values, 0, 10)))
         components = components[components.find('['):]
@@ -87,4 +108,4 @@ print(a[2.5])
 # This should return an error, because there is no time point at t=0
 # a[0]
 
-# blahblahblah
+print(str(a))
