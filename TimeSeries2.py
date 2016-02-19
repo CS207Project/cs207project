@@ -26,6 +26,9 @@ class TimeSeries:
     str(a)
         returns 
 
+
+    experiment
+
     """
 
     def __init__(self, times, values):
@@ -86,3 +89,4 @@ print(a[2.5])
 
 # This should return an error, because there is no time point at t=0
 # a[0]
+print(str(a))
