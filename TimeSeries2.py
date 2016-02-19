@@ -5,6 +5,27 @@ import numpy as np
 
 class TimeSeries:
     """
+    a = TimeSeries([1, 1.5, 2, 2.5, 10], [0, 2, -1, 0.5, 0])
+    a[2.5] = 1.0
+
+    print a[0]
+        error
+
+    a.contains(1)
+        returns True
+
+    a.contains(20)
+        returns False
+
+    len(a)
+        returns 5
+
+    [v for v in TimeSeries([0,1,2],[1,3,5])] 
+        returns [1,3,5]
+
+    str(a)
+        returns 
+
     """
 
     def __init__(self, times, values):
