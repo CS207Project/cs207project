@@ -15,8 +15,11 @@ class TimeSeries:
     Methods
     -------
 
+    
+    Tests
+    -----
     >>> threes = TimeSeries(range(0,10,3))
-    >>> len(threes)
+    l>>> len(threes)
     4
 
     >>> threes[1]
