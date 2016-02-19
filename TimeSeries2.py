@@ -8,17 +8,25 @@ class TimeSeries:
     """
 
     def __init__(self, times, values):
+        assert(len(times) == len(values))
         self._times = np.array(times)
         self._values = np.array(values)
 
     def __len__(self):
-        return len(self._data)
+        return len(self._times)
 
-    def __getitem__(self, position):  # not working
-        return self._values[self._time[position]]
+    def get_index(self,time):
+        try:
+            return np.where(self._times==time)[0][0]
+        except IndexError:
+            raise IndexError("Time not in Time Series")
 
-    def __setitem__(self, position, value):
-        self._values[position] = value
+    def __getitem__(self, time):
+        return self._values[get_index(time)]
+
+    def __setitem__(self, time, value):
+        self._values[get_index(time)] = value
+        return
 
     def __repr__(self):
         class_name = type(self).__name__
@@ -36,10 +44,16 @@ class TimeSeries:
         components2 = components[components.find('['):]
         return '{}, {}'.format(components, components2)
 
+# Create a non-uniform TimeSeries instance:
 a = TimeSeries([1, 1.5, 2, 2.5, 10], [0, 2, -1, 0.5, 0])
-print(a)
-a[2.5] == 0.5
-a[1.5] = 2.5
-print(a)
-print(a[2.5])
-print(a[0])
+
+# Set the value at time 2.5
+print(a[2.53])
+# a[2.5] = 1.0
+
+# Set the value at time 2.5
+# a[1.5] = 2.5
+# print(a)
+
+# This should return an error, because there is no time point at t=0
+# a[0]
