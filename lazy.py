@@ -1,15 +1,23 @@
 class LazyOperation:
+    '''
+    Class that handles lazy operations. An oject of this
+    class will keep an operation in suspension until the
+    eval() method is called, at which point it returns
+    the value of the suspended operation.
+    '''
     def __init__(self,old_fuction,args_a,kwargs_a):
         self._function = old_fuction
         self._args = args_a
         self._kwargs = kwargs_a
 
     def __eq__(self,other):
+        '''Custom equivalence method for LazyOperation class'''
         retval = (self._args == other._args) and (self._kwargs == other._kwargs)
         retval = retval and (id(self._function) == id(other._function))
         return retval
 
     def eval(self):
+        '''Finally execute the opeartion.'''
         computedArgs = []
         computedKWArgs = []
 
