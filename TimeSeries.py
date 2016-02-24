@@ -115,6 +115,15 @@ class TimeSeries:
     def __iter__(self):
         return iter(self._values)
 
+    def iteritems(self):
+        return zip(self._times,self._values)
+
+    def itervalues(self):
+        return iter(self._values)
+
+    def itertimes(self):
+        return iter(self._times)
+
     def __repr__(self):
         class_name = type(self).__name__
         components = reprlib.repr(list(itertools.islice(self._times, 0, 10)))
@@ -157,6 +166,10 @@ class TimeSeries:
     def interpolate(self,timesList):
         valuesList = [self.__interpolate_point(time) for time in timesList]
         return TimeSeries(timesList,valuesList)
+
+
+
+
 
 ##### To run doctest:
 # dtest(TimeSeries, globals(), verbose = True)
