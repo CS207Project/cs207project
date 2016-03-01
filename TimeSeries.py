@@ -11,7 +11,7 @@ class TimeSeries:
     ----------
     times : list of times that data were collected
     values: list of magnitudes of observations at each time
-    itemes: list of time, value tuples
+    items: list of time, value tuples
 
     Methods
     -------
@@ -70,6 +70,25 @@ class TimeSeries:
 
     >>> a.interpolate([-100,100])
     TimeSeries([-100, 100], [1, 3])
+
+    >>> t1 = TimeSeries([1, 2, 3, 4], [40, 50, 60, 70])
+    >>> t2 = TimeSeries([], [])
+
+    >>> t1.mean()
+    55.0
+
+    >>> t1.median()
+    55.0
+
+    >>> t2.mean()
+    Traceback (most recent call last):
+        ...
+    ValueError: Cannot calculate mean of empty timeseries.
+
+    >>> t2.median()
+    Traceback (most recent call last):
+        ...
+    ValueError: Cannot calculate median of empty timeseries.
     """
 
     def __init__(self, times, values):
@@ -107,10 +126,7 @@ class TimeSeries:
         return
 
     def __contains__(self, time):
-        if time in self._times:
-            return True
-        else:
-            return False
+        return time in self._times
 
     def __iter__(self):
         return iter(self._values)
@@ -167,8 +183,15 @@ class TimeSeries:
         valuesList = [self.__interpolate_point(time) for time in timesList]
         return TimeSeries(timesList,valuesList)
 
+    def mean(self):
+        if len(self) == 0:
+            raise ValueError("Cannot calculate mean of empty timeseries.")
+        return np.average(self.values)
 
-
+    def median(self):
+        if len(self) == 0:
+            raise ValueError("Cannot calculate median of empty timeseries.")
+        return np.median(self.values)
 
 
 ##### To run doctest:
