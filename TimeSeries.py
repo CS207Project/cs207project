@@ -193,6 +193,71 @@ class TimeSeries:
             raise ValueError("Cannot calculate median of empty timeseries.")
         return np.median(self.values)
 
+    def __timeEqual(self, other):
+        # try:
+        return (len(self.times) == len(other.times) and 
+        all(a==b for a,b in zip(self.times, other.times)))
+        # except(AttributeError):
+        #     raise NotImplemented
+
+    def __try_wrapper(f):
+        def inner(*args, **kwargs):
+            try:
+                return f(*args, **kwargs)
+            except(AttributeError):
+                raise NotImplementedError
+        return inner
+
+    @__try_wrapper
+    def __eq__(self, other):
+        if self.__timeEqual(other):
+            return all(a==b for a,b in zip(self.values, other.values))
+        else:
+            raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
+
+
+    def __add__(self, rhs):
+        try:
+            if (self.__timeEqual(rhs)):
+                pairs = zip(self.values, rhs.values)
+                return TimeSeries(self.times, (a + b for a, b in pairs))
+            else:
+                raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
+        except(AttributeError):
+            raise NotImplementedError
+
+    def __sub__(self, rhs):
+        try:
+            if (self.__timeEqual(rhs)):
+                pairs = zip(self.values, rhs.values)
+                return TimeSeries(self.times, (a - b for a, b in pairs))
+            else:
+                raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
+        except(AttributeError):
+            raise NotImplementedError
+
+    def __mul__(self, rhs):
+        try:
+            if (self.__timeEqual(rhs)):
+                pairs = zip(self.values, rhs.values)
+                return TimeSeries(self.times, (a * b for a, b in pairs))
+            else:
+                raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
+        except(AttributeError):
+            raise NotImplementedError
+
+    def __abs__(self):
+        return np.sqrt(sum(x * x for x in self.values))
+
+    def __bool__(self):
+        return bool(abs(self))
+
+    def __neg__(self):
+        return TimeSeries(self.times, (-x for x in self.values))
+
+    def __pos__(self):
+        return TimeSeries(self.times, self.values)
+
 
 ##### To run doctest:
 # dtest(TimeSeries, globals(), verbose = True)
