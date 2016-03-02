@@ -26,69 +26,8 @@ class TimeSeries:
 
     Tests
     -----
-    >>> a = TimeSeries([1, 1.5, 2, 2.5, 10], [0, 2, -1, 0.5, 0])
-    >>> a[2.5] = 1.0 # // test for setting
 
-    >>> str(a) # // test string representation
-    '[1.0, 1.5, 2.0, 2.5, 10.0], [0.0, 2.0, -1.0, 1.0, 0.0]'
-
-    >>> print(a[10]) # // test string indexing
-    0.0
-
-    >>> 1 in a
-    True
-
-    >>> 20 in a
-    False
-
-    >>> [v for v in TimeSeries([0,1,2],[1,3,5])]
-    [1, 3, 5]
-
-    >>> len(a)
-    5
-
-    >>> str(a)
-    '[1.0, 1.5, 2.0, 2.5, 10.0], [0.0, 2.0, -1.0, 1.0, 0.0]'
-
-    >>> a.values
-    [0.0, 2.0, -1.0, 1.0, 0.0]
-
-    >>> a.times
-    [1.0, 1.5, 2.0, 2.5, 10.0]
-
-    >>> a.items
-    [(1.0, 0.0), (1.5, 2.0), (2.0, -1.0), (2.5, 1.0), (10.0, 0.0)]
-
-    >>> a = TimeSeries([0,5,10], [1,2,3])
-    >>> b = TimeSeries([2.5,7.5], [100, -100])
-
-    >>> a.interpolate([1])
-    TimeSeries([1], [1.2])
-
-    >>> a.interpolate(b.times)
-    TimeSeries([2.5, 7.5], [1.5, 2.5])
-
-    >>> a.interpolate([-100,100])
-    TimeSeries([-100, 100], [1, 3])
-
-    >>> t1 = TimeSeries([1, 2, 3, 4], [40, 50, 60, 70])
-    >>> t2 = TimeSeries([], [])
-
-    >>> t1.mean()
-    55.0
-
-    >>> t1.median()
-    55.0
-
-    >>> t2.mean()
-    Traceback (most recent call last):
-        ...
-    ValueError: Cannot calculate mean of empty timeseries.
-
-    >>> t2.median()
-    Traceback (most recent call last):
-        ...
-    ValueError: Cannot calculate median of empty timeseries.
+    Tests are in the Test.py file
     """
 
     def __init__(self, times, values):
