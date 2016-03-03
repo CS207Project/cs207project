@@ -1,5 +1,6 @@
 import reprlib
 import itertools
+import numbers
 import numpy as np
 
 from doctest import run_docstring_examples as dtest
@@ -134,7 +135,7 @@ class TimeSeries:
 
     def __timeEqual(self, other):
         # try:
-        return (len(self.times) == len(other.times) and 
+        return (len(self.times) == len(other.times) and
         all(a==b for a,b in zip(self.times, other.times)))
         # except(AttributeError):
         #     raise NotImplemented
@@ -159,7 +160,7 @@ class TimeSeries:
         try:
             if (self.__timeEqual(rhs)):
                 pairs = zip(self.values, rhs.values)
-                return TimeSeries(self.times, (a + b for a, b in pairs))
+                return TimeSeries(self.times, [a + b for a, b in pairs])
             else:
                 raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
         except(AttributeError):
@@ -169,13 +170,15 @@ class TimeSeries:
         try:
             if (self.__timeEqual(rhs)):
                 pairs = zip(self.values, rhs.values)
-                return TimeSeries(self.times, (a - b for a, b in pairs))
+                return TimeSeries(self.times, [a - b for a, b in pairs])
             else:
                 raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
         except(AttributeError):
             raise NotImplementedError
 
     def __mul__(self, rhs):
+        if isinstance(rhs,numbers.Integral):
+            return TimeSeries(self.times,[a*rhs for a in self.values])
         try:
             if (self.__timeEqual(rhs)):
                 pairs = zip(self.values, rhs.values)
@@ -192,7 +195,7 @@ class TimeSeries:
         return bool(abs(self))
 
     def __neg__(self):
-        return TimeSeries(self.times, (-x for x in self.values))
+        return TimeSeries(self.times, [-x for x in self.values])
 
     def __pos__(self):
         return TimeSeries(self.times, self.values)
