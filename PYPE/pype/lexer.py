@@ -17,9 +17,8 @@ tokens = [
 ] + list(reserved.values())
 
 # TODO You'll need a list of token specifications here.
-# TODO Here's an example:
 t_LPAREN = r'\('
-t_LPAREN = r'\)'
+t_RPAREN = r'\)'
 t_LBRACE = r'\['
 t_RBRACE = r'\]'
 t_OP_ADD = r'\+'
@@ -28,41 +27,64 @@ t_OP_MUL = r'\*'
 t_OP_DIV = r'/'
 t_STRING = r'\".*\"'
 t_ASSIGN = r':='
-t_NUMBER = r'\d'
+t_NUMBER = r'\d+'
 #t_ID = r'\w+'
 
-# TODO Ignore whitespace.
-t_ignore = r'\s'
-# TODO Write one rule for IDs and reserved keywords. Section 4.3 has an example.
+# Ignore whitespace.
+t_ignore = ' \t\r\f\v'
+
+# Write one rule for IDs and reserved keywords. Section 4.3 has an example.
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
     t.type = reserved.get(t.value,'ID')    # Check for reserved words
     return t
-# TODO Ignore comments. Comments in PyPE are just like in Python. Section 4.5.
+
+# Ignore comments. Comments in PyPE are just like in Python. Section 4.5.
 def t_COMMENT(t):
     r'\#.*'
     pass
     # No return value. Token discarded
-# TODO Write a rule for newlines that track line numbers. Section 4.6.
+
+# Write a rule for newlines that track line numbers. Section 4.6.
 # Define a rule so we can track line numbers
 def t_newline(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
-# TODO Write an error-handling routine. It should print both line and column numbers.
+
+# Write an error-handling routine. It should print both line and column numbers.
 # Compute column. 
 #     input is the input text string
 #     token is a token instance
 def find_column(input,token):
     last_cr = input.rfind('\n',0,token.lexpos)
     if last_cr < 0:
-    last_cr = 0
-    column = (token.lexpos - last_cr) + 1
+        last_cr = 0
+    column = (token.lexpos - last_cr) - 1 
     return column
 
 # Error handling rule
 def t_error(t):
-    print("Illegal character '%s'" % t.value[0])
+    print("Illegal character '%s'" % t.value[0],"in line {}".format(t.lineno) , "and column {}".format(find_column(t.lexer.lexdata, t)))
     t.lexer.skip(1)
-    
+    #print(vars(t.lexer)['lexdata'])
+
 # This actually builds the lexer.
 lexer = ply.lex.lex()
+
+
+# Test it out
+data = ''' 
+3 + 4 * 10
+  + -20 *2
+^
+'''
+# Give the lexer some input
+lexer.input(data)
+
+
+# Tokenize
+while True:
+    tok = lexer.token()
+    if not tok: 
+        break      # No more input
+    print(tok)

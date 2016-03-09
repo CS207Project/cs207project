@@ -1,4 +1,4 @@
-from .error import *
+#from .error import *
 
 class ASTVisitor():
   def visit(self, astnode):
@@ -36,7 +36,7 @@ class ASTProgram(ASTNode):
   def __init__(self, statements):
     super().__init__()
     self.children = statements
-
+'''
 class ASTImport(ASTNode): # TODO
 class ASTComponent(ASTNode): # TODO
   @property
@@ -57,7 +57,7 @@ class ASTEvalExpr(ASTNode): # TODO
   @property
   def args(self): # TODO
     return self.children[1:]
-
+'''
 # These are already complete.
 class ASTID(ASTNode):
   def __init__(self, name, typedecl=None):
