@@ -32,9 +32,10 @@ t_NUMBER = r'\d'
 t_ID = r'\w+'
 
 # TODO Ignore whitespace.
-
+t_ignore = r'\s'
 # TODO Write one rule for IDs and reserved keywords. Section 4.3 has an example.
-
+def t_ID(t):
+    pass
 # TODO Ignore comments. Comments in PyPE are just like in Python. Section 4.5.
 
 # TODO Write a rule for newlines that track line numbers. Section 4.6.
