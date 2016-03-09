@@ -19,6 +19,18 @@ tokens = [
 # TODO You'll need a list of token specifications here.
 # TODO Here's an example:
 t_LPAREN = r'\('
+t_LPAREN
+t_RPAREN
+t_LBRACE
+t_RBRACE
+t_OP_ADD
+t_OP_SUB
+t_OP_MUL
+t_OP_DIV
+t_STRING
+t_ASSIGN
+t_NUMBER
+t_ID
 
 # TODO Ignore whitespace.
 
