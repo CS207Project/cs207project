@@ -39,10 +39,30 @@ def t_ID(t):
     t.type = reserved.get(t.value,'ID')    # Check for reserved words
     return t
 # TODO Ignore comments. Comments in PyPE are just like in Python. Section 4.5.
-
+def t_COMMENT(t):
+    r'\#.*'
+    pass
+    # No return value. Token discarded
 # TODO Write a rule for newlines that track line numbers. Section 4.6.
-
+# Define a rule so we can track line numbers
+def t_newline(t):
+    r'\n+'
+    t.lexer.lineno += len(t.value)
 # TODO Write an error-handling routine. It should print both line and column numbers.
+# Compute column. 
+#     input is the input text string
+#     token is a token instance
+def find_column(input,token):
+    last_cr = input.rfind('\n',0,token.lexpos)
+    if last_cr < 0:
+    last_cr = 0
+    column = (token.lexpos - last_cr) + 1
+    return column
 
+# Error handling rule
+def t_error(t):
+    print("Illegal character '%s'" % t.value[0])
+    t.lexer.skip(1)
+    
 # This actually builds the lexer.
 lexer = ply.lex.lex()
