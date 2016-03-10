@@ -6,7 +6,7 @@ reserved = { # pattern : token-name
   'import' : 'IMPORT',
 }
 # 'tokens' is a special word in ply's lexers.
-tokens = [ 
+tokens = [
   'LPAREN','RPAREN', # Individual parentheses
   'LBRACE','RBRACE', # Individual braces
   'OP_ADD','OP_SUB','OP_MUL','OP_DIV', # the four basic arithmetic symbols
@@ -19,8 +19,8 @@ tokens = [
 # TODO You'll need a list of token specifications here.
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
-t_LBRACE = r'\['
-t_RBRACE = r'\]'
+t_LBRACE = r'\{'
+t_RBRACE = r'\}'
 t_OP_ADD = r'\+'
 t_OP_SUB = r'-'
 t_OP_MUL = r'\*'
@@ -52,14 +52,14 @@ def t_newline(t):
     t.lexer.lineno += len(t.value)
 
 # Write an error-handling routine. It should print both line and column numbers.
-# Compute column. 
+# Compute column.
 #     input is the input text string
 #     token is a token instance
 def find_column(input,token):
     last_cr = input.rfind('\n',0,token.lexpos)
     if last_cr < 0:
         last_cr = 0
-    column = (token.lexpos - last_cr) - 1 
+    column = (token.lexpos - last_cr) - 1
     return column
 
 # Error handling rule
@@ -71,20 +71,24 @@ def t_error(t):
 # This actually builds the lexer.
 lexer = ply.lex.lex()
 
-
+""" commented 3/10 by DNY
 # Test it out
-data = ''' 
+data = '''
 3 + 4 * 10
-  + -20 *2
+  + -20 *2 + a
 ^
 '''
 # Give the lexer some input
 lexer.input(data)
 
+print(vars(lexer).keys())
 
 # Tokenize
 while True:
     tok = lexer.token()
-    if not tok: 
+    if not tok:
         break      # No more input
     print(tok)
+    print(type(tok.value))
+    print(tok.type)
+"""
