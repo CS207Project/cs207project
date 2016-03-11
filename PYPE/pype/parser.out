@@ -83,9 +83,9 @@ state 0
     LBRACE          shift and go to state 1
 
     statement_list                 shift and go to state 4
-    program                        shift and go to state 2
-    component                      shift and go to state 5
     import_statement               shift and go to state 6
+    program                        shift and go to state 5
+    component                      shift and go to state 2
 
 state 1
 
@@ -96,8 +96,11 @@ state 1
 
 state 2
 
-    (0) S' -> program .
+    (5) statement_list -> component .
 
+    LBRACE          reduce using rule 5 (statement_list -> component .)
+    LPAREN          reduce using rule 5 (statement_list -> component .)
+    $end            reduce using rule 5 (statement_list -> component .)
 
 
 state 3
@@ -124,11 +127,8 @@ state 4
 
 state 5
 
-    (5) statement_list -> component .
+    (0) S' -> program .
 
-    LBRACE          reduce using rule 5 (statement_list -> component .)
-    LPAREN          reduce using rule 5 (statement_list -> component .)
-    $end            reduce using rule 5 (statement_list -> component .)
 
 
 state 6
@@ -160,13 +160,13 @@ state 7
     (27) expression -> . NUMBER
     (28) expression -> . STRING
 
-    LPAREN          shift and go to state 13
-    ID              shift and go to state 16
-    NUMBER          shift and go to state 12
-    STRING          shift and go to state 11
+    LPAREN          shift and go to state 16
+    ID              shift and go to state 11
+    NUMBER          shift and go to state 15
+    STRING          shift and go to state 13
 
-    expression_list                shift and go to state 15
     expression                     shift and go to state 14
+    expression_list                shift and go to state 12
 
 state 8
 
@@ -195,64 +195,17 @@ state 10
 
 state 11
 
-    (28) expression -> STRING .
+    (26) expression -> ID .
 
-    RPAREN          reduce using rule 28 (expression -> STRING .)
-    LPAREN          reduce using rule 28 (expression -> STRING .)
-    ID              reduce using rule 28 (expression -> STRING .)
-    NUMBER          reduce using rule 28 (expression -> STRING .)
-    STRING          reduce using rule 28 (expression -> STRING .)
-    RBRACE          reduce using rule 28 (expression -> STRING .)
+    RPAREN          reduce using rule 26 (expression -> ID .)
+    LPAREN          reduce using rule 26 (expression -> ID .)
+    ID              reduce using rule 26 (expression -> ID .)
+    NUMBER          reduce using rule 26 (expression -> ID .)
+    STRING          reduce using rule 26 (expression -> ID .)
+    RBRACE          reduce using rule 26 (expression -> ID .)
 
 
 state 12
-
-    (27) expression -> NUMBER .
-
-    RPAREN          reduce using rule 27 (expression -> NUMBER .)
-    LPAREN          reduce using rule 27 (expression -> NUMBER .)
-    ID              reduce using rule 27 (expression -> NUMBER .)
-    NUMBER          reduce using rule 27 (expression -> NUMBER .)
-    STRING          reduce using rule 27 (expression -> NUMBER .)
-    RBRACE          reduce using rule 27 (expression -> NUMBER .)
-
-
-state 13
-
-    (10) expression -> LPAREN . INPUT declaration_list RPAREN
-    (11) expression -> LPAREN . INPUT RPAREN
-    (12) expression -> LPAREN . OUTPUT declaration_list RPAREN
-    (13) expression -> LPAREN . OUTPUT RPAREN
-    (19) expression -> LPAREN . ASSIGN ID expression RPAREN
-    (20) expression -> LPAREN . ID parameter_list RPAREN
-    (21) expression -> LPAREN . ID RPAREN
-    (22) expression -> LPAREN . OP_ADD parameter_list RPAREN
-    (23) expression -> LPAREN . OP_SUB parameter_list RPAREN
-    (24) expression -> LPAREN . OP_MUL parameter_list RPAREN
-    (25) expression -> LPAREN . OP_DIV parameter_list RPAREN
-
-    INPUT           shift and go to state 18
-    OUTPUT          shift and go to state 20
-    ASSIGN          shift and go to state 25
-    ID              shift and go to state 24
-    OP_ADD          shift and go to state 22
-    OP_SUB          shift and go to state 21
-    OP_MUL          shift and go to state 23
-    OP_DIV          shift and go to state 19
-
-
-state 14
-
-    (9) expression_list -> expression .
-
-    RBRACE          reduce using rule 9 (expression_list -> expression .)
-    LPAREN          reduce using rule 9 (expression_list -> expression .)
-    ID              reduce using rule 9 (expression_list -> expression .)
-    NUMBER          reduce using rule 9 (expression_list -> expression .)
-    STRING          reduce using rule 9 (expression_list -> expression .)
-
-
-state 15
 
     (7) component -> LBRACE ID expression_list . RBRACE
     (8) expression_list -> expression_list . expression
@@ -271,24 +224,71 @@ state 15
     (27) expression -> . NUMBER
     (28) expression -> . STRING
 
-    RBRACE          shift and go to state 26
-    LPAREN          shift and go to state 13
-    ID              shift and go to state 16
-    NUMBER          shift and go to state 12
-    STRING          shift and go to state 11
+    RBRACE          shift and go to state 18
+    LPAREN          shift and go to state 16
+    ID              shift and go to state 11
+    NUMBER          shift and go to state 15
+    STRING          shift and go to state 13
 
-    expression                     shift and go to state 27
+    expression                     shift and go to state 19
+
+state 13
+
+    (28) expression -> STRING .
+
+    RPAREN          reduce using rule 28 (expression -> STRING .)
+    LPAREN          reduce using rule 28 (expression -> STRING .)
+    ID              reduce using rule 28 (expression -> STRING .)
+    NUMBER          reduce using rule 28 (expression -> STRING .)
+    STRING          reduce using rule 28 (expression -> STRING .)
+    RBRACE          reduce using rule 28 (expression -> STRING .)
+
+
+state 14
+
+    (9) expression_list -> expression .
+
+    RBRACE          reduce using rule 9 (expression_list -> expression .)
+    LPAREN          reduce using rule 9 (expression_list -> expression .)
+    ID              reduce using rule 9 (expression_list -> expression .)
+    NUMBER          reduce using rule 9 (expression_list -> expression .)
+    STRING          reduce using rule 9 (expression_list -> expression .)
+
+
+state 15
+
+    (27) expression -> NUMBER .
+
+    RPAREN          reduce using rule 27 (expression -> NUMBER .)
+    LPAREN          reduce using rule 27 (expression -> NUMBER .)
+    ID              reduce using rule 27 (expression -> NUMBER .)
+    NUMBER          reduce using rule 27 (expression -> NUMBER .)
+    STRING          reduce using rule 27 (expression -> NUMBER .)
+    RBRACE          reduce using rule 27 (expression -> NUMBER .)
+
 
 state 16
 
-    (26) expression -> ID .
+    (10) expression -> LPAREN . INPUT declaration_list RPAREN
+    (11) expression -> LPAREN . INPUT RPAREN
+    (12) expression -> LPAREN . OUTPUT declaration_list RPAREN
+    (13) expression -> LPAREN . OUTPUT RPAREN
+    (19) expression -> LPAREN . ASSIGN ID expression RPAREN
+    (20) expression -> LPAREN . ID parameter_list RPAREN
+    (21) expression -> LPAREN . ID RPAREN
+    (22) expression -> LPAREN . OP_ADD parameter_list RPAREN
+    (23) expression -> LPAREN . OP_SUB parameter_list RPAREN
+    (24) expression -> LPAREN . OP_MUL parameter_list RPAREN
+    (25) expression -> LPAREN . OP_DIV parameter_list RPAREN
 
-    RPAREN          reduce using rule 26 (expression -> ID .)
-    LPAREN          reduce using rule 26 (expression -> ID .)
-    ID              reduce using rule 26 (expression -> ID .)
-    NUMBER          reduce using rule 26 (expression -> ID .)
-    STRING          reduce using rule 26 (expression -> ID .)
-    RBRACE          reduce using rule 26 (expression -> ID .)
+    INPUT           shift and go to state 20
+    OUTPUT          shift and go to state 24
+    ASSIGN          shift and go to state 22
+    ID              shift and go to state 23
+    OP_ADD          shift and go to state 26
+    OP_SUB          shift and go to state 25
+    OP_MUL          shift and go to state 27
+    OP_DIV          shift and go to state 21
 
 
 state 17
@@ -300,6 +300,26 @@ state 17
 
 state 18
 
+    (7) component -> LBRACE ID expression_list RBRACE .
+
+    LBRACE          reduce using rule 7 (component -> LBRACE ID expression_list RBRACE .)
+    LPAREN          reduce using rule 7 (component -> LBRACE ID expression_list RBRACE .)
+    $end            reduce using rule 7 (component -> LBRACE ID expression_list RBRACE .)
+
+
+state 19
+
+    (8) expression_list -> expression_list expression .
+
+    RBRACE          reduce using rule 8 (expression_list -> expression_list expression .)
+    LPAREN          reduce using rule 8 (expression_list -> expression_list expression .)
+    ID              reduce using rule 8 (expression_list -> expression_list expression .)
+    NUMBER          reduce using rule 8 (expression_list -> expression_list expression .)
+    STRING          reduce using rule 8 (expression_list -> expression_list expression .)
+
+
+state 20
+
     (10) expression -> LPAREN INPUT . declaration_list RPAREN
     (11) expression -> LPAREN INPUT . RPAREN
     (14) declaration_list -> . declaration_list declaration
@@ -308,13 +328,13 @@ state 18
     (17) declaration -> . ID
 
     RPAREN          shift and go to state 29
-    LPAREN          shift and go to state 31
+    LPAREN          shift and go to state 30
     ID              shift and go to state 32
 
     declaration_list               shift and go to state 33
-    declaration                    shift and go to state 30
+    declaration                    shift and go to state 31
 
-state 19
+state 21
 
     (25) expression -> LPAREN OP_DIV . parameter_list RPAREN
     (29) parameter_list -> . parameter_list expression
@@ -334,115 +354,22 @@ state 19
     (27) expression -> . NUMBER
     (28) expression -> . STRING
 
-    LPAREN          shift and go to state 13
-    ID              shift and go to state 16
-    NUMBER          shift and go to state 12
-    STRING          shift and go to state 11
+    LPAREN          shift and go to state 16
+    ID              shift and go to state 11
+    NUMBER          shift and go to state 15
+    STRING          shift and go to state 13
 
-    parameter_list                 shift and go to state 35
-    expression                     shift and go to state 34
-
-state 20
-
-    (12) expression -> LPAREN OUTPUT . declaration_list RPAREN
-    (13) expression -> LPAREN OUTPUT . RPAREN
-    (14) declaration_list -> . declaration_list declaration
-    (15) declaration_list -> . declaration
-    (16) declaration -> . LPAREN type ID RPAREN
-    (17) declaration -> . ID
-
-    RPAREN          shift and go to state 36
-    LPAREN          shift and go to state 31
-    ID              shift and go to state 32
-
-    declaration_list               shift and go to state 37
-    declaration                    shift and go to state 30
-
-state 21
-
-    (23) expression -> LPAREN OP_SUB . parameter_list RPAREN
-    (29) parameter_list -> . parameter_list expression
-    (30) parameter_list -> . expression
-    (10) expression -> . LPAREN INPUT declaration_list RPAREN
-    (11) expression -> . LPAREN INPUT RPAREN
-    (12) expression -> . LPAREN OUTPUT declaration_list RPAREN
-    (13) expression -> . LPAREN OUTPUT RPAREN
-    (19) expression -> . LPAREN ASSIGN ID expression RPAREN
-    (20) expression -> . LPAREN ID parameter_list RPAREN
-    (21) expression -> . LPAREN ID RPAREN
-    (22) expression -> . LPAREN OP_ADD parameter_list RPAREN
-    (23) expression -> . LPAREN OP_SUB parameter_list RPAREN
-    (24) expression -> . LPAREN OP_MUL parameter_list RPAREN
-    (25) expression -> . LPAREN OP_DIV parameter_list RPAREN
-    (26) expression -> . ID
-    (27) expression -> . NUMBER
-    (28) expression -> . STRING
-
-    LPAREN          shift and go to state 13
-    ID              shift and go to state 16
-    NUMBER          shift and go to state 12
-    STRING          shift and go to state 11
-
-    parameter_list                 shift and go to state 38
-    expression                     shift and go to state 34
+    expression                     shift and go to state 35
+    parameter_list                 shift and go to state 34
 
 state 22
 
-    (22) expression -> LPAREN OP_ADD . parameter_list RPAREN
-    (29) parameter_list -> . parameter_list expression
-    (30) parameter_list -> . expression
-    (10) expression -> . LPAREN INPUT declaration_list RPAREN
-    (11) expression -> . LPAREN INPUT RPAREN
-    (12) expression -> . LPAREN OUTPUT declaration_list RPAREN
-    (13) expression -> . LPAREN OUTPUT RPAREN
-    (19) expression -> . LPAREN ASSIGN ID expression RPAREN
-    (20) expression -> . LPAREN ID parameter_list RPAREN
-    (21) expression -> . LPAREN ID RPAREN
-    (22) expression -> . LPAREN OP_ADD parameter_list RPAREN
-    (23) expression -> . LPAREN OP_SUB parameter_list RPAREN
-    (24) expression -> . LPAREN OP_MUL parameter_list RPAREN
-    (25) expression -> . LPAREN OP_DIV parameter_list RPAREN
-    (26) expression -> . ID
-    (27) expression -> . NUMBER
-    (28) expression -> . STRING
+    (19) expression -> LPAREN ASSIGN . ID expression RPAREN
 
-    LPAREN          shift and go to state 13
-    ID              shift and go to state 16
-    NUMBER          shift and go to state 12
-    STRING          shift and go to state 11
+    ID              shift and go to state 36
 
-    parameter_list                 shift and go to state 39
-    expression                     shift and go to state 34
 
 state 23
-
-    (24) expression -> LPAREN OP_MUL . parameter_list RPAREN
-    (29) parameter_list -> . parameter_list expression
-    (30) parameter_list -> . expression
-    (10) expression -> . LPAREN INPUT declaration_list RPAREN
-    (11) expression -> . LPAREN INPUT RPAREN
-    (12) expression -> . LPAREN OUTPUT declaration_list RPAREN
-    (13) expression -> . LPAREN OUTPUT RPAREN
-    (19) expression -> . LPAREN ASSIGN ID expression RPAREN
-    (20) expression -> . LPAREN ID parameter_list RPAREN
-    (21) expression -> . LPAREN ID RPAREN
-    (22) expression -> . LPAREN OP_ADD parameter_list RPAREN
-    (23) expression -> . LPAREN OP_SUB parameter_list RPAREN
-    (24) expression -> . LPAREN OP_MUL parameter_list RPAREN
-    (25) expression -> . LPAREN OP_DIV parameter_list RPAREN
-    (26) expression -> . ID
-    (27) expression -> . NUMBER
-    (28) expression -> . STRING
-
-    LPAREN          shift and go to state 13
-    ID              shift and go to state 16
-    NUMBER          shift and go to state 12
-    STRING          shift and go to state 11
-
-    parameter_list                 shift and go to state 40
-    expression                     shift and go to state 34
-
-state 24
 
     (20) expression -> LPAREN ID . parameter_list RPAREN
     (21) expression -> LPAREN ID . RPAREN
@@ -463,41 +390,114 @@ state 24
     (27) expression -> . NUMBER
     (28) expression -> . STRING
 
-    RPAREN          shift and go to state 41
-    LPAREN          shift and go to state 13
-    ID              shift and go to state 16
-    NUMBER          shift and go to state 12
-    STRING          shift and go to state 11
+    RPAREN          shift and go to state 38
+    LPAREN          shift and go to state 16
+    ID              shift and go to state 11
+    NUMBER          shift and go to state 15
+    STRING          shift and go to state 13
 
-    parameter_list                 shift and go to state 42
-    expression                     shift and go to state 34
+    expression                     shift and go to state 35
+    parameter_list                 shift and go to state 37
+
+state 24
+
+    (12) expression -> LPAREN OUTPUT . declaration_list RPAREN
+    (13) expression -> LPAREN OUTPUT . RPAREN
+    (14) declaration_list -> . declaration_list declaration
+    (15) declaration_list -> . declaration
+    (16) declaration -> . LPAREN type ID RPAREN
+    (17) declaration -> . ID
+
+    RPAREN          shift and go to state 39
+    LPAREN          shift and go to state 30
+    ID              shift and go to state 32
+
+    declaration_list               shift and go to state 40
+    declaration                    shift and go to state 31
 
 state 25
 
-    (19) expression -> LPAREN ASSIGN . ID expression RPAREN
+    (23) expression -> LPAREN OP_SUB . parameter_list RPAREN
+    (29) parameter_list -> . parameter_list expression
+    (30) parameter_list -> . expression
+    (10) expression -> . LPAREN INPUT declaration_list RPAREN
+    (11) expression -> . LPAREN INPUT RPAREN
+    (12) expression -> . LPAREN OUTPUT declaration_list RPAREN
+    (13) expression -> . LPAREN OUTPUT RPAREN
+    (19) expression -> . LPAREN ASSIGN ID expression RPAREN
+    (20) expression -> . LPAREN ID parameter_list RPAREN
+    (21) expression -> . LPAREN ID RPAREN
+    (22) expression -> . LPAREN OP_ADD parameter_list RPAREN
+    (23) expression -> . LPAREN OP_SUB parameter_list RPAREN
+    (24) expression -> . LPAREN OP_MUL parameter_list RPAREN
+    (25) expression -> . LPAREN OP_DIV parameter_list RPAREN
+    (26) expression -> . ID
+    (27) expression -> . NUMBER
+    (28) expression -> . STRING
 
-    ID              shift and go to state 43
+    LPAREN          shift and go to state 16
+    ID              shift and go to state 11
+    NUMBER          shift and go to state 15
+    STRING          shift and go to state 13
 
+    expression                     shift and go to state 35
+    parameter_list                 shift and go to state 41
 
 state 26
 
-    (7) component -> LBRACE ID expression_list RBRACE .
+    (22) expression -> LPAREN OP_ADD . parameter_list RPAREN
+    (29) parameter_list -> . parameter_list expression
+    (30) parameter_list -> . expression
+    (10) expression -> . LPAREN INPUT declaration_list RPAREN
+    (11) expression -> . LPAREN INPUT RPAREN
+    (12) expression -> . LPAREN OUTPUT declaration_list RPAREN
+    (13) expression -> . LPAREN OUTPUT RPAREN
+    (19) expression -> . LPAREN ASSIGN ID expression RPAREN
+    (20) expression -> . LPAREN ID parameter_list RPAREN
+    (21) expression -> . LPAREN ID RPAREN
+    (22) expression -> . LPAREN OP_ADD parameter_list RPAREN
+    (23) expression -> . LPAREN OP_SUB parameter_list RPAREN
+    (24) expression -> . LPAREN OP_MUL parameter_list RPAREN
+    (25) expression -> . LPAREN OP_DIV parameter_list RPAREN
+    (26) expression -> . ID
+    (27) expression -> . NUMBER
+    (28) expression -> . STRING
 
-    LBRACE          reduce using rule 7 (component -> LBRACE ID expression_list RBRACE .)
-    LPAREN          reduce using rule 7 (component -> LBRACE ID expression_list RBRACE .)
-    $end            reduce using rule 7 (component -> LBRACE ID expression_list RBRACE .)
+    LPAREN          shift and go to state 16
+    ID              shift and go to state 11
+    NUMBER          shift and go to state 15
+    STRING          shift and go to state 13
 
+    expression                     shift and go to state 35
+    parameter_list                 shift and go to state 42
 
 state 27
 
-    (8) expression_list -> expression_list expression .
+    (24) expression -> LPAREN OP_MUL . parameter_list RPAREN
+    (29) parameter_list -> . parameter_list expression
+    (30) parameter_list -> . expression
+    (10) expression -> . LPAREN INPUT declaration_list RPAREN
+    (11) expression -> . LPAREN INPUT RPAREN
+    (12) expression -> . LPAREN OUTPUT declaration_list RPAREN
+    (13) expression -> . LPAREN OUTPUT RPAREN
+    (19) expression -> . LPAREN ASSIGN ID expression RPAREN
+    (20) expression -> . LPAREN ID parameter_list RPAREN
+    (21) expression -> . LPAREN ID RPAREN
+    (22) expression -> . LPAREN OP_ADD parameter_list RPAREN
+    (23) expression -> . LPAREN OP_SUB parameter_list RPAREN
+    (24) expression -> . LPAREN OP_MUL parameter_list RPAREN
+    (25) expression -> . LPAREN OP_DIV parameter_list RPAREN
+    (26) expression -> . ID
+    (27) expression -> . NUMBER
+    (28) expression -> . STRING
 
-    RBRACE          reduce using rule 8 (expression_list -> expression_list expression .)
-    LPAREN          reduce using rule 8 (expression_list -> expression_list expression .)
-    ID              reduce using rule 8 (expression_list -> expression_list expression .)
-    NUMBER          reduce using rule 8 (expression_list -> expression_list expression .)
-    STRING          reduce using rule 8 (expression_list -> expression_list expression .)
+    LPAREN          shift and go to state 16
+    ID              shift and go to state 11
+    NUMBER          shift and go to state 15
+    STRING          shift and go to state 13
 
+    expression                     shift and go to state 35
+    parameter_list                 shift and go to state 43
 
 state 28
 
@@ -522,21 +522,21 @@ state 29
 
 state 30
 
+    (16) declaration -> LPAREN . type ID RPAREN
+    (18) type -> . ID
+
+    ID              shift and go to state 45
+
+    type                           shift and go to state 44
+
+state 31
+
     (15) declaration_list -> declaration .
 
     RPAREN          reduce using rule 15 (declaration_list -> declaration .)
     LPAREN          reduce using rule 15 (declaration_list -> declaration .)
     ID              reduce using rule 15 (declaration_list -> declaration .)
 
-
-state 31
-
-    (16) declaration -> LPAREN . type ID RPAREN
-    (18) type -> . ID
-
-    ID              shift and go to state 44
-
-    type                           shift and go to state 45
 
 state 32
 
@@ -555,23 +555,12 @@ state 33
     (17) declaration -> . ID
 
     RPAREN          shift and go to state 46
-    LPAREN          shift and go to state 31
+    LPAREN          shift and go to state 30
     ID              shift and go to state 32
 
     declaration                    shift and go to state 47
 
 state 34
-
-    (30) parameter_list -> expression .
-
-    RPAREN          reduce using rule 30 (parameter_list -> expression .)
-    LPAREN          reduce using rule 30 (parameter_list -> expression .)
-    ID              reduce using rule 30 (parameter_list -> expression .)
-    NUMBER          reduce using rule 30 (parameter_list -> expression .)
-    STRING          reduce using rule 30 (parameter_list -> expression .)
-
-
-state 35
 
     (25) expression -> LPAREN OP_DIV parameter_list . RPAREN
     (29) parameter_list -> parameter_list . expression
@@ -590,133 +579,51 @@ state 35
     (27) expression -> . NUMBER
     (28) expression -> . STRING
 
-    RPAREN          shift and go to state 49
-    LPAREN          shift and go to state 13
-    ID              shift and go to state 16
-    NUMBER          shift and go to state 12
-    STRING          shift and go to state 11
+    RPAREN          shift and go to state 48
+    LPAREN          shift and go to state 16
+    ID              shift and go to state 11
+    NUMBER          shift and go to state 15
+    STRING          shift and go to state 13
 
-    expression                     shift and go to state 48
+    expression                     shift and go to state 49
+
+state 35
+
+    (30) parameter_list -> expression .
+
+    RPAREN          reduce using rule 30 (parameter_list -> expression .)
+    LPAREN          reduce using rule 30 (parameter_list -> expression .)
+    ID              reduce using rule 30 (parameter_list -> expression .)
+    NUMBER          reduce using rule 30 (parameter_list -> expression .)
+    STRING          reduce using rule 30 (parameter_list -> expression .)
+
 
 state 36
 
-    (13) expression -> LPAREN OUTPUT RPAREN .
+    (19) expression -> LPAREN ASSIGN ID . expression RPAREN
+    (10) expression -> . LPAREN INPUT declaration_list RPAREN
+    (11) expression -> . LPAREN INPUT RPAREN
+    (12) expression -> . LPAREN OUTPUT declaration_list RPAREN
+    (13) expression -> . LPAREN OUTPUT RPAREN
+    (19) expression -> . LPAREN ASSIGN ID expression RPAREN
+    (20) expression -> . LPAREN ID parameter_list RPAREN
+    (21) expression -> . LPAREN ID RPAREN
+    (22) expression -> . LPAREN OP_ADD parameter_list RPAREN
+    (23) expression -> . LPAREN OP_SUB parameter_list RPAREN
+    (24) expression -> . LPAREN OP_MUL parameter_list RPAREN
+    (25) expression -> . LPAREN OP_DIV parameter_list RPAREN
+    (26) expression -> . ID
+    (27) expression -> . NUMBER
+    (28) expression -> . STRING
 
-    RPAREN          reduce using rule 13 (expression -> LPAREN OUTPUT RPAREN .)
-    LPAREN          reduce using rule 13 (expression -> LPAREN OUTPUT RPAREN .)
-    ID              reduce using rule 13 (expression -> LPAREN OUTPUT RPAREN .)
-    NUMBER          reduce using rule 13 (expression -> LPAREN OUTPUT RPAREN .)
-    STRING          reduce using rule 13 (expression -> LPAREN OUTPUT RPAREN .)
-    RBRACE          reduce using rule 13 (expression -> LPAREN OUTPUT RPAREN .)
+    LPAREN          shift and go to state 16
+    ID              shift and go to state 11
+    NUMBER          shift and go to state 15
+    STRING          shift and go to state 13
 
+    expression                     shift and go to state 50
 
 state 37
-
-    (12) expression -> LPAREN OUTPUT declaration_list . RPAREN
-    (14) declaration_list -> declaration_list . declaration
-    (16) declaration -> . LPAREN type ID RPAREN
-    (17) declaration -> . ID
-
-    RPAREN          shift and go to state 50
-    LPAREN          shift and go to state 31
-    ID              shift and go to state 32
-
-    declaration                    shift and go to state 47
-
-state 38
-
-    (23) expression -> LPAREN OP_SUB parameter_list . RPAREN
-    (29) parameter_list -> parameter_list . expression
-    (10) expression -> . LPAREN INPUT declaration_list RPAREN
-    (11) expression -> . LPAREN INPUT RPAREN
-    (12) expression -> . LPAREN OUTPUT declaration_list RPAREN
-    (13) expression -> . LPAREN OUTPUT RPAREN
-    (19) expression -> . LPAREN ASSIGN ID expression RPAREN
-    (20) expression -> . LPAREN ID parameter_list RPAREN
-    (21) expression -> . LPAREN ID RPAREN
-    (22) expression -> . LPAREN OP_ADD parameter_list RPAREN
-    (23) expression -> . LPAREN OP_SUB parameter_list RPAREN
-    (24) expression -> . LPAREN OP_MUL parameter_list RPAREN
-    (25) expression -> . LPAREN OP_DIV parameter_list RPAREN
-    (26) expression -> . ID
-    (27) expression -> . NUMBER
-    (28) expression -> . STRING
-
-    RPAREN          shift and go to state 51
-    LPAREN          shift and go to state 13
-    ID              shift and go to state 16
-    NUMBER          shift and go to state 12
-    STRING          shift and go to state 11
-
-    expression                     shift and go to state 48
-
-state 39
-
-    (22) expression -> LPAREN OP_ADD parameter_list . RPAREN
-    (29) parameter_list -> parameter_list . expression
-    (10) expression -> . LPAREN INPUT declaration_list RPAREN
-    (11) expression -> . LPAREN INPUT RPAREN
-    (12) expression -> . LPAREN OUTPUT declaration_list RPAREN
-    (13) expression -> . LPAREN OUTPUT RPAREN
-    (19) expression -> . LPAREN ASSIGN ID expression RPAREN
-    (20) expression -> . LPAREN ID parameter_list RPAREN
-    (21) expression -> . LPAREN ID RPAREN
-    (22) expression -> . LPAREN OP_ADD parameter_list RPAREN
-    (23) expression -> . LPAREN OP_SUB parameter_list RPAREN
-    (24) expression -> . LPAREN OP_MUL parameter_list RPAREN
-    (25) expression -> . LPAREN OP_DIV parameter_list RPAREN
-    (26) expression -> . ID
-    (27) expression -> . NUMBER
-    (28) expression -> . STRING
-
-    RPAREN          shift and go to state 52
-    LPAREN          shift and go to state 13
-    ID              shift and go to state 16
-    NUMBER          shift and go to state 12
-    STRING          shift and go to state 11
-
-    expression                     shift and go to state 48
-
-state 40
-
-    (24) expression -> LPAREN OP_MUL parameter_list . RPAREN
-    (29) parameter_list -> parameter_list . expression
-    (10) expression -> . LPAREN INPUT declaration_list RPAREN
-    (11) expression -> . LPAREN INPUT RPAREN
-    (12) expression -> . LPAREN OUTPUT declaration_list RPAREN
-    (13) expression -> . LPAREN OUTPUT RPAREN
-    (19) expression -> . LPAREN ASSIGN ID expression RPAREN
-    (20) expression -> . LPAREN ID parameter_list RPAREN
-    (21) expression -> . LPAREN ID RPAREN
-    (22) expression -> . LPAREN OP_ADD parameter_list RPAREN
-    (23) expression -> . LPAREN OP_SUB parameter_list RPAREN
-    (24) expression -> . LPAREN OP_MUL parameter_list RPAREN
-    (25) expression -> . LPAREN OP_DIV parameter_list RPAREN
-    (26) expression -> . ID
-    (27) expression -> . NUMBER
-    (28) expression -> . STRING
-
-    RPAREN          shift and go to state 53
-    LPAREN          shift and go to state 13
-    ID              shift and go to state 16
-    NUMBER          shift and go to state 12
-    STRING          shift and go to state 11
-
-    expression                     shift and go to state 48
-
-state 41
-
-    (21) expression -> LPAREN ID RPAREN .
-
-    RPAREN          reduce using rule 21 (expression -> LPAREN ID RPAREN .)
-    LPAREN          reduce using rule 21 (expression -> LPAREN ID RPAREN .)
-    ID              reduce using rule 21 (expression -> LPAREN ID RPAREN .)
-    NUMBER          reduce using rule 21 (expression -> LPAREN ID RPAREN .)
-    STRING          reduce using rule 21 (expression -> LPAREN ID RPAREN .)
-    RBRACE          reduce using rule 21 (expression -> LPAREN ID RPAREN .)
-
-
-state 42
 
     (20) expression -> LPAREN ID parameter_list . RPAREN
     (29) parameter_list -> parameter_list . expression
@@ -735,17 +642,55 @@ state 42
     (27) expression -> . NUMBER
     (28) expression -> . STRING
 
-    RPAREN          shift and go to state 54
-    LPAREN          shift and go to state 13
-    ID              shift and go to state 16
-    NUMBER          shift and go to state 12
-    STRING          shift and go to state 11
+    RPAREN          shift and go to state 51
+    LPAREN          shift and go to state 16
+    ID              shift and go to state 11
+    NUMBER          shift and go to state 15
+    STRING          shift and go to state 13
 
-    expression                     shift and go to state 48
+    expression                     shift and go to state 49
 
-state 43
+state 38
 
-    (19) expression -> LPAREN ASSIGN ID . expression RPAREN
+    (21) expression -> LPAREN ID RPAREN .
+
+    RPAREN          reduce using rule 21 (expression -> LPAREN ID RPAREN .)
+    LPAREN          reduce using rule 21 (expression -> LPAREN ID RPAREN .)
+    ID              reduce using rule 21 (expression -> LPAREN ID RPAREN .)
+    NUMBER          reduce using rule 21 (expression -> LPAREN ID RPAREN .)
+    STRING          reduce using rule 21 (expression -> LPAREN ID RPAREN .)
+    RBRACE          reduce using rule 21 (expression -> LPAREN ID RPAREN .)
+
+
+state 39
+
+    (13) expression -> LPAREN OUTPUT RPAREN .
+
+    RPAREN          reduce using rule 13 (expression -> LPAREN OUTPUT RPAREN .)
+    LPAREN          reduce using rule 13 (expression -> LPAREN OUTPUT RPAREN .)
+    ID              reduce using rule 13 (expression -> LPAREN OUTPUT RPAREN .)
+    NUMBER          reduce using rule 13 (expression -> LPAREN OUTPUT RPAREN .)
+    STRING          reduce using rule 13 (expression -> LPAREN OUTPUT RPAREN .)
+    RBRACE          reduce using rule 13 (expression -> LPAREN OUTPUT RPAREN .)
+
+
+state 40
+
+    (12) expression -> LPAREN OUTPUT declaration_list . RPAREN
+    (14) declaration_list -> declaration_list . declaration
+    (16) declaration -> . LPAREN type ID RPAREN
+    (17) declaration -> . ID
+
+    RPAREN          shift and go to state 52
+    LPAREN          shift and go to state 30
+    ID              shift and go to state 32
+
+    declaration                    shift and go to state 47
+
+state 41
+
+    (23) expression -> LPAREN OP_SUB parameter_list . RPAREN
+    (29) parameter_list -> parameter_list . expression
     (10) expression -> . LPAREN INPUT declaration_list RPAREN
     (11) expression -> . LPAREN INPUT RPAREN
     (12) expression -> . LPAREN OUTPUT declaration_list RPAREN
@@ -761,25 +706,80 @@ state 43
     (27) expression -> . NUMBER
     (28) expression -> . STRING
 
-    LPAREN          shift and go to state 13
-    ID              shift and go to state 16
-    NUMBER          shift and go to state 12
-    STRING          shift and go to state 11
+    RPAREN          shift and go to state 53
+    LPAREN          shift and go to state 16
+    ID              shift and go to state 11
+    NUMBER          shift and go to state 15
+    STRING          shift and go to state 13
 
-    expression                     shift and go to state 55
+    expression                     shift and go to state 49
+
+state 42
+
+    (22) expression -> LPAREN OP_ADD parameter_list . RPAREN
+    (29) parameter_list -> parameter_list . expression
+    (10) expression -> . LPAREN INPUT declaration_list RPAREN
+    (11) expression -> . LPAREN INPUT RPAREN
+    (12) expression -> . LPAREN OUTPUT declaration_list RPAREN
+    (13) expression -> . LPAREN OUTPUT RPAREN
+    (19) expression -> . LPAREN ASSIGN ID expression RPAREN
+    (20) expression -> . LPAREN ID parameter_list RPAREN
+    (21) expression -> . LPAREN ID RPAREN
+    (22) expression -> . LPAREN OP_ADD parameter_list RPAREN
+    (23) expression -> . LPAREN OP_SUB parameter_list RPAREN
+    (24) expression -> . LPAREN OP_MUL parameter_list RPAREN
+    (25) expression -> . LPAREN OP_DIV parameter_list RPAREN
+    (26) expression -> . ID
+    (27) expression -> . NUMBER
+    (28) expression -> . STRING
+
+    RPAREN          shift and go to state 54
+    LPAREN          shift and go to state 16
+    ID              shift and go to state 11
+    NUMBER          shift and go to state 15
+    STRING          shift and go to state 13
+
+    expression                     shift and go to state 49
+
+state 43
+
+    (24) expression -> LPAREN OP_MUL parameter_list . RPAREN
+    (29) parameter_list -> parameter_list . expression
+    (10) expression -> . LPAREN INPUT declaration_list RPAREN
+    (11) expression -> . LPAREN INPUT RPAREN
+    (12) expression -> . LPAREN OUTPUT declaration_list RPAREN
+    (13) expression -> . LPAREN OUTPUT RPAREN
+    (19) expression -> . LPAREN ASSIGN ID expression RPAREN
+    (20) expression -> . LPAREN ID parameter_list RPAREN
+    (21) expression -> . LPAREN ID RPAREN
+    (22) expression -> . LPAREN OP_ADD parameter_list RPAREN
+    (23) expression -> . LPAREN OP_SUB parameter_list RPAREN
+    (24) expression -> . LPAREN OP_MUL parameter_list RPAREN
+    (25) expression -> . LPAREN OP_DIV parameter_list RPAREN
+    (26) expression -> . ID
+    (27) expression -> . NUMBER
+    (28) expression -> . STRING
+
+    RPAREN          shift and go to state 55
+    LPAREN          shift and go to state 16
+    ID              shift and go to state 11
+    NUMBER          shift and go to state 15
+    STRING          shift and go to state 13
+
+    expression                     shift and go to state 49
 
 state 44
-
-    (18) type -> ID .
-
-    ID              reduce using rule 18 (type -> ID .)
-
-
-state 45
 
     (16) declaration -> LPAREN type . ID RPAREN
 
     ID              shift and go to state 56
+
+
+state 45
+
+    (18) type -> ID .
+
+    ID              reduce using rule 18 (type -> ID .)
 
 
 state 46
@@ -805,17 +805,6 @@ state 47
 
 state 48
 
-    (29) parameter_list -> parameter_list expression .
-
-    RPAREN          reduce using rule 29 (parameter_list -> parameter_list expression .)
-    LPAREN          reduce using rule 29 (parameter_list -> parameter_list expression .)
-    ID              reduce using rule 29 (parameter_list -> parameter_list expression .)
-    NUMBER          reduce using rule 29 (parameter_list -> parameter_list expression .)
-    STRING          reduce using rule 29 (parameter_list -> parameter_list expression .)
-
-
-state 49
-
     (25) expression -> LPAREN OP_DIV parameter_list RPAREN .
 
     RPAREN          reduce using rule 25 (expression -> LPAREN OP_DIV parameter_list RPAREN .)
@@ -826,55 +815,25 @@ state 49
     RBRACE          reduce using rule 25 (expression -> LPAREN OP_DIV parameter_list RPAREN .)
 
 
+state 49
+
+    (29) parameter_list -> parameter_list expression .
+
+    RPAREN          reduce using rule 29 (parameter_list -> parameter_list expression .)
+    LPAREN          reduce using rule 29 (parameter_list -> parameter_list expression .)
+    ID              reduce using rule 29 (parameter_list -> parameter_list expression .)
+    NUMBER          reduce using rule 29 (parameter_list -> parameter_list expression .)
+    STRING          reduce using rule 29 (parameter_list -> parameter_list expression .)
+
+
 state 50
 
-    (12) expression -> LPAREN OUTPUT declaration_list RPAREN .
+    (19) expression -> LPAREN ASSIGN ID expression . RPAREN
 
-    RPAREN          reduce using rule 12 (expression -> LPAREN OUTPUT declaration_list RPAREN .)
-    LPAREN          reduce using rule 12 (expression -> LPAREN OUTPUT declaration_list RPAREN .)
-    ID              reduce using rule 12 (expression -> LPAREN OUTPUT declaration_list RPAREN .)
-    NUMBER          reduce using rule 12 (expression -> LPAREN OUTPUT declaration_list RPAREN .)
-    STRING          reduce using rule 12 (expression -> LPAREN OUTPUT declaration_list RPAREN .)
-    RBRACE          reduce using rule 12 (expression -> LPAREN OUTPUT declaration_list RPAREN .)
+    RPAREN          shift and go to state 57
 
 
 state 51
-
-    (23) expression -> LPAREN OP_SUB parameter_list RPAREN .
-
-    RPAREN          reduce using rule 23 (expression -> LPAREN OP_SUB parameter_list RPAREN .)
-    LPAREN          reduce using rule 23 (expression -> LPAREN OP_SUB parameter_list RPAREN .)
-    ID              reduce using rule 23 (expression -> LPAREN OP_SUB parameter_list RPAREN .)
-    NUMBER          reduce using rule 23 (expression -> LPAREN OP_SUB parameter_list RPAREN .)
-    STRING          reduce using rule 23 (expression -> LPAREN OP_SUB parameter_list RPAREN .)
-    RBRACE          reduce using rule 23 (expression -> LPAREN OP_SUB parameter_list RPAREN .)
-
-
-state 52
-
-    (22) expression -> LPAREN OP_ADD parameter_list RPAREN .
-
-    RPAREN          reduce using rule 22 (expression -> LPAREN OP_ADD parameter_list RPAREN .)
-    LPAREN          reduce using rule 22 (expression -> LPAREN OP_ADD parameter_list RPAREN .)
-    ID              reduce using rule 22 (expression -> LPAREN OP_ADD parameter_list RPAREN .)
-    NUMBER          reduce using rule 22 (expression -> LPAREN OP_ADD parameter_list RPAREN .)
-    STRING          reduce using rule 22 (expression -> LPAREN OP_ADD parameter_list RPAREN .)
-    RBRACE          reduce using rule 22 (expression -> LPAREN OP_ADD parameter_list RPAREN .)
-
-
-state 53
-
-    (24) expression -> LPAREN OP_MUL parameter_list RPAREN .
-
-    RPAREN          reduce using rule 24 (expression -> LPAREN OP_MUL parameter_list RPAREN .)
-    LPAREN          reduce using rule 24 (expression -> LPAREN OP_MUL parameter_list RPAREN .)
-    ID              reduce using rule 24 (expression -> LPAREN OP_MUL parameter_list RPAREN .)
-    NUMBER          reduce using rule 24 (expression -> LPAREN OP_MUL parameter_list RPAREN .)
-    STRING          reduce using rule 24 (expression -> LPAREN OP_MUL parameter_list RPAREN .)
-    RBRACE          reduce using rule 24 (expression -> LPAREN OP_MUL parameter_list RPAREN .)
-
-
-state 54
 
     (20) expression -> LPAREN ID parameter_list RPAREN .
 
@@ -886,11 +845,52 @@ state 54
     RBRACE          reduce using rule 20 (expression -> LPAREN ID parameter_list RPAREN .)
 
 
+state 52
+
+    (12) expression -> LPAREN OUTPUT declaration_list RPAREN .
+
+    RPAREN          reduce using rule 12 (expression -> LPAREN OUTPUT declaration_list RPAREN .)
+    LPAREN          reduce using rule 12 (expression -> LPAREN OUTPUT declaration_list RPAREN .)
+    ID              reduce using rule 12 (expression -> LPAREN OUTPUT declaration_list RPAREN .)
+    NUMBER          reduce using rule 12 (expression -> LPAREN OUTPUT declaration_list RPAREN .)
+    STRING          reduce using rule 12 (expression -> LPAREN OUTPUT declaration_list RPAREN .)
+    RBRACE          reduce using rule 12 (expression -> LPAREN OUTPUT declaration_list RPAREN .)
+
+
+state 53
+
+    (23) expression -> LPAREN OP_SUB parameter_list RPAREN .
+
+    RPAREN          reduce using rule 23 (expression -> LPAREN OP_SUB parameter_list RPAREN .)
+    LPAREN          reduce using rule 23 (expression -> LPAREN OP_SUB parameter_list RPAREN .)
+    ID              reduce using rule 23 (expression -> LPAREN OP_SUB parameter_list RPAREN .)
+    NUMBER          reduce using rule 23 (expression -> LPAREN OP_SUB parameter_list RPAREN .)
+    STRING          reduce using rule 23 (expression -> LPAREN OP_SUB parameter_list RPAREN .)
+    RBRACE          reduce using rule 23 (expression -> LPAREN OP_SUB parameter_list RPAREN .)
+
+
+state 54
+
+    (22) expression -> LPAREN OP_ADD parameter_list RPAREN .
+
+    RPAREN          reduce using rule 22 (expression -> LPAREN OP_ADD parameter_list RPAREN .)
+    LPAREN          reduce using rule 22 (expression -> LPAREN OP_ADD parameter_list RPAREN .)
+    ID              reduce using rule 22 (expression -> LPAREN OP_ADD parameter_list RPAREN .)
+    NUMBER          reduce using rule 22 (expression -> LPAREN OP_ADD parameter_list RPAREN .)
+    STRING          reduce using rule 22 (expression -> LPAREN OP_ADD parameter_list RPAREN .)
+    RBRACE          reduce using rule 22 (expression -> LPAREN OP_ADD parameter_list RPAREN .)
+
+
 state 55
 
-    (19) expression -> LPAREN ASSIGN ID expression . RPAREN
+    (24) expression -> LPAREN OP_MUL parameter_list RPAREN .
 
-    RPAREN          shift and go to state 57
+    RPAREN          reduce using rule 24 (expression -> LPAREN OP_MUL parameter_list RPAREN .)
+    LPAREN          reduce using rule 24 (expression -> LPAREN OP_MUL parameter_list RPAREN .)
+    ID              reduce using rule 24 (expression -> LPAREN OP_MUL parameter_list RPAREN .)
+    NUMBER          reduce using rule 24 (expression -> LPAREN OP_MUL parameter_list RPAREN .)
+    STRING          reduce using rule 24 (expression -> LPAREN OP_MUL parameter_list RPAREN .)
+    RBRACE          reduce using rule 24 (expression -> LPAREN OP_MUL parameter_list RPAREN .)
 
 
 state 56
