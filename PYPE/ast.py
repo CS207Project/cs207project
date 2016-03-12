@@ -35,7 +35,7 @@ class ASTNode(object):
         children will all be visited before its siblings.
         The visitor may modify attributes, but may not add or delete nodes.'''
         visitor.visit(self)
-        for child in children:
+        for child in self.children:
             child.walk(visitor)
         return visitor.return_value()
 
@@ -47,7 +47,7 @@ class ASTProgram(ASTNode):
 class ASTImport(ASTNode):
     def __init__(self, module):
         super().__init__()
-        self.property = module # store module as 'property'
+        self.module = module # store module as 'property'
 
 class ASTComponent(ASTNode):
     def __init__(self, IDname, expression_list):

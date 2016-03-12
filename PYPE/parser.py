@@ -1,7 +1,7 @@
 import ply.yacc
 
-from lexer import tokens,reserved
-from ast import *
+from .lexer import tokens,reserved
+from .ast import *
 
 # Here's an example production rule which constructs an AST node
 def p_program(p):
@@ -11,9 +11,9 @@ def p_program(p):
 # Here's an example production rule which simply aggregates lists of AST nodes.
 def p_statement_list(p):
     r'''statement_list : statement_list component
-                                         | statement_list import_statement
-                                         | import_statement
-                                         | component'''
+                       | statement_list import_statement
+                       | import_statement
+                       | component'''
     if len(p)>2:
         p[0] = p[1] + [p[2]]
     else:
@@ -21,7 +21,7 @@ def p_statement_list(p):
 
 def p_import_statement(p):
     r'import_statement : LPAREN IMPORT ID RPAREN'
-    p[0] = ASTImport(p[4])
+    p[0] = ASTImport(p[3])
 
 def p_component(p):
     r'''component : LBRACE ID expression_list RBRACE'''
@@ -29,7 +29,7 @@ def p_component(p):
 
 def p_expression_list(p):
     r'''expression_list : expression_list expression
-                                            | expression'''
+                        | expression'''
     if len(p) > 2:
         p[0] = p[1] + [p[2]]
     else:
@@ -37,7 +37,7 @@ def p_expression_list(p):
 
 def p_input(p):
     r'''expression : LPAREN INPUT declaration_list RPAREN
-                                 | LPAREN INPUT RPAREN'''
+                   | LPAREN INPUT RPAREN'''
     if len(p) > 4:
         p[0] = ASTInputExpr(p[3])
     else:
@@ -46,7 +46,7 @@ def p_input(p):
 # returns ASTOutputExpr
 def p_output(p):
     r'''expression : LPAREN OUTPUT declaration_list RPAREN
-                                 | LPAREN OUTPUT RPAREN'''
+                   | LPAREN OUTPUT RPAREN'''
     if len(p) > 4:
         p[0] = ASTOutputExpr(p[3])
     else:
@@ -55,7 +55,7 @@ def p_output(p):
 # returns [ASTID, ... ]
 def p_declaration_list(p):
     r'''declaration_list : declaration_list declaration
-                                             | declaration'''
+                         | declaration'''
     if len(p) > 2:
         p[0] = p[1] + [p[2]]
     else:
@@ -64,7 +64,7 @@ def p_declaration_list(p):
 # returns ASTID
 def p_declaration(p):# not sure I did this one correctly
     r'''declaration : LPAREN type ID RPAREN
-                                    | ID'''
+                    | ID'''
     if len(p) > 2:
         p[0] = ASTID(p[3],typedecl=p[2])
     else:
@@ -83,7 +83,7 @@ def p_assign(p):
 # return ASTEvalExpr
 def p_functioncall(p):
     r'''expression : LPAREN ID parameter_list RPAREN
-                                 | LPAREN ID RPAREN'''
+                   | LPAREN ID RPAREN'''
     # convert ID into ASTID
     if len(p) > 3:
         p[0] = ASTEvalExpr(ASTID(p[2]),p[3])
@@ -93,9 +93,9 @@ def p_functioncall(p):
 # return ASTEvalExpr
 def p_operator(p):
     r'''expression : LPAREN OP_ADD parameter_list RPAREN
-                                 | LPAREN OP_SUB parameter_list RPAREN
-                                 | LPAREN OP_MUL parameter_list RPAREN
-                                 | LPAREN OP_DIV parameter_list RPAREN '''
+                   | LPAREN OP_SUB parameter_list RPAREN
+                   | LPAREN OP_MUL parameter_list RPAREN
+                   | LPAREN OP_DIV parameter_list RPAREN '''
     p[0] = ASTEvalExpr(ASTID(p[2]),p[3])
 
 """ ignoring through combination in p_operator (see examples)
@@ -110,7 +110,7 @@ def p_identification(p):
 
 def p_literal(p):
     r'''expression : NUMBER
-                                 | STRING'''
+                   | STRING'''
     p[0] = ASTLiteral(p[1])
 
 """ combine in p_literal
@@ -119,7 +119,7 @@ def p_literal(p):
 
 def p_parameter_list(p):
     r'''parameter_list : parameter_list expression
-                                         | expression'''
+                       | expression'''
     if len(p) > 2:
         p[0] = p[1]+ [p[2]]
     else:
@@ -143,8 +143,8 @@ start = 'program'
 parser = ply.yacc.yacc() # To get more information, add debug=True
 
 # test out the program
-
-from lexer import lexer
+"""
+from .lexer import lexer
 
 data = '''
 (import timeseries)
@@ -169,4 +169,4 @@ data = '''
 # Give the lexer some input
 ast = parser.parse(data, lexer=lexer)
 ast.pprint()
-""""""
+"""

@@ -31,8 +31,7 @@ class SymbolTable(object):
 
     def addsym(self, sym, scope='global'):
         if scope in self.T.keys():
-            self.T[scope][sym.name] = (sym.type, sym.ref)
+            self.T[scope][sym.name] = sym
         else:
-            initDict = {sym.name:(sym.type, sym.ref)}
+            initDict = {sym.name:sym}
             self.T[scope] = initDict
-            

@@ -2,6 +2,7 @@ import reprlib
 import itertools
 import numbers
 import numpy as np
+import pype
 
 from doctest import run_docstring_examples as dtest
 
@@ -199,6 +200,16 @@ class TimeSeries:
 
     def __pos__(self):
         return TimeSeries(self.times, self.values)
+
+    # need to add tests!!
+    @pype.component
+    def std(self):
+        return np.std(self.values)
+
+    # need to add tests!!
+    @pype.component
+    def mean(self):
+        return np.mean(self.values)
 
 
 ##### To run doctest:
