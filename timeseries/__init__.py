@@ -1,1 +1,1 @@
-from .TimeSeries import TimeSeries
+from .timeseries import TimeSeries

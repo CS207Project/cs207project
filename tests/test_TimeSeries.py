@@ -1,5 +1,5 @@
 import unittest
-from TimeSeries import TimeSeries
+from timeseries import TimeSeries
 
 class Tests(unittest.TestCase):
     """

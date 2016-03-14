@@ -124,11 +124,6 @@ class TimeSeries:
         valuesList = [self.__interpolate_point(time) for time in timesList]
         return TimeSeries(timesList,valuesList)
 
-    def mean(self):
-        if len(self) == 0:
-            raise ValueError("Cannot calculate mean of empty timeseries.")
-        return np.average(self.values)
-
     def median(self):
         if len(self) == 0:
             raise ValueError("Cannot calculate median of empty timeseries.")
@@ -204,12 +199,17 @@ class TimeSeries:
     # need to add tests!!
     @pype.component
     def std(self):
+        if len(self) < 2:
+            raise ValueError("Cannot calculate std of a timeseries of length %d"
+                ,len(self.values))
         return np.std(self.values)
 
     # need to add tests!!
     @pype.component
     def mean(self):
-        return np.mean(self.values)
+        if len(self) == 0:
+            raise ValueError("Cannot calculate mean of empty timeseries.")
+        return np.average(self.values)
 
 
 ##### To run doctest:
