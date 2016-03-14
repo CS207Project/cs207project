@@ -1,7 +1,7 @@
 import unittest
 from timeseries import TimeSeries
 
-class Tests(unittest.TestCase):
+class TSTests(unittest.TestCase):
     """
     This class contains all the tests for the time series class
 
