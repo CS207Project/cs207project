@@ -1,5 +1,5 @@
 ========
-ts_cs207
+TimeSeries Utility (CS 207 Project)
 ========
 
 
