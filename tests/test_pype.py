@@ -22,10 +22,9 @@ class PYPYTests(unittest.TestCase):
         syms = ast.walk( SymbolTableVisitor() )
         syms.pprint()
 
-
-#SymbolTable = Pipeline('bleh').compile(open('pype/samples/example1.ppl'))
-
-#SymbolTable.pprint()
+    def test_pipeline(self):
+        st = Pipeline('bleh').compile(open(EXAMPLE_0_PATH))
+        st.pprint()
 
 
 # test out the program
