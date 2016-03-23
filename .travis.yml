@@ -4,6 +4,8 @@ python:
 before_install:
     - pip install pytest pytest-cov
     - pip install coveralls
+    - pip install ply
+    - pip install sphinx
     - pip install .
 script:
     - py.test
