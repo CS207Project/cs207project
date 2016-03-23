@@ -1,6 +1,5 @@
 # Add your requirements here like:
-numpy
-scipy
-ply
-sphinx
-
+# numpy
+# scipy
+# ply
+# sphinx
