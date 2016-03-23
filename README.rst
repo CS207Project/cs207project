@@ -1,7 +1,8 @@
 ========
 TimeSeries Utility (CS 207 Project)
 
-[![Build Status](https://travis-ci.org/CS207Project/cs207project.svg?branch=master)](https://travis-ci.org/CS207Project/cs207project)
+.. image:: https://travis-ci.org/CS207Project/cs207project.svg?branch=master
+    :target: https://travis-ci.org/CS207Project/cs207project
 
 ========
 Timeseries group project for CS207
