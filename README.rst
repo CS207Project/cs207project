@@ -1,7 +1,6 @@
 ========
 TimeSeries Utility (CS 207 Project)
 
-# Python tests using Travis CI and Coveralls
 [![Build Status](https://travis-ci.org/CS207Project/cs207project.svg?branch=master)](https://travis-ci.org/CS207Project/cs207project)
 
 ========
