@@ -104,3 +104,40 @@ class TSTests(unittest.TestCase):
     def test_itervalues(self):
         t1 = TimeSeries([1, 2], [3, 4])
         self.assertEqual(list(t1.itervalues()),[3,4])
+
+    def test_setitem(self):
+        t1 = TimeSeries([1, 2, 3], [5, 10, 15])
+        t2 = TimeSeries([1, 2, 3], [5, 20, 15])
+        t1[2] = 20
+        self.assertEqual(t1, t2)
+
+    def test_repr1(self):
+        t1 = TimeSeries([1, 2, 3], [10, 100, 1000])
+        repr_string = 'TimeSeries([1, 2, 3], [10, 100, 1000])'
+        self.assertEqual(repr_string, repr(t1))
+
+    def test_repr2(self):
+        t1 = TimeSeries([], [])
+        repr_string = 'TimeSeries([], [])'
+        self.assertEqual(repr_string, repr(t1))
+
+    def test_str1(self):
+        t1 = TimeSeries([1, 2, 3], [10, 100, 1000])
+        repr_string = '[1, 2, 3], [10, 100, 1000]'
+        self.assertEqual(repr_string, str(t1))
+
+    def test_str2(self):
+        t1 = TimeSeries([], [])
+        repr_string = '[], []'
+        self.assertEqual(repr_string, str(t1))
+
+    def test_std1(self):
+        t1 = TimeSeries([1], [10])
+
+        with self.assertRaises(ValueError):
+            t1.std()
+
+    def test_std2(self):
+        t1 = TimeSeries([1, 2, 3], [10, 100, 1000])
+        t2 = TimeSeries([4, 6, 8], [100, 1000, 10])
+        self.assertEqual(t1.std(), t2.std())
