@@ -7,7 +7,7 @@ from .translate import SymbolTableVisitor, LoweringVisitor
 class Pipeline(object):
     def __init__(self, source):
         with open(source) as f:
-            self.compile(f)
+            self.ir = self.compile(f)
 
     def compile(self, file):
         input = file.read()
@@ -25,7 +25,7 @@ class Pipeline(object):
         ir = ast.mod_walk( LoweringVisitor(syms) )
 
         # Optimization
-        ir.flowgraph_pass( AssignmentEllision() )
-        ir.flowgraph_pass( DeadCodeElimination() )
+        # ir.flowgraph_pass( AssignmentEllision() )
+        # ir.flowgraph_pass( DeadCodeElimination() )
 
         return ir

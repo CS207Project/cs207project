@@ -1,4 +1,4 @@
-(import TimeSeries)
+(import timeseries)
 
 { standardize
   (:= new_t (/ (- t mu) sig))

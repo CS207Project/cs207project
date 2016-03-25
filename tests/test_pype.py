@@ -22,9 +22,9 @@ class PYPYTests(unittest.TestCase):
         syms = ast.walk( SymbolTableVisitor() )
         syms.pprint()
 
-    def test_pipeline(self):
-        st = Pipeline('bleh').compile(open(EXAMPLE_0_PATH))
-        st.pprint()
+    # def test_pipeline(self):
+    #     st = Pipeline('bleh').compile(open(EXAMPLE_0_PATH))
+    #     st.pprint()
 
 
 # test out the program

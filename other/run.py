@@ -1,5 +1,4 @@
-from pype.pipeline import Pipeline
+from pype import Pipeline
 
-SymbolTable = Pipeline('bleh').compile(open('pype/samples/example1.ppl'))
-
-SymbolTable.pprint()
+p = Pipeline('../tests/samples/example1.ppl')
+print(p)

@@ -200,6 +200,10 @@ class TimeSeries:
     def __pos__(self):
         return TimeSeries(self.times, self.values)
 
+    @pype.component
+    def __truediv__(self):
+        return self
+
     # need to add tests!!
     @pype.component
     def std(self):
