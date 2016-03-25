@@ -7,6 +7,25 @@ class ASTVisitor():
     def return_value(self):
         return None
 
+class ASTModVisitor(ASTVisitor):
+  '''A visitor class that can also construct a new, modified AST.
+
+  Two methods are offered: the normal visit() method, which focuses on analyzing
+  and/or modifying a single node; and the post_visit() method, which allows you
+  to modify the child list of a node.
+  The default implementation does nothing; it simply builds up itself, unmodified.'''
+  def visit(self, astnode):
+    # Note that this overrides the super's implementation, because we need a
+    # non-None return value.
+    return astnode
+  def post_visit(self, visit_value, child_values):
+    '''A function which constructs a return value out of its children.
+
+    This can be used to modify an AST by returning a different or modified
+    ASTNode than the original. The top-level return value will then be the
+    new AST.'''
+    return visit_value
+
 class ASTNode(object):
     def __init__(self):
         self.parent = None
@@ -38,6 +57,18 @@ class ASTNode(object):
         for child in self.children:
             child.walk(visitor)
         return visitor.return_value()
+
+    def mod_walk(self, mod_visitor):
+        '''Traverses an AST, building up a return value from visitor methods.
+
+        Similar to walk(), but constructs a return value from the result of
+        postvisit() calls. This can be used to modify an AST by building up the
+        desired new AST with return values.'''
+
+        selfval = mod_visitor.visit(self)
+        child_values = [child.mod_walk(mod_visitor) for child in self.children]
+        retval = mod_visitor.post_visit(self, selfval, child_values)
+        return retval
 
 class ASTProgram(ASTNode):
     def __init__(self, statements):

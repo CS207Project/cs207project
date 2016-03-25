@@ -149,7 +149,7 @@ class TimeSeries:
         else:
             raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
 
-
+    @pype.component
     def __add__(self, rhs):
         try:
             if (self.__timeEqual(rhs)):
@@ -160,6 +160,7 @@ class TimeSeries:
         except(AttributeError):
             raise NotImplementedError
 
+    @pype.component
     def __sub__(self, rhs):
         try:
             if (self.__timeEqual(rhs)):
@@ -170,6 +171,7 @@ class TimeSeries:
         except(AttributeError):
             raise NotImplementedError
 
+    @pype.component
     def __mul__(self, rhs):
         if isinstance(rhs,numbers.Integral):
             return TimeSeries(self.times,[a*rhs for a in self.values])
@@ -182,15 +184,19 @@ class TimeSeries:
         except(AttributeError):
             raise NotImplementedError
 
+    @pype.component
     def __abs__(self):
         return np.sqrt(sum(x * x for x in self.values))
 
+    @pype.component
     def __bool__(self):
         return bool(abs(self))
 
+    @pype.component
     def __neg__(self):
         return TimeSeries(self.times, [-x for x in self.values])
 
+    @pype.component
     def __pos__(self):
         return TimeSeries(self.times, self.values)
 

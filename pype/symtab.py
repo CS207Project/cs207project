@@ -35,3 +35,11 @@ class SymbolTable(object):
         else:
             initDict = {sym.name:sym}
             self.T[scope] = initDict
+
+    def lookupsym(self, sym, scope=None):
+        if scope is not None:
+            if sym in self.T[scope]:
+                return self.T[scope][sym]
+        if sym in self.T['global']:
+            return self.T['global'][sym]
+        return None
