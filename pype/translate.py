@@ -1,6 +1,9 @@
 from .ast import *
 from .symtab import *
 from .lib_import import LibraryImporter
+from .fgir import FGNodeType, FGNode, Flowgraph, FGIR
+from .error import *
+
 
 class SymbolTableVisitor(ASTVisitor):
     def __init__(self):
