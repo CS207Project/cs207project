@@ -3,6 +3,7 @@ from .parser import parser
 from .ast import *
 from .semantic_analysis import CheckSingleAssignment, CheckSingleIOExpression, CheckUndefinedVariables
 from .translate import SymbolTableVisitor, LoweringVisitor
+from .optimize import AssignmentEllision
 
 class Pipeline(object):
     def __init__(self, source):
@@ -24,8 +25,16 @@ class Pipeline(object):
         # Translation
         ir = ast.mod_walk( LoweringVisitor(syms) )
 
-        # Optimization
-        # ir.flowgraph_pass( AssignmentEllision() )
-        # ir.flowgraph_pass( DeadCodeElimination() )
-
         return ir
+
+    def optimize_AssignmentEllision(self):
+        self.ir.flowgraph_pass( AssignmentEllision() )
+
+    def optimize_DeadCodeElimination(self):
+        # ir.flowgraph_pass( DeadCodeElimination() )
+        pass
+
+    def optimize(self):
+        # Optimization
+        optimize_AssignmentEllision()
+        optimize_DeadCodeElimination()

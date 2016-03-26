@@ -23,8 +23,13 @@ class PYPYTests(unittest.TestCase):
         syms.pprint()
 
     def test_pipeline(self):
-         st = Pipeline(EXAMPLE_0_PATH)
-         print(st.ir['standardize'].dotfile())
+         p = Pipeline(EXAMPLE_0_PATH)
+         assert p.ir['standardize'].dotfile()
+         print(p.ir['standardize'].topological_sort())
+
+         p.optimize_AssignmentEllision()
+         print(p.ir['standardize'].dotfile())
+         print(p.ir['standardize'].topological_sort())
 
 
 # test out the program
