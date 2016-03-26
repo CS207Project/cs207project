@@ -7,6 +7,9 @@ import unittest
 EXAMPLE_0_PATH = "tests/samples/example0.ppl"
 EXAMPLE_0_TOKENS_PATH = "tests/samples/example0.tokens"
 
+EXAMPLE_0_TOPO_PREOP = "['@N0', '@N1', '@N2', '@N5', '@N3', '@N4', '@N6', '@N7', '@N8']"
+EXAMPLE_0_TOPO_AE = "['@N1', '@N6', '@N0', '@N7', '@N3', '@N8']"
+
 class PYPYTests(unittest.TestCase):
 
     def test_lexing(self):
@@ -22,9 +25,14 @@ class PYPYTests(unittest.TestCase):
         syms = ast.walk( SymbolTableVisitor() )
         syms.pprint()
 
-    def test_pipeline(self):
+    def test_compile(self):
          st = Pipeline(EXAMPLE_0_PATH)
-         print(st.ir['standardize'].dotfile())
+         st.ir['standardize'].dotfile()
+
+    def test_ae(self):
+         st = Pipeline(EXAMPLE_0_PATH)
+         st.optimize_AssignmentEllision()
+         st.ir['standardize'].dotfile()
 
 
 # test out the program

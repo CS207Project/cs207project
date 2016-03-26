@@ -53,7 +53,7 @@ class Flowgraph(object):
       s+= '  "'+str(nid)+'" [ color = "red" ]\n'
     s+= '}\n'
     return s
-    
+
 
   def pre(self, nodeid):
     return self.nodes[nodeid].inputs
@@ -62,8 +62,24 @@ class Flowgraph(object):
     return [i for (i,n) in self.nodes.items() if nodeid in self.nodes[i].inputs]
 
   def topological_sort(self):
-    # TODO : implement a topological sort
-    return [] # should return a list of node ids in sorted order
+    topo_sorted = []
+    nodes_left = list(self.nodes.keys())
+
+    while len(nodes_left) > 0:
+        nid = nodes_left[0]
+        self.topo_vistnode(nid,nodes_left,topo_sorted)
+
+    return topo_sorted # should return a list of node ids in sorted order
+
+  def topo_vistnode(self,nid,nodes_left,topo_sorted):
+    if nid in topo_sorted:
+        return
+    for i_nid in self.nodes[nid].inputs:
+      self.topo_vistnode(i_nid,nodes_left,topo_sorted)
+
+    nodes_left.remove(nid)
+    topo_sorted.append(nid)
+    return
 
 class FGIR(object):
   def __init__(self):
