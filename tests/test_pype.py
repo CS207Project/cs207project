@@ -6,9 +6,15 @@ import unittest
 
 EXAMPLE_0_PATH = "tests/samples/example0.ppl"
 EXAMPLE_0_TOKENS_PATH = "tests/samples/example0.tokens"
+EXAMPLE_SIX_PATH = "tests/samples/six.ppl"
 
 EXAMPLE_0_TOPO_PREOP = "['@N0', '@N1', '@N2', '@N5', '@N3', '@N4', '@N6', '@N7', '@N8']"
 EXAMPLE_0_TOPO_AE = "['@N1', '@N6', '@N0', '@N7', '@N3', '@N8']"
+
+def pprint(p):
+    for g in p.ir:
+        print(p.ir[g].dotfile())
+        print(p.ir[g].topological_sort())
 
 class PYPYTests(unittest.TestCase):
 
@@ -27,12 +33,18 @@ class PYPYTests(unittest.TestCase):
 
     def test_pipeline(self):
         p = Pipeline(EXAMPLE_0_PATH)
-        assert p.ir['standardize'].dotfile()
-        print(p.ir['standardize'].topological_sort())
+        pprint(p)
 
         p.optimize_AssignmentEllision()
-        print(p.ir['standardize'].dotfile())
-        print(p.ir['standardize'].topological_sort())
+        pprint(p)
+
+        p.optimize_DeadCodeElimination()
+        pprint(p)
+
+    def test_opt(self):
+        p = Pipeline(EXAMPLE_SIX_PATH)
+        p.optimize()
+        self.assertEqual(len(p.ir['six'].nodes),4)
 
 
 # test out the program

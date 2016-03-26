@@ -40,11 +40,12 @@ class AssignmentEllision(FlowgraphOptimization):
   their pre- and post-dependencies.'''
 
   def visit(self, flowgraph):
-    nid_varname = dict((v,k) for k,v in flowgraph.variables.items())
+    nid_varname = dict((v,k) for k,v in flowgraph.variables.items()) # make a reverse dictionary so that you can remove things
     nodes_to_del = []
-    for (nid,node) in flowgraph.nodes.items():
-      if node.type == FGNodeType.assignment:
-        inp = node.inputs.pop()
+
+    for (nid,node) in flowgraph.nodes.items(): # loop over the nodes
+      if node.type == FGNodeType.assignment: # find the assignments
+        inp = node.inputs.pop() # get it's parent
         nodes_to_del.append(nid)
 
         # update variable name
@@ -54,11 +55,13 @@ class AssignmentEllision(FlowgraphOptimization):
         # update edges
         for (j_nid,j_node) in flowgraph.nodes.items():
           if nid in j_node.inputs:
-            j_node.inputs.remove(nid)
+            j_node.inputs = list(filter(lambda a: a != nid,j_node.inputs))
             j_node.inputs.append(inp)
 
+    # delete the nodes
     for nid in nodes_to_del:
       del flowgraph.nodes[nid]
+
     return flowgraph
 
 
@@ -78,19 +81,32 @@ class DeadCodeElimination(FlowgraphOptimization):
   this instance, component1 will end up unmodified after DCE.'''
 
   def visit(self, flowgraph):
-    nid_varname = dict((v,k) for k,v in flowgraph.variables.items())
-    nodes_to_del = []
-    for (nid,node) in flowgraph.nodes.items():
-      if node.type == FGNodeType.assignment:
-        inp = node.inputs.pop()
-        nodes_to_del.append(nid)
+    nid_varname = dict((v,k) for k,v in flowgraph.variables.items()) # reverse dicitonary
 
-        # update variable name
-        if nid in nid_varname.keys():
-          flowgraph.variables[nid_varname[nid]] = inp
+    nodes_to_del = list(flowgraph.nodes.keys())
+    outs = flowgraph.outputs[:]
 
-        # update edges
-        for (j_nid,j_node) in flowgraph.nodes.items():
-          if nid in j_node.inputs:
-            j_node.inputs.remove(nid)
-            j_node.inputs.append(inp)
+    # start with the outputs and resursively remove from consideration things
+    # that the output needs
+    while(len(outs) > 0):
+      nid = outs.pop()
+      if nid in nodes_to_del:
+        nodes_to_del.remove(nid)
+        
+      for j_nid in flowgraph.nodes[nid].inputs:
+        outs.append(j_nid)
+
+
+    # now we have the nodes we need to remove
+    # they need to be removed from the nodes list, input lists and variables
+    for nid in nodes_to_del:
+      if nid in flowgraph.inputs:
+        continue
+
+      # update variable name
+      if nid in nid_varname.keys():
+        del flowgraph.variables[nid_varname[nid]]
+
+      # remove the node entirely
+      del flowgraph.nodes[nid]
+    return flowgraph

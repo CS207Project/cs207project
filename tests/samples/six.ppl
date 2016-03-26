@@ -1,0 +1,20 @@
+(import timeseries)
+
+{ component2
+  # sum of squares
+  (input x y)
+  (:= z (+ (* x x) (* y y)))
+  (output z)
+}
+
+{ six
+  # Produces the number 6 through convoluted means
+  (input x y)
+  (:= a (+ x (* 2 y)))
+  (:= b (+ (/ y x) (* x x)))
+  (:= c 6)
+  (:= d (component2 x y)) 
+  (:= e (+ (* a a) (+ (* b b) d)))
+  (output c)
+}
+

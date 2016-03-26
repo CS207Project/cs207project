@@ -3,7 +3,7 @@ from .parser import parser
 from .ast import *
 from .semantic_analysis import CheckSingleAssignment, CheckSingleIOExpression, CheckUndefinedVariables
 from .translate import SymbolTableVisitor, LoweringVisitor
-from .optimize import AssignmentEllision
+from .optimize import AssignmentEllision, DeadCodeElimination
 
 class Pipeline(object):
     def __init__(self, source):
@@ -30,10 +30,9 @@ class Pipeline(object):
         self.ir.flowgraph_pass( AssignmentEllision() )
 
     def optimize_DeadCodeElimination(self):
-        # ir.flowgraph_pass( DeadCodeElimination() )
-        pass
+        self.ir.flowgraph_pass( DeadCodeElimination() )
 
     def optimize(self):
         # Optimization
-        optimize_AssignmentEllision()
-        optimize_DeadCodeElimination()
+        self.optimize_AssignmentEllision()
+        self.optimize_DeadCodeElimination()

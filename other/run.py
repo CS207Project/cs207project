@@ -1,9 +1,18 @@
 from pype import Pipeline
 
-p = Pipeline('../tests/samples/example0.ppl')
-assert p.ir['standardize'].dotfile()
-print(p.ir['standardize'].topological_sort())
+def pprint(p):
+    for g in p.ir:
+        print(p.ir[g].dotfile())
+        #print(p.ir[g].topological_sort())
 
+print("BASE")
+p = Pipeline('tests/samples/six.ppl')
+pprint(p)
+
+# print("AE")
 p.optimize_AssignmentEllision()
-print(p.ir['standardize'].dotfile())
-print(p.ir['standardize'].topological_sort())
+# pprint(p)
+
+print("DCE")
+p.optimize_DeadCodeElimination()
+pprint(p)
