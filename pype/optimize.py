@@ -78,5 +78,19 @@ class DeadCodeElimination(FlowgraphOptimization):
   this instance, component1 will end up unmodified after DCE.'''
 
   def visit(self, flowgraph):
-    # TODO: implement this
-    return flowgraph
+    nid_varname = dict((v,k) for k,v in flowgraph.variables.items())
+    nodes_to_del = []
+    for (nid,node) in flowgraph.nodes.items():
+      if node.type == FGNodeType.assignment:
+        inp = node.inputs.pop()
+        nodes_to_del.append(nid)
+
+        # update variable name
+        if nid in nid_varname.keys():
+          flowgraph.variables[nid_varname[nid]] = inp
+
+        # update edges
+        for (j_nid,j_node) in flowgraph.nodes.items():
+          if nid in j_node.inputs:
+            j_node.inputs.remove(nid)
+            j_node.inputs.append(inp)

@@ -25,14 +25,14 @@ class PYPYTests(unittest.TestCase):
         syms = ast.walk( SymbolTableVisitor() )
         syms.pprint()
 
-    def test_compile(self):
-         st = Pipeline(EXAMPLE_0_PATH)
-         st.ir['standardize'].dotfile()
+    def test_pipeline(self):
+        p = Pipeline(EXAMPLE_0_PATH)
+        assert p.ir['standardize'].dotfile()
+        print(p.ir['standardize'].topological_sort())
 
-    def test_ae(self):
-         st = Pipeline(EXAMPLE_0_PATH)
-         st.optimize_AssignmentEllision()
-         st.ir['standardize'].dotfile()
+        p.optimize_AssignmentEllision()
+        print(p.ir['standardize'].dotfile())
+        print(p.ir['standardize'].topological_sort())
 
 
 # test out the program

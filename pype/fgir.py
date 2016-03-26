@@ -66,14 +66,14 @@ class Flowgraph(object):
     nodes_left = list(self.nodes.keys())
 
     while len(nodes_left) > 0:
-        nid = nodes_left[0]
-        self.topo_vistnode(nid,nodes_left,topo_sorted)
+      nid = nodes_left[0]
+      self.topo_vistnode(nid,nodes_left,topo_sorted)
 
     return topo_sorted # should return a list of node ids in sorted order
 
   def topo_vistnode(self,nid,nodes_left,topo_sorted):
     if nid in topo_sorted:
-        return
+      return
     for i_nid in self.nodes[nid].inputs:
       self.topo_vistnode(i_nid,nodes_left,topo_sorted)
 
