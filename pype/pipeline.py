@@ -3,14 +3,32 @@ from .parser import parser
 from .ast import *
 from .semantic_analysis import CheckSingleAssignment, CheckSingleIOExpression, CheckUndefinedVariables
 from .translate import SymbolTableVisitor, LoweringVisitor
-from .optimize import AssignmentEllision, DeadCodeElimination
+from .optimize import *
+from .pcode import PCodeGenerator
 
 class Pipeline(object):
     def __init__(self, source):
+        self.pcodes = {}
         with open(source) as f:
-            self.ir = self.compile(f)
+            self.compile(f)
 
-    def compile(self, file):
+    # def compile(self, file): # Akhil's version
+    #     input = file.read()
+    #
+    #     # Lexing, parsing, AST construction
+    #     ast = parser.parse(input, lexer=lexer)
+    #
+    #     # Semantic analysis
+    #     ast.walk( CheckSingleAssignment() )
+    #     ast.walk( CheckSingleIOExpression() )
+    #     syms = ast.walk( SymbolTableVisitor() )
+    #     ast.walk( CheckUndefinedVariables(syms) )
+    #
+    #     # Translation
+    #     ir = ast.mod_walk( LoweringVisitor(syms) )
+    #     return ir
+
+    def compile(self, file): # bob's version
         input = file.read()
 
         # Lexing, parsing, AST construction
@@ -24,7 +42,16 @@ class Pipeline(object):
 
         # Translation
         ir = ast.mod_walk( LoweringVisitor(syms) )
-        return ir
+
+        # Optimization
+        ir.flowgraph_pass( AssignmentEllision() )
+        ir.flowgraph_pass( DeadCodeElimination() )
+        ir.topological_flowgraph_pass( InlineComponents() )
+
+        # PCode Generation
+        pcodegen = PCodeGenerator()
+        ir.flowgraph_pass( pcodegen )
+        self.pcodes = pcodegen.pcodes
 
     def optimize_AssignmentEllision(self):
         self.ir.flowgraph_pass( AssignmentEllision() )
@@ -36,3 +63,6 @@ class Pipeline(object):
         # Optimization
         self.optimize_AssignmentEllision()
         self.optimize_DeadCodeElimination()
+
+    def __getitem__(self, component_name):
+        return self.pcodes[component_name]

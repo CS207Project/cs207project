@@ -1,6 +1,7 @@
 import enum
 
-FGNodeType = enum.Enum('FGNodeType','component libraryfunction librarymethod input output assignment literal unknown')
+FGNodeType = enum.Enum('FGNodeType','component libraryfunction librarymethod input output assignment literal forward unknown')
+
 
 class FGNode(object):
   def __init__(self, nodeid, nodetype, ref=None, inputs=[]):
@@ -115,3 +116,15 @@ class FGIR(object):
 
   def topological_node_pass(self, topo_optimizer):
     self.node_pass(topo_optimizer, topological=True)
+
+  def topological_flowgraph_pass(self, topo_flowgraph_optimizer):
+    deps = {}
+    for (name,fg) in self.graphs.items():
+      deps[name] = [n.ref for n in fg.nodes.values() if n.type==FGNodeType.component]
+    order = []
+    for name in self.graphs:
+      order = self._topo_helper(name, deps, order)
+    for name in order:
+      fg = topo_flowgraph_optimizer.visit(self.graphs[name])
+      if fg is not None:
+        self.graphs[name] = fg
