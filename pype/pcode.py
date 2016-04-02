@@ -11,16 +11,18 @@ class PCodeOp(object):
   a PCode object should be an method of PCodeOp.'''
 
   @staticmethod
-  async def _node(in_qs, out_qs, func):
+  async def _node(in_qs, out_qs, func): #DNY Implemented
     '''A helper function to create coroutines.
 
     `in_qs`: an ordered list of asyncio.Queues() which hold the node's inputs.
     `out_qs`: a list of asyncio.Queues() into which the function's output should go
     `func`: the function to apply to the inputs which produces the output value'''
-    # TODO
     # hint: look at asyncio.gather
+    input_values = await asyncio.gather(*in_qs)
     # hint: the same return value of the function is put in every output queue
-    pass
+    output = func(*input_values)
+    for q in out_qs:
+      await q.put(output)
 
   @staticmethod
   async def forward(in_qs, out_qs):
@@ -29,15 +31,16 @@ class PCodeOp(object):
     await PCodeOp._node(in_qs, out_qs, f)
 
   @staticmethod
-  async def libraryfunction(in_qs, out_qs, function_ref):
+  async def libraryfunction(in_qs, out_qs, function_ref): #DNY Implemented
     def f(*inputs):
-      # TODO
+      return function_ref(*inputs)
     await PCodeOp._node(in_qs, out_qs, f)
 
   @staticmethod
   async def librarymethod(in_qs, out_qs, method_ref):
+    #print(method_ref.__name__)
     def f(*inputs):
-      return method_ref.__get__(inputs[0])(*inputs[1:])
+      return method_ref.__get__(inputs[0])(*inputs[1:]) # fancy way of getting the method bound to the instance
     await PCodeOp._node(in_qs, out_qs, f)
 
   @staticmethod
@@ -90,7 +93,7 @@ class PCodeGenerator(FlowgraphOptimization):
   def __init__(self):
     self.pcodes = {}
 
-  def visit(self, flowgraph):
+  def visit(self, flowgraph):#assume recieving Flowgraph instance
     pc = PCode()
 
     # Create asyncio queues for every edge
@@ -99,10 +102,20 @@ class PCodeGenerator(FlowgraphOptimization):
     qs = {} # { (src,dst)=>asyncio.Queue(), ... }
 
     # Populate qs by iterating over inputs of every node
-    # TODO
-    # hint: destination nodes should be in flowgraph nodes
-    # hint: sources are their inputs
-    pass
+    completed_nodes = set()
+    def make_qs(out_nodes):
+        back_nodes = set()
+        for n_out in out_nodes:
+            n_inputs = set(flowgraph.pre(n_out)) # create all back edges
+            for n_input in n_inputs: # input queue's handled below
+                qs[(n_input, n_out)] = asyncio.Queue()
+            back_nodes = back_nodes.union(n_inputs)
+            completed_nodes.add(n_out)
+        next_nodes = back_nodes.difference(completed_nodes)
+        if next_nodes:
+            make_qs(next_nodes) # recursive call to fill in back edges
+    # call recursive function
+    make_qs(flowgraph.outputs)
 
     # Add an extra input queue for each component input
     component_inputs = []
@@ -137,3 +150,4 @@ class PCodeGenerator(FlowgraphOptimization):
 
     self.pcodes[flowgraph.name] = pc
     self.queues = qs
+    return flowgraph #DNY added to play with FGIR.flowgraph_pass()

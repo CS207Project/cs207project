@@ -9,6 +9,9 @@ class FGNode(object):
     self.type = nodetype
     self.ref = ref
     self.inputs = inputs
+    if nodetype is FGNodeType.libraryfunction:
+      print(type(ref))
+
   def __repr__(self):
     return '<'+str(self.type)+' '+str(self.nodeid)+'<='+','.join(map(str,self.inputs))+' : '+str(self.ref)+'>'
 
@@ -116,6 +119,12 @@ class FGIR(object):
 
   def topological_node_pass(self, topo_optimizer):
     self.node_pass(topo_optimizer, topological=True)
+
+  def _topo_helper(self, name, deps, order=[]):
+    for dep in deps[name]:
+      if dep not in order:
+        order = self._topo_helper(dep, deps, order)
+    return order+[name]
 
   def topological_flowgraph_pass(self, topo_flowgraph_optimizer):
     deps = {}

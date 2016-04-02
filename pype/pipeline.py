@@ -27,6 +27,17 @@ class Pipeline(object):
     #     # Translation
     #     ir = ast.mod_walk( LoweringVisitor(syms) )
     #     return ir
+    # 
+    # def optimize_AssignmentEllision(self):
+    #     self.ir.flowgraph_pass( AssignmentEllision() )
+    #
+    # def optimize_DeadCodeElimination(self):
+    #     self.ir.flowgraph_pass( DeadCodeElimination() )
+    #
+    # def optimize(self):
+    #     # Optimization
+    #     self.optimize_AssignmentEllision()
+    #     self.optimize_DeadCodeElimination()
 
     def compile(self, file): # bob's version
         input = file.read()
@@ -52,17 +63,6 @@ class Pipeline(object):
         pcodegen = PCodeGenerator()
         ir.flowgraph_pass( pcodegen )
         self.pcodes = pcodegen.pcodes
-
-    def optimize_AssignmentEllision(self):
-        self.ir.flowgraph_pass( AssignmentEllision() )
-
-    def optimize_DeadCodeElimination(self):
-        self.ir.flowgraph_pass( DeadCodeElimination() )
-
-    def optimize(self):
-        # Optimization
-        self.optimize_AssignmentEllision()
-        self.optimize_DeadCodeElimination()
 
     def __getitem__(self, component_name):
         return self.pcodes[component_name]
