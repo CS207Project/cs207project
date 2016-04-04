@@ -20,4 +20,4 @@ from timeseries import TimeSeries
 t = TimeSeries(list(range(10)),list(range(10)))
 pipeline = Pipeline('../tests/samples/example0.ppl')
 value = pipeline['standardize'].run(t)
-print(value)
+print(repr(value))

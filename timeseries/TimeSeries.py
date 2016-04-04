@@ -162,14 +162,17 @@ class TimeSeries:
 
     @pype.component
     def __sub__(self, rhs):
-        try:
-            if (self.__timeEqual(rhs)):
-                pairs = zip(self.values, rhs.values)
-                return TimeSeries(self.times, [a - b for a, b in pairs])
-            else:
-                raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
-        except(AttributeError):
-            raise NotImplementedError
+        if isinstance(rhs,TimeSeries):
+            try:
+                if (self.__timeEqual(rhs)):
+                    pairs = zip(self.values, rhs.values)
+                    return TimeSeries(self.times, [a - b for a, b in pairs])
+                else:
+                    raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
+            except(AttributeError):
+                raise NotImplementedError
+        else:
+            return TimeSeries(self.times, self.values - rhs)
 
     @pype.component
     def __mul__(self, rhs):
@@ -201,8 +204,18 @@ class TimeSeries:
         return TimeSeries(self.times, self.values)
 
     @pype.component
-    def __truediv__(self):
-        return self
+    def __truediv__(self,rhs):
+        if isinstance(rhs,TimeSeries):
+            try:
+                if (self.__timeEqual(rhs)):
+                    pairs = zip(self.values, rhs.values)
+                    return TimeSeries(self.times, (a / b for a, b in pairs))
+                else:
+                    raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
+            except(AttributeError):
+                raise NotImplementedError
+        else:
+            return TimeSeries(self.times,[a/rhs for a in self.values])
 
     # need to add tests!!
     @pype.component

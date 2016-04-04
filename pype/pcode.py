@@ -18,7 +18,8 @@ class PCodeOp(object):
     `out_qs`: a list of asyncio.Queues() into which the function's output should go
     `func`: the function to apply to the inputs which produces the output value'''
     # hint: look at asyncio.gather
-    input_values = await asyncio.gather(*in_qs)
+    input_generator = (in_q.get() for in_q in in_qs)
+    input_values = await asyncio.gather(*input_generator)
     # hint: the same return value of the function is put in every output queue
     output = func(*input_values)
     for q in out_qs:
