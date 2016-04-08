@@ -8,6 +8,6 @@
 
 { dist 
   (input a b) 
-  (:= c (+ (mul a b) (mul b a))) 
+  (:= c (+ (mul a b) (mul b a)))
   (output c) 
 }

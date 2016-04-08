@@ -56,8 +56,8 @@ class Pipeline(object):
         #print(self.ir.pprint())
 
         # Optimization
-        #self.ir.flowgraph_pass( AssignmentEllision() )
-        #self.ir.flowgraph_pass( DeadCodeElimination() )
+        self.ir.flowgraph_pass( AssignmentEllision() )
+        self.ir.flowgraph_pass( DeadCodeElimination() )
         self.ir.topological_flowgraph_pass( InlineComponents() )
 
         # PCode Generation
