@@ -7,6 +7,7 @@ import unittest
 EXAMPLE_0_PATH = "tests/samples/example0.ppl"
 EXAMPLE_0_TOKENS_PATH = "tests/samples/example0.tokens"
 EXAMPLE_SIX_PATH = "tests/samples/six.ppl"
+EXAMPLE_ICvisit_PATH = "tests/samples/icvisit.ppl"
 
 EXAMPLE_0_TOPO_PREOP = "['@N0', '@N1', '@N2', '@N5', '@N3', '@N4', '@N6', '@N7', '@N8']"
 EXAMPLE_0_TOPO_AE = "['@N1', '@N6', '@N0', '@N7', '@N3', '@N8']"
@@ -45,6 +46,11 @@ class PYPYTests(unittest.TestCase):
         p = Pipeline(EXAMPLE_SIX_PATH)
         p.optimize()
         self.assertEqual(len(p.ir['six'].nodes),4)
+
+    def test_ICvisit(self):
+        p = Pipeline(EXAMPLE_ICvisit_PATH)
+        #p.ir.topological_flowgraph_pass( InlineComponents() )
+
 
 
 # test out the program

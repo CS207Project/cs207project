@@ -1,0 +1,13 @@
+(import timeseries)
+
+{ mul 
+  (input x y) 
+  (:= z (* x y)) 
+  (output z) 
+}
+
+{ dist 
+  (input a b) 
+  (:= c (+ (mul a b) (mul b a))) 
+  (output c) 
+}

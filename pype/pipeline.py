@@ -39,6 +39,7 @@ class Pipeline(object):
         self.optimize_AssignmentEllision()
         self.optimize_DeadCodeElimination()
 
+
     def compile(self, file): # bob's version
         input = file.read()
 
@@ -53,10 +54,11 @@ class Pipeline(object):
 
         # Translation
         self.ir = ast.mod_walk( LoweringVisitor(syms) )
+        #print(self.ir.pprint())
 
         # Optimization
-        self.ir.flowgraph_pass( AssignmentEllision() )
-        self.ir.flowgraph_pass( DeadCodeElimination() )
+        #self.ir.flowgraph_pass( AssignmentEllision() )
+        #self.ir.flowgraph_pass( DeadCodeElimination() )
         self.ir.topological_flowgraph_pass( InlineComponents() )
 
         # PCode Generation
