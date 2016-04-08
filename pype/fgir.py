@@ -132,7 +132,7 @@ class FGIR(object):
       deps[name] = [n.ref for n in fg.nodes.values() if n.type==FGNodeType.component]
     order = []
     for name in self.graphs:
-      order = self._topo_helper(name, deps, order) #broken
+      order = self._topo_helper(name, deps, order)
     for name in order:
       fg = topo_flowgraph_optimizer.visit(self.graphs[name])
       if fg is not None:

@@ -39,7 +39,6 @@ class Pipeline(object):
         self.optimize_AssignmentEllision()
         self.optimize_DeadCodeElimination()
 
-
     def compile(self, file): # bob's version
         input = file.read()
 
