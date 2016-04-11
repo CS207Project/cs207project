@@ -128,7 +128,7 @@ class LoweringVisitor(ASTModVisitor):
             if op is None:
                 raise PypeSyntaxError('Undefined operator: '+str(node.op.name))
             if op.type==SymbolType.component:
-                n = fg.new_node(FGNodeType.component)
+                n = fg.new_node(FGNodeType.component, ref=op.name)
             elif op.type==SymbolType.libraryfunction:
                 n = fg.new_node(FGNodeType.libraryfunction, ref=op.ref)
             elif op.type==SymbolType.librarymethod:

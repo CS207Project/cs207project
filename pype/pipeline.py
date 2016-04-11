@@ -53,7 +53,6 @@ class Pipeline(object):
 
         # Translation
         self.ir = ast.mod_walk( LoweringVisitor(syms) )
-        #print(self.ir.pprint())
 
         # Optimization
         self.ir.flowgraph_pass( AssignmentEllision() )
