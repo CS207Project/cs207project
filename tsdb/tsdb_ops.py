@@ -81,18 +81,45 @@ class TSDBOp_UpsertMeta(TSDBOp):
 
 class TSDBOp_Select(TSDBOp):
 
-    def __init__(self, md):
+    def __init__(self, md, fields):
         super().__init__('select')
-        self['md'] = md #we abuse the metadata dict to carry the payload for `select`
+        self['md'] = md
+        self['fields'] = fields#DNY: specifies the fields that you want returned.
+        #DNY: if None, just return the keys
 
     @classmethod
     def from_json(cls, json_dict):
-        return cls(json_dict['md'])
+        return cls(json_dict['md'], json_dict['fields'])
 
+class TSDBOp_AddTrigger(TSDBOp):
+
+    def __init__(self, proc, onwhat, target, arg):
+        super().__init__('add_trigger')
+        self['proc'] = proc
+        self['onwhat'] = onwhat
+        self['target'] = target
+        self['arg'] = arg
+
+    @classmethod
+    def from_json(cls, json_dict):
+        return cls(json_dict['proc'], json_dict['onwhat'], json_dict['target'], json_dict['arg'])
+
+class TSDBOp_RemoveTrigger(TSDBOp):
+
+    def __init__(self, proc, onwhat):
+        super().__init__('remove_trigger')
+        self['proc'] = proc
+        self['onwhat'] = onwhat
+
+    @classmethod
+    def from_json(cls, json_dict):
+        return cls(json_dict['proc'], json_dict['onwhat'])
 
 # This simplifies reconstructing TSDBOp instances from network data.
 typemap = {
   'insert_ts': TSDBOp_InsertTS,
   'upsert_meta': TSDBOp_UpsertMeta,
   'select': TSDBOp_Select,
+  'add_trigger': TSDBOp_AddTrigger,
+  'remove_trigger': TSDBOp_RemoveTrigger,
 }

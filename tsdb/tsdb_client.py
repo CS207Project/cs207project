@@ -29,14 +29,20 @@ class TSDBClient(object):
         # msg['md'] = metadata_dict
         self._send(msg.to_json())
 
-    def select(self, metadata_dict={}):
-        # your code here
+    def select(self, metadata_dict={}, fields=None):
+        #DNY: TODO, need to redo
         msg = TSDBOp_Select(metadata_dict)
         # msg = {}
         # msg['op'] = 'select'
         # msg['md'] = metadata_dict
         status, payload =  self._send(msg.to_json())
         return TSDBStatus(status), payload
+
+    def add_trigger(self, proc, onwhat, target, arg):
+        # your code here
+
+    def remove_trigger(self, proc, onwhat):
+        # your code here
 
     # Feel free to change this to be completely synchronous
     # from here onwards. Return the status and the payload

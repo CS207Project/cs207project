@@ -1,7 +1,17 @@
 from collections import defaultdict
 from operator import and_
 from functools import reduce
+import operator
 
+# this dictionary will help you in writing a generic select operation
+OPMAP = {
+    '<': operator.lt,
+    '>': operator.le,
+    '==': operator.eq,
+    '!=': operator.ne,
+    '<=': operator.le,
+    '>=': operator.ge
+}
 
 class DictDB:
     "Database implementation in a dict"
@@ -13,6 +23,9 @@ class DictDB:
         self.pkfield = 'pk'
         for s in schema:
             indexinfo = schema[s]['index']
+            # convert = schema[s]['convert']
+            # later use binary search trees for highcard/numeric
+            # bitmaps for lowcard/str_or_factor
             if indexinfo is not None:
                 self.indexes[s] = defaultdict(set)# create an index for every non-None schema
 
@@ -59,7 +72,15 @@ class DictDB:
         for field, value in meta.items():
             if field in self.schema:
                 pks = pks & self.indexes[field][value]
-        # json_dict = {}
-        # for key in pks:
-        #     json_dict[key] = self.rows[key]
+        #DNY: new to implement
+        # if fields is None: return only pks
+        # like so [pk1,pk2],[{},{}]
+        # if fields is [], this means all fields
+        #except for the 'ts' field. Looks like
+        #['pk1',...],[{'f1':v1, 'f2':v2},...]
+        # if the names of fields are given in the list, include only those fields. `ts` ia an
+        #acceptable field and can be used to just return time series.
+        #see tsdb_server to see how this return
+        #value is used
+        # return pks, matchedfielddicts
         return list(pks)#json_dict
