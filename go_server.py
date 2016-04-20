@@ -3,6 +3,7 @@ from tsdb import TSDBServer, DictDB
 
 identity = lambda x: x
 
+#DNY: 'convert' is the function used to make the inputs the right type
 schema = {
   'pk': {'convert': identity, 'index': None},
   'ts': {'convert': identity, 'index': None},

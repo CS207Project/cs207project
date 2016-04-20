@@ -232,6 +232,12 @@ class TimeSeries:
             raise ValueError("Cannot calculate mean of empty timeseries.")
         return np.average(self.values)
 
+    def to_json(self):#DNY: to interface with TSDB objects
+        return [[float(i) for i in self.values],[float(i) for i in self.times]]
+
+    @classmethod
+    def from_json(cls,dataList):
+        return cls(dataList[0],dataList[1])
 
 ##### To run doctest:
 # dtest(TimeSeries, globals(), verbose = True)

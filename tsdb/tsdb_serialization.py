@@ -3,12 +3,22 @@ import json
 LENGTH_FIELD_LENGTH = 4
 
 
-def serialize(json_obj):
+def serialize(json_obj):#DNY: this is called in the tsdb_server.py (and soon tsdb_client.py) to send bytes
     '''Turn a JSON object into bytes suitable for writing out to the network.
 
     Includes a fixed-width length field to simplify reconstruction on the other
     end of the wire.'''
-    #your code here. Returns the bytes on the wire
+    #DNY written
+    # encode the JSON string as bytes
+    # try:
+    json_str = json.dumps(json_obj)
+    # except TypeError:
+    #     print(json_obj)
+    # figure out length, add LFL, and write length wiht size LFL using int.to_bytes() method
+    dataBytes = json_str.encode()
+    lengthFieldBytes = (len(dataBytes)+LENGTH_FIELD_LENGTH).to_bytes(LENGTH_FIELD_LENGTH, byteorder='little')
+    # join the two and returns the bytes on the wire
+    return lengthFieldBytes + dataBytes
 
 
 class Deserializer(object):
@@ -37,12 +47,11 @@ class Deserializer(object):
     def ready(self):
         return (self.buflen > 0 and len(self.buf) >= self.buflen)
 
-    def deserialize(self):
-        json_str = self.buf[LENGTH_FIELD_LENGTH:self.buflen].decode()
+    def deserialize(self):#DNY: only called once self.ready() returns true (see tsdb_server.py)
+        json_str = self.buf[LENGTH_FIELD_LENGTH:self.buflen].decode()#DNY: defaults to utf-8 encoding (see docs)
         self.buf = self.buf[self.buflen:]
         self.buflen = -1
-        # There may be more data in the buffer already, so preserve it
-        self._maybe_set_length()
+        self._maybe_set_length() # There may be more data in the buffer already, so preserve it
         try:
             obj = json.loads(json_str)
             return obj

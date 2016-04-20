@@ -9,25 +9,69 @@ class TSDBClient(object):
     """
     def __init__(self, port=9999):
         self.port = port
+        self.deserializer = Deserializer()
 
     def insert_ts(self, primary_key, ts):
         # your code here, construct from the code in tsdb_ops.py
+        msg = TSDBOp_InsertTS(primary_key, ts)
+        # msg = {}
+        # msg['op'] = 'insert_ts'
+        # msg['pk'] = primary_key
+        # msg['ts'] = [ts.values, ts.times]
+        self._send(msg.to_json())
 
     def upsert_meta(self, primary_key, metadata_dict):
         # your code here
+        msg = TSDBOp_UpsertMeta(primary_key, metadata_dict)
+        # msg = {}
+        # msg['op'] = 'upsert_meta'
+        # msg['pk'] = primary_key
+        # msg['md'] = metadata_dict
+        self._send(msg.to_json())
+
     def select(self, metadata_dict={}):
         # your code here
+        msg = TSDBOp_Select(metadata_dict)
+        # msg = {}
+        # msg['op'] = 'select'
+        # msg['md'] = metadata_dict
+        status, payload =  self._send(msg.to_json())
+        return TSDBStatus(status), payload
 
     # Feel free to change this to be completely synchronous
     # from here onwards. Return the status and the payload
     async def _send_coro(self, msg, loop):
         # your code here
-        return status, payload
+        # DNY: looking heavily at the sockets lecture
+        reader, writer = await asyncio.open_connection('',self.port,loop=loop)
+        print('-----------')
+        print('C> writing')
+        writer.write(serialize(msg))
+        response = await reader.read()
+        writer.close()# close the connection once the response is read
+
+        #DNY: now looking at tsdb_server.py for how to deserialize
+        self.deserializer.append(response)
+        if self.deserializer.ready():# it should always be ready, or the read failed
+            decodedResponse = self.deserializer.deserialize()
+            # print("decodedResponse!!!")
+            # print(decodedResponse)
+            obj = TSDBOp_Return.from_json(decodedResponse)
+            # print("object!!!")
+            # print(obj)
+            status = obj['status']  # until proven otherwise.
+            payload = obj['payload']  # until proven otherwise.
+            print('C> status:',str(TSDBStatus(status)))
+            print('C> payload:',payload)
+            return status, payload
+        else:
+            raise(ValueError("client failed to read the full response"))
 
     #call `_send` with a well formed message to send.
     #once again replace this function if appropriate
     def _send(self, msg):
         loop = asyncio.get_event_loop()
         coro = asyncio.ensure_future(self._send_coro(msg, loop))
-        loop.run_until_complete(coro)
+        #DNY: coro is a Task object from asyncio
+        loop.run_until_complete(coro)#DNY: blocking call until coro completes
         return coro.result()

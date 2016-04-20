@@ -8,9 +8,10 @@ from .tsdb_ops import *
 
 
 class TSDBProtocol(asyncio.Protocol):
-    def __init__(self, server):
+    #DNY: see https://docs.python.org/3/library/asyncio-protocol.html#asyncio-protocol
+    def __init__(self, server): #DNY: presumably given TSDBServer as input
         self.server = server
-        self.deserializer = Deserializer()
+        self.deserializer = Deserializer()# comes from tsdb_serialization.py
         self.futures = []
 
     def _insert_ts(self, op):
@@ -29,27 +30,31 @@ class TSDBProtocol(asyncio.Protocol):
 
     def _select(self, op):
         "server function for select"
-        loids = self.server.db.select(op['md'])
+        loids = self.server.db.select(op['md'])#DNY: presumably 'md' stands for metadata
+        # print("Selection made!")
+        # print(loids)
         return TSDBOp_Return(TSDBStatus.OK, op['op'], loids)
 
-
     def connection_made(self, conn):
-        "callback for when the conection is made."
+        "callback for when the connection is made."
         #connection or transport is saved as an instance variable
-        self.conn = conn
+        self.conn = conn#DNY: conn is a 'asyncio.WriteTransport' object
+        #DNY: handles communication channels
 
     def data_received(self, data):
         """
-        callback for when data comes. This is the workhorse function which calls database functionality, gets results if appropriate (for select), and bundles them back to the client.
+        callback for when data comes. This is the workhorse function which calls
+        database functionality, gets results if appropriate (for select), and
+        bundles them back to the client.
         """
         print('S> data received ['+str(len(data))+']: '+str(data))
-        self.deserializer.append(data)
+        self.deserializer.append(data)#DNY: presumably deserializer handles readying data
         if self.deserializer.ready():
             msg = self.deserializer.deserialize()
             status = TSDBStatus.OK  # until proven otherwise.
             response = TSDBOp_Return(status, None)  # until proven otherwise.
             try:
-                op = TSDBOp.from_json(msg)
+                op = TSDBOp.from_json(msg)#DNY: constructs appropriate TSDBOp_... by identifying msg
             except TypeError as e:
                 response = TSDBOp_Return(TSDBStatus.INVALID_OPERATION, None)
             if status is TSDBStatus.OK:
@@ -66,7 +71,7 @@ class TSDBProtocol(asyncio.Protocol):
             self.conn.close()
 
     def connection_lost(self, transport):
-        "callbackfor when the client closes the connection"
+        "callback for when the client closes the connection"
         print('S> connection lost')
 
 

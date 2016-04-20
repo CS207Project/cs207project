@@ -6,7 +6,8 @@ from .tsdb_error import *
 # typing for TSDB ops and a straightforward mechanism for conversion to/from
 # JSON objects.
 
-
+#DNY: Ops are operations sent to the database, to be run.
+# IMPT! they inherit from dict, so they can be indexed!
 class TSDBOp(dict):
     def __init__(self, op):
         self['op'] = op
@@ -42,7 +43,7 @@ class TSDBOp(dict):
             raise TypeError('Not a TSDB Operation: '+str(json_dict))
         if json_dict['op'] not in typemap:
             raise TypeError('Invalid TSDB Operation: '+str(json_dict['op']))
-        return typemap[json_dict['op']].from_json(json_dict)
+        return typemap[json_dict['op']].from_json(json_dict) #DNY return appropriate type
 
 
 class TSDBOp_InsertTS(TSDBOp):
@@ -52,8 +53,9 @@ class TSDBOp_InsertTS(TSDBOp):
 
     @classmethod
     def from_json(cls, json_dict):
+        # print(json_dict)
         return cls(json_dict['pk'], ts.TimeSeries(*(json_dict['ts'])))
-
+        #DNY: timeseries encoded as list [[t1,t2,...], [v1,v2,...]]
 
 class TSDBOp_Return(TSDBOp):
 
@@ -63,7 +65,7 @@ class TSDBOp_Return(TSDBOp):
 
     @classmethod
     def from_json(cls, json_dict):  #should not be used
-        return cls(json_dict['status'], json_dict['payload'])
+        return cls(json_dict['status'],json_dict['op'],json_dict['payload'])
 
 class TSDBOp_UpsertMeta(TSDBOp):
 
@@ -86,7 +88,6 @@ class TSDBOp_Select(TSDBOp):
     @classmethod
     def from_json(cls, json_dict):
         return cls(json_dict['md'])
-
 
 
 # This simplifies reconstructing TSDBOp instances from network data.
