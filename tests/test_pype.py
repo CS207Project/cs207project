@@ -48,8 +48,8 @@ class PYPYTests(unittest.TestCase):
         self.assertEqual(len(p.ir['six'].nodes),4)
 
     def test_ICvisit(self):
-        p = Pipeline(EXAMPLE_ICvisit_PATH)
-        #p.ir.topological_flowgraph_pass( InlineComponents() )
+         p = Pipeline(EXAMPLE_ICvisit_PATH)
+         #p.ir.topological_flowgraph_pass( InlineComponents() )
 
 
 
