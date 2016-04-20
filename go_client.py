@@ -39,7 +39,7 @@ def main():
     bla = client.select({'order': 1, 'blarg': 2})
     print("END", bla)
     client.select({'blarg': {'>=': 2}}, fields=['blarg', 'mean'])
-    client.select({'blarg': {'>=': 2}, 'order': 1}, fields=['blarg', 'std'])
+    client.select({'blarg': {'>=': 2}, 'order': 1}, fields=['blarg', 'std', 'order'])
     #client.add_pipeline(ppl)
     #client.autokey('useless','print', None)
 

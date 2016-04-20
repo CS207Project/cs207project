@@ -31,7 +31,7 @@ class TSDBClient(object):
 
     def select(self, metadata_dict={}, fields=None):
         #DNY: TODO, need to redo
-        msg = TSDBOp_Select(metadata_dict)
+        msg = TSDBOp_Select(metadata_dict,fields)
         # msg = {}
         # msg['op'] = 'select'
         # msg['md'] = metadata_dict
@@ -39,10 +39,16 @@ class TSDBClient(object):
         return TSDBStatus(status), payload
 
     def add_trigger(self, proc, onwhat, target, arg):
-        # your code here
+        msg = TSDBOp_AddTrigger(proc,onwhat,target,arg)
+
+        status, payload =  self._send(msg.to_json())
+        return TSDBStatus(status), payload
 
     def remove_trigger(self, proc, onwhat):
-        # your code here
+        msg = TSDBOp_RemoveTrigger(proc,onwhat)
+
+        status, payload =  self._send(msg.to_json())
+        return TSDBStatus(status), payload
 
     # Feel free to change this to be completely synchronous
     # from here onwards. Return the status and the payload
@@ -53,6 +59,7 @@ class TSDBClient(object):
         print('-----------')
         print('C> writing')
         writer.write(serialize(msg))
+        await writer.drain() #ASK : make sure buffer is flushed i.e everything is written
         response = await reader.read()
         writer.close()# close the connection once the response is read
 

@@ -2,6 +2,7 @@ from collections import defaultdict
 from operator import and_
 from functools import reduce
 import operator
+import numbers
 
 # this dictionary will help you in writing a generic select operation
 OPMAP = {
@@ -15,12 +16,12 @@ OPMAP = {
 
 class DictDB:
     "Database implementation in a dict"
-    def __init__(self, schema):
+    def __init__(self, schema,pk_field = 'pk'):
         "initializes database with indexed and schema"
         self.indexes = {}
         self.rows = {} # contains the row data, each entry points to another dictionary
         self.schema = schema # DNY: see go_server.py for example schema
-        self.pkfield = 'pk'
+        self.pkfield = pk_field
         for s in schema:
             indexinfo = schema[s]['index']
             # convert = schema[s]['convert']
@@ -64,15 +65,9 @@ class DictDB:
                 idx = self.indexes[field]# idx is a defaultdict(set)
                 idx[v].add(pk)#DNY: 'v' must be hashable
 
-    def select(self, meta):
-        #implement select, AND'ing over the filters in the md metadata dict
-        #remember that each item in the dictionary looks like key==value
-        #DNY written
-        pks = set(self.rows.keys())
-        for field, value in meta.items():
-            if field in self.schema:
-                pks = pks & self.indexes[field][value]
-        #DNY: new to implement
+    #ASK Helper func
+    #TODO: use indices when possible
+    def _getDataForRows(self,pks_out,fields_to_ret):
         # if fields is None: return only pks
         # like so [pk1,pk2],[{},{}]
         # if fields is [], this means all fields
@@ -83,4 +78,44 @@ class DictDB:
         #see tsdb_server to see how this return
         #value is used
         # return pks, matchedfielddicts
-        return list(pks)#json_dict
+
+        if fields_to_ret is None:
+            return list(pks_out),[{} for _ in range(len(pks_out))]
+        elif fields_to_ret == []:
+            return list(pks_out), [{field:value for field,value in values_dict.items() if field != 'ts'}
+                    for p,values_dict in self.rows.items() if p in pks_out]
+        elif isinstance(fields_to_ret,list):
+            return list(pks_out), [{field:value for field,value in values_dict.items() if field in fields_to_ret}
+                        for p,values_dict in self.rows.items() if p in pks_out]
+        else:
+            raise Exception("Fields requested must be a list or None")
+
+    def select(self, meta, fields_to_ret):
+        # if fields is None: return only pks
+        # like so [pk1,pk2],[{},{}]
+        # if fields is [], this means all fields
+        #except for the 'ts' field. Looks like
+        #['pk1',...],[{'f1':v1, 'f2':v2},...]
+        # if the names of fields are given in the list, include only those fields. `ts` ia an
+        #acceptable field and can be used to just return time series.
+        #see tsdb_server to see how this return
+        #value is used
+        # return pks, matchedfielddicts
+
+        #ASK: Implementing via a full table scan right now
+        pks_out = set(self.rows.keys())
+        for field,criteria in meta.items():
+            if field in self.schema:
+                fieldConvert = self.schema[field]['convert']
+                if(isinstance(criteria,dict)): #ASK: this is a range query
+                    op,val = list(criteria.items())[0]
+                    matches = [p for p in pks_out if field in self.rows[p] and
+                                    OPMAP[op](self.rows[p][field],fieldConvert(val))]
+                    pks_out = pks_out & set(matches)
+                elif(isinstance(criteria,numbers.Real)): #ASK: this is an exact query
+                    matches = [p for p in pks_out if field in self.rows[p] and
+                                self.rows[p][field] == fieldConvert(criteria)]
+                    pks_out = pks_out & set(matches)
+
+        #ASK: decide what to return
+        return self._getDataForRows(pks_out,fields_to_ret)
