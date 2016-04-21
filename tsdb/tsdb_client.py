@@ -1,4 +1,5 @@
-import asyncio
+from socket import *
+import time
 from .tsdb_serialization import serialize, LENGTH_FIELD_LENGTH, Deserializer
 from .tsdb_ops import *
 from .tsdb_error import *
@@ -52,19 +53,28 @@ class TSDBClient(object):
 
     # Feel free to change this to be completely synchronous
     # from here onwards. Return the status and the payload
-    async def _send_coro(self, msg, loop):
-        # your code here
-        # DNY: looking heavily at the sockets lecture
-        reader, writer = await asyncio.open_connection('',self.port,loop=loop)
+    def _send(self, msg):
+        # ASK: changing to synchronous
+        RECV_SIZE = 8192
+
+        # connect and send
+        s = socket(AF_INET,SOCK_STREAM)
+        s.connect(('',self.port))
+        s.send(serialize(msg))
+
+        # receive
+        while True:
+            response = s.recv(RECV_SIZE)
+            if not response:
+                break
+            self.deserializer.append(response)
+
+        s.close() #close the socket
+
         print('-----------')
         print('C> writing')
-        writer.write(serialize(msg))
-        await writer.drain() #ASK : make sure buffer is flushed i.e everything is written
-        response = await reader.read()
-        writer.close()# close the connection once the response is read
 
         #DNY: now looking at tsdb_server.py for how to deserialize
-        self.deserializer.append(response)
         if self.deserializer.ready():# it should always be ready, or the read failed
             decodedResponse = self.deserializer.deserialize()
             # print("decodedResponse!!!")
@@ -80,11 +90,4 @@ class TSDBClient(object):
         else:
             raise(ValueError("client failed to read the full response"))
 
-    #call `_send` with a well formed message to send.
-    #once again replace this function if appropriate
-    def _send(self, msg):
-        loop = asyncio.get_event_loop()
-        coro = asyncio.ensure_future(self._send_coro(msg, loop))
-        #DNY: coro is a Task object from asyncio
-        loop.run_until_complete(coro)#DNY: blocking call until coro completes
-        return coro.result()
+        return status,payload
