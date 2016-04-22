@@ -11,43 +11,43 @@ class TSDBClient(object):
         self.port = port
         self.deserializer = Deserializer()
 
-    def insert_ts(self, primary_key, ts):
+    async def insert_ts(self, primary_key, ts):
         # your code here, construct from the code in tsdb_ops.py
         msg = TSDBOp_InsertTS(primary_key, ts)
         # msg = {}
         # msg['op'] = 'insert_ts'
         # msg['pk'] = primary_key
         # msg['ts'] = [ts.values, ts.times]
-        self._send(msg.to_json())
+        await self._send(msg.to_json())
 
-    def upsert_meta(self, primary_key, metadata_dict):
+    async def upsert_meta(self, primary_key, metadata_dict):
         # your code here
         msg = TSDBOp_UpsertMeta(primary_key, metadata_dict)
         # msg = {}
         # msg['op'] = 'upsert_meta'
         # msg['pk'] = primary_key
         # msg['md'] = metadata_dict
-        self._send(msg.to_json())
+        await self._send(msg.to_json())
 
-    def select(self, metadata_dict={}, fields=None):
+    async def select(self, metadata_dict={}, fields=None):
         #DNY: TODO, need to redo
         msg = TSDBOp_Select(metadata_dict,fields)
         # msg = {}
         # msg['op'] = 'select'
         # msg['md'] = metadata_dict
-        status, payload =  self._send(msg.to_json())
+        status, payload =  await self._send(msg.to_json())
         return TSDBStatus(status), payload
 
-    def add_trigger(self, proc, onwhat, target, arg):
+    async def add_trigger(self, proc, onwhat, target, arg):
         msg = TSDBOp_AddTrigger(proc,onwhat,target,arg)
 
-        status, payload =  self._send(msg.to_json())
+        status, payload =  await self._send(msg.to_json())
         return TSDBStatus(status), payload
 
-    def remove_trigger(self, proc, onwhat):
+    async def remove_trigger(self, proc, onwhat):
         msg = TSDBOp_RemoveTrigger(proc,onwhat)
 
-        status, payload =  self._send(msg.to_json())
+        status, payload =  await self._send(msg.to_json())
         return TSDBStatus(status), payload
 
     # Feel free to change this to be completely synchronous
@@ -82,9 +82,9 @@ class TSDBClient(object):
 
     #call `_send` with a well formed message to send.
     #once again replace this function if appropriate
-    def _send(self, msg):
+    async def _send(self, msg):
         loop = asyncio.get_event_loop()
-        coro = asyncio.ensure_future(self._send_coro(msg, loop))
+        #coro = asyncio.ensure_future(self._send_coro(msg, loop))
         #DNY: coro is a Task object from asyncio
-        loop.run_until_complete(coro)#DNY: blocking call until coro completes
-        return coro.result()
+        #loop.run_until_complete(coro)#DNY: blocking call until coro completes
+        return await self._send_coro(msg, loop)
