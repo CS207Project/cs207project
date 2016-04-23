@@ -147,7 +147,7 @@ class TimeSeries:
         if self.__timeEqual(other):
             return all(a==b for a,b in zip(self.values, other.values))
         else:
-            raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
+            raise ValueError(str(self)+' and '+str(other)+' must have the same time points')
 
     @pype.component
     def __add__(self, rhs):
@@ -233,7 +233,8 @@ class TimeSeries:
         return np.average(self.values)
 
     def to_json(self):#DNY: to interface with TSDB objects
-        return [[float(i) for i in self.values],[float(i) for i in self.times]]
+        #ASK: fixing DNY's implementation (times need to be first)
+        return [[float(i) for i in self.times],[float(i) for i in self.values]]
 
     @classmethod
     def from_json(cls,dataList):
