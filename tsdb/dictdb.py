@@ -32,6 +32,7 @@ class DictDB:
 
     def insert_ts(self, pk, ts):
         "given a pk and a timeseries, insert them"
+        print("in db insert",pk,ts)
         if pk not in self.rows:
             self.rows[pk] = {'pk': pk}
         else:
@@ -95,49 +96,53 @@ class DictDB:
 
     def select(self, meta, fields_to_ret, additional):
         #ASK: Implementing via a full table scan right now
-        try:
-            pks_out = set(self.rows.keys())
-            for field,criteria in meta.items():
-                if field in self.schema:
-                    fieldConvert = self.schema[field]['convert']
 
-                    #ASK: this is a range query. Not sure how to do this with indices with
-                    #     current implementation
-                    if(isinstance(criteria,dict)):
-                        op,val = list(criteria.items())[0]
-                        matches = [p for p in pks_out if field in self.rows[p] and
-                                        OPMAP[op](self.rows[p][field],fieldConvert(val))]
-                        pks_out = pks_out & set(matches)
+        pks_out = set(self.rows.keys())
+        for field,criteria in meta.items():
+            if field in self.schema:
+                fieldConvert = self.schema[field]['convert']
 
-                    #ASK: this is an exact query
+                #ASK: this is a range query. Not sure how to do this with indices with
+                #     current implementation
+                if(isinstance(criteria,dict)):
+                    op,val = list(criteria.items())[0]
+                    matches = [p for p in pks_out if field in self.rows[p] and
+                                    OPMAP[op](self.rows[p][field],fieldConvert(val))]
+                    pks_out = pks_out & set(matches)
+
+                #ASK: this is an exact query
+                else:
+                    criteria = fieldConvert(criteria) #ASK: convert to the right format
+
+                    #ASK: we have an index for this field
+                    if field in self.indexes:
+                        matches = self.indexes[field][criteria]
+
+                    #ASK: we don't have an index for this field
                     else:
-                        criteria = fieldConvert(criteria) #ASK: convert to the right format
-
-                        #ASK: we have an index for this field
-                        if field in self.indexes:
-                            matches = self.indexes[field][criteria]
-
-                        #ASK: we don't have an index for this field
-                        else:
-                            matches = [p for p in pks_out if field in self.rows[p] and
-                                        self.rows[p][field] == criteria]
-                        pks_out = pks_out & set(matches)
-        except:
-            raise Exception("Error in Selecting")
+                        matches = [p for p in pks_out if field in self.rows[p] and
+                                    self.rows[p][field] == criteria]
+                    pks_out = pks_out & set(matches)
 
         #ASK: decide what to return
+        pks_out = list(pks_out)
         if additional and 'sort_by' in additional:
-            try:
-                field = additonal['sort_by']
-                if field not in self.schema:
-                    raise Exception("Sort Column not in schema")
-                pks_out = sorted(pks_out,key=lambda p: self.rows[p][field])
-            except:
-                Exception("Error in Sorting after selection")
+            # print("Sorting by ",additional['sort_by'][1:]," in direction ",additional['sort_by'][0])
+            sortfield = additional['sort_by'][1:]
+            sortdir = additional['sort_by'][0]
+
+            if sortfield not in self.schema:
+                raise Exception("Sort Column not in schema")
+
+            if sortdir == '+':
+                pks_out = sorted(pks_out,key=lambda p: self.rows[p][sortfield])
+            elif sortdir == '-':
+                pks_out = sorted(pks_out,key=lambda p: self.rows[p][sortfield],reverse=True)
+            else:
+                raise Exception("Illdefined sort order. Must be '+' or '-'")
+
         if additional and 'limit' in additional:
-            try:
-                pks_out = pks_out[:int(additonal['limit'])]
-            except:
-                Exception("Error in Sorting after selection")
+            print("Limiting")
+            pks_out = pks_out[:int(additional['limit'])]
 
         return self._getDataForRows(pks_out,fields_to_ret)

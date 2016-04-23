@@ -18,7 +18,8 @@ class TSDBClient(object):
         # msg['op'] = 'insert_ts'
         # msg['pk'] = primary_key
         # msg['ts'] = [ts.values, ts.times]
-        await self._send(msg.to_json())
+        status, payload =  await self._send(msg.to_json())
+        return TSDBStatus(status), payload
 
     async def upsert_meta(self, primary_key, metadata_dict):
         # your code here
@@ -27,7 +28,8 @@ class TSDBClient(object):
         # msg['op'] = 'upsert_meta'
         # msg['pk'] = primary_key
         # msg['md'] = metadata_dict
-        await self._send(msg.to_json())
+        status, payload =  await self._send(msg.to_json())
+        return TSDBStatus(status), payload
 
     async def select(self, metadata_dict={}, fields=None, additional=None):
         #DNY: TODO, need to redo

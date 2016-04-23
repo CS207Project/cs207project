@@ -1,6 +1,7 @@
 import timeseries as ts
 from .tsdb_error import *
 from collections import OrderedDict
+import numbers
 
 # Interface classes for TSDB network operations.
 # These are a little clunky (extensibility is meh), but it does provide strong
@@ -20,11 +21,13 @@ class TSDBOp(dict):
         # unless they have a 'to_json' method.
         if obj is None:
             obj = self
-        json_dict = {}
-        if isinstance(obj, str) or not hasattr(obj, '__len__') or obj is None:
+        json_dict = OrderedDict()
+        if isinstance(obj, str) or isinstance(obj,numbers.Number) or not hasattr(obj, '__len__') or obj is None:
             return obj
+        if isinstance(obj,list):
+            return [self.to_json(o) for o in obj]
         for k, v in obj.items():
-            if isinstance(v, str) or not hasattr(v, '__len__') or v is None:
+            if isinstance(v, str) or isinstance(obj,numbers.Number) or not hasattr(v, '__len__') or v is None:
                 json_dict[k] = v
             elif isinstance(v, TSDBStatus):
                 json_dict[k] = v.name
