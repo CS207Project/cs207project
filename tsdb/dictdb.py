@@ -65,57 +65,79 @@ class DictDB:
                 idx = self.indexes[field]# idx is a defaultdict(set)
                 idx[v].add(pk)#DNY: 'v' must be hashable
 
-    #ASK Helper func
-    #TODO: use indices when possible
+    #ASK: Helper func
     def _getDataForRows(self,pks_out,fields_to_ret):
-        # if fields is None: return only pks
-        # like so [pk1,pk2],[{},{}]
-        # if fields is [], this means all fields
-        #except for the 'ts' field. Looks like
-        #['pk1',...],[{'f1':v1, 'f2':v2},...]
-        # if the names of fields are given in the list, include only those fields. `ts` ia an
-        #acceptable field and can be used to just return time series.
-        #see tsdb_server to see how this return
-        #value is used
-        # return pks, matchedfielddicts
+        data_list_out = []
 
+        # just return primary_key and empty dicts
         if fields_to_ret is None:
-            return list(pks_out),[{} for _ in range(len(pks_out))]
+            data_list_out = [{} for _ in range(len(pks_out))]
+
+        # return all fields except for the 'ts' field
         elif fields_to_ret == []:
-            return list(pks_out), [{field:value for field,value in values_dict.items() if field != 'ts'}
-                    for p,values_dict in self.rows.items() if p in pks_out]
+            for p in pks_out:
+                values_dict = self.rows[p]
+                data_list_out.append(
+                    {field:value for field,value in values_dict.items() if field != 'ts'})
+
+        # return all fields that the user has specified
         elif isinstance(fields_to_ret,list):
-            return list(pks_out), [{field:value for field,value in values_dict.items() if field in fields_to_ret}
-                        for p,values_dict in self.rows.items() if p in pks_out]
+            for p in pks_out:
+                values_dict = self.rows[p]
+                data_list_out.append(
+                    {field:value for field,value in values_dict.items() if field in fields_to_ret})
+
+        # something went wrong
         else:
             raise Exception("Fields requested must be a list or None")
 
-    def select(self, meta, fields_to_ret):
-        # if fields is None: return only pks
-        # like so [pk1,pk2],[{},{}]
-        # if fields is [], this means all fields
-        #except for the 'ts' field. Looks like
-        #['pk1',...],[{'f1':v1, 'f2':v2},...]
-        # if the names of fields are given in the list, include only those fields. `ts` ia an
-        #acceptable field and can be used to just return time series.
-        #see tsdb_server to see how this return
-        #value is used
-        # return pks, matchedfielddicts
+        return pks_out, data_list_out
 
+    def select(self, meta, fields_to_ret, additional):
         #ASK: Implementing via a full table scan right now
-        pks_out = set(self.rows.keys())
-        for field,criteria in meta.items():
-            if field in self.schema:
-                fieldConvert = self.schema[field]['convert']
-                if(isinstance(criteria,dict)): #ASK: this is a range query
-                    op,val = list(criteria.items())[0]
-                    matches = [p for p in pks_out if field in self.rows[p] and
-                                    OPMAP[op](self.rows[p][field],fieldConvert(val))]
-                    pks_out = pks_out & set(matches)
-                elif(isinstance(criteria,numbers.Real)): #ASK: this is an exact query
-                    matches = [p for p in pks_out if field in self.rows[p] and
-                                self.rows[p][field] == fieldConvert(criteria)]
-                    pks_out = pks_out & set(matches)
+        try:
+            pks_out = set(self.rows.keys())
+            for field,criteria in meta.items():
+                if field in self.schema:
+                    fieldConvert = self.schema[field]['convert']
+
+                    #ASK: this is a range query. Not sure how to do this with indices with
+                    #     current implementation
+                    if(isinstance(criteria,dict)):
+                        op,val = list(criteria.items())[0]
+                        matches = [p for p in pks_out if field in self.rows[p] and
+                                        OPMAP[op](self.rows[p][field],fieldConvert(val))]
+                        pks_out = pks_out & set(matches)
+
+                    #ASK: this is an exact query
+                    else:
+                        criteria = fieldConvert(criteria) #ASK: convert to the right format
+
+                        #ASK: we have an index for this field
+                        if field in self.indexes:
+                            matches = self.indexes[field][criteria]
+
+                        #ASK: we don't have an index for this field
+                        else:
+                            matches = [p for p in pks_out if field in self.rows[p] and
+                                        self.rows[p][field] == criteria]
+                        pks_out = pks_out & set(matches)
+        except:
+            raise Exception("Error in Selecting")
 
         #ASK: decide what to return
+        if additional and 'sort_by' in additional:
+            try:
+                field = additonal['sort_by']
+                if field not in self.schema:
+                    raise Exception("Sort Column not in schema")
+                pks_out = sorted(pks_out,key=lambda p: self.rows[p][field])
+            except:
+                Exception("Error in Sorting after selection")
+        if additional and 'limit' in additional:
+            try:
+                pks_out = pks_out[:int(additonal['limit'])]
+            except:
+                Exception("Error in Sorting after selection")
+
         return self._getDataForRows(pks_out,fields_to_ret)

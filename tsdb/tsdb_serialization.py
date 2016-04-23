@@ -1,4 +1,5 @@
 import json
+from collections import OrderedDict
 
 LENGTH_FIELD_LENGTH = 4
 
@@ -47,13 +48,16 @@ class Deserializer(object):
     def ready(self):
         return (self.buflen > 0 and len(self.buf) >= self.buflen)
 
-    def deserialize(self):#DNY: only called once self.ready() returns true (see tsdb_server.py)
-        json_str = self.buf[LENGTH_FIELD_LENGTH:self.buflen].decode()#DNY: defaults to utf-8 encoding (see docs)
+    def deserialize(self):
+        json_str = self.buf[LENGTH_FIELD_LENGTH:self.buflen].decode()
         self.buf = self.buf[self.buflen:]
         self.buflen = -1
-        self._maybe_set_length() # There may be more data in the buffer already, so preserve it
+        # There may be more data in the buffer already, so preserve it
+        self._maybe_set_length()
         try:
-            obj = json.loads(json_str)
+            #Note how now everything is assumed to be an OrderedDict
+            obj = json.loads(json_str, object_pairs_hook=OrderedDict)
+            #print("OBJ", obj)
             return obj
         except json.JSONDecodeError:
             print('Invalid JSON object received:\n'+str(json_str))

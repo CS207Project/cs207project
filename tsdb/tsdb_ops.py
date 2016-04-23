@@ -1,5 +1,6 @@
 import timeseries as ts
 from .tsdb_error import *
+from collections import OrderedDict
 
 # Interface classes for TSDB network operations.
 # These are a little clunky (extensibility is meh), but it does provide strong
@@ -81,15 +82,15 @@ class TSDBOp_UpsertMeta(TSDBOp):
 
 class TSDBOp_Select(TSDBOp):
 
-    def __init__(self, md, fields):
+    def __init__(self, md, fields, additional):
         super().__init__('select')
         self['md'] = md
-        self['fields'] = fields#DNY: specifies the fields that you want returned.
-        #DNY: if None, just return the keys
+        self['fields'] = fields
+        self['additional'] = additional
 
     @classmethod
     def from_json(cls, json_dict):
-        return cls(json_dict['md'], json_dict['fields'])
+        return cls(json_dict['md'], json_dict['fields'], json_dict['additional'])
 
 class TSDBOp_AddTrigger(TSDBOp):
 
@@ -115,11 +116,32 @@ class TSDBOp_RemoveTrigger(TSDBOp):
     def from_json(cls, json_dict):
         return cls(json_dict['proc'], json_dict['onwhat'])
 
+class TSDBOp_AugmentedSelect(TSDBOp):
+    """
+    A hybrid of select, and add trigger, we only miss the onwhat key as this op
+    is used as an add on to selects. We remove the fields arg from select, as
+    the only fields sent back are the ones in target, which is used as in
+    add_trigger, except that instead of upserting meta with the targets, that
+    data is sent back to the user.
+    """
+    def __init__(self, proc, target, arg, md, additional):
+        super().__init__('augmented_select')
+        self['md'] = md
+        self['additional'] = additional
+        self['proc'] = proc
+        self['arg'] = arg
+        self['target'] = target
+
+    @classmethod
+    def from_json(cls, json_dict):
+        return cls(json_dict['proc'], json_dict['target'], json_dict['arg'], json_dict['md'], json_dict['additional'])
+
 # This simplifies reconstructing TSDBOp instances from network data.
 typemap = {
   'insert_ts': TSDBOp_InsertTS,
   'upsert_meta': TSDBOp_UpsertMeta,
   'select': TSDBOp_Select,
+  'augmented_select': TSDBOp_AugmentedSelect,
   'add_trigger': TSDBOp_AddTrigger,
   'remove_trigger': TSDBOp_RemoveTrigger,
 }

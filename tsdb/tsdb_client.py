@@ -29,12 +29,17 @@ class TSDBClient(object):
         # msg['md'] = metadata_dict
         await self._send(msg.to_json())
 
-    async def select(self, metadata_dict={}, fields=None):
+    async def select(self, metadata_dict={}, fields=None, additional=None):
         #DNY: TODO, need to redo
-        msg = TSDBOp_Select(metadata_dict,fields)
+        msg = TSDBOp_Select(metadata_dict,fields,additional)
         # msg = {}
         # msg['op'] = 'select'
         # msg['md'] = metadata_dict
+        status, payload =  await self._send(msg.to_json())
+        return TSDBStatus(status), payload
+
+    async def augmented_select(self, proc, target, arg=None, metadata_dict={}, additional=None):
+        msg = TSDBOp_AugmentedSelect(proc,target,arg,metadata_dict,additional)
         status, payload =  await self._send(msg.to_json())
         return TSDBStatus(status), payload
 
