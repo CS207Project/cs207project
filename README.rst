@@ -17,10 +17,10 @@ Usage
 
 1. Setup
 --------
-. Start the Database Server::
+- Start the Database Server::
     python go_server.py
 
-. Start the Web Server::
+- Start the Web Server::
     python web_server.py
 
 2. API Quick Guide
@@ -30,28 +30,28 @@ a. SELECT
 ~~~~~~~~~
 Select from the timeseries database.
 
-. Endpoint: /select
-. Verb: GET
-. Format: json text as a parameter with the key 'query'. i.e url ends with ?query=json_text
-. Example::
+- Endpoint: /select
+- Verb: GET
+- Format: json text as a parameter with the key 'query'- i.e url ends with ?query=json_text
+- Example::
     query = {'where':{'order': {'>=' : 1}},'fields':['order','vp'],'additional':{'sort_by':'-order','limit':10}}
     requests.get(server_url+'/select',params={'query':json.dumps(query)}).content
 
 b. AUGMENTED SELECT
 ~~~~~~~~~~~~~~~~~~~
-. Endpoint: /augselect
-. Verb: GET
-. Format: json text as a parameter with the key 'query'. i.e url ends with ?query=json_text
-. Example::
+- Endpoint: /augselect
+- Verb: GET
+- Format: json text as a parameter with the key 'query'- i.e url ends with ?query=json_text
+- Example::
     _, query = tsmaker(0.5, 0.2, 0.1)
     payload = {'proc':'corr','target':'d','arg':query, 'where': {'pk': v}}
     requests.get(server_url+'/augselect',params={'query':json.dumps(payload)}).content
 
 c. INSERT TIMESERIES
 ~~~~~~~~~~~~~~~~~~~~
-. Endpoint: /tsdb/add/ts
-. Verb: POST
-. Example::
+- Endpoint: /tsdb/add/ts
+- Verb: POST
+- Example::
     def make_insert_ts(primary_key,t):
         return json.dumps({'primary_key':primary_key, 'ts':t.to_json()})
 
@@ -62,9 +62,9 @@ c. INSERT TIMESERIES
 
 d. UPSERT METADATA
 ~~~~~~~~~~~~~~~~~~
-. Endpoint: /tsdb/add/metadata
-. Verb: POST
-. Example::
+- Endpoint: /tsdb/add/metadata
+- Verb: POST
+- Example::
     def make_upsert_meta(primary_key, metadata_dict):
         return json.dumps({'primary_key':primary_key, 'metadata_dict': metadata_dict})
 
@@ -74,9 +74,9 @@ d. UPSERT METADATA
 
 e. INSERT TRIGGER
 ~~~~~~~~~~~~~~~~~
-. Endpoint: /tsdb/add/trigger
-. Verb: POST
-. Example::
+- Endpoint: /tsdb/add/trigger
+- Verb: POST
+- Example::
 
     _, query = tsmaker(0.5, 0.2, 0.1)
     requests.post(server_url+'/add/trigger',
@@ -84,8 +84,8 @@ e. INSERT TRIGGER
 
 f. REMOVE TRIGGER
 ~~~~~~~~~~~~~~~~~
-. Endpoint: /tsdb/remove/trigger
-. Verb: POST
+- Endpoint: /tsdb/remove/trigger
+- Verb: POST
 
 
 Modules
