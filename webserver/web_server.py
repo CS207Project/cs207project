@@ -7,7 +7,7 @@ import json
 
 class Handlers:
     def __init__(self):
-        pass
+        self.client = TSDBClient()
 
     async def homepage_handler(self,request):
         body_txt = """
@@ -103,16 +103,15 @@ class Handlers:
 
 class WebServer:
     def __init__(self):
-        self.client = TSDBClient()
         self.handler = Handlers()
         self.app = web.Application()
-        self.app.router.add_route('GET', '/tsdb', handler.homepage_handler)
-        self.app.router.add_route('GET', '/tsdb/select',handler.select_handler)
-        self.app.router.add_route('GET', '/tsdb/augselect',handler.augselect_handler)
-        self.app.router.add_route('POST', '/tsdb/add/ts', handler.add_ts_handler)
-        self.app.router.add_route('POST', '/tsdb/add/trigger', handler.add_trigger_handler)
-        self.app.router.add_route('POST', '/tsdb/remove/trigger', handler.remove_trigger_handler)
-        self.app.router.add_route('POST', '/tsdb/add/metadata', handler.add_metadata_handler)
+        self.app.router.add_route('GET', '/tsdb', self.handler.homepage_handler)
+        self.app.router.add_route('GET', '/tsdb/select',self.handler.select_handler)
+        self.app.router.add_route('GET', '/tsdb/augselect',self.handler.augselect_handler)
+        self.app.router.add_route('POST', '/tsdb/add/ts', self.handler.add_ts_handler)
+        self.app.router.add_route('POST', '/tsdb/add/trigger', self.handler.add_trigger_handler)
+        self.app.router.add_route('POST', '/tsdb/remove/trigger', self.handler.remove_trigger_handler)
+        self.app.router.add_route('POST', '/tsdb/add/metadata', self.handler.add_metadata_handler)
 
     def run(self):
         web.run_app(self.app)
