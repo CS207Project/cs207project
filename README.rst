@@ -35,8 +35,8 @@ Select from the timeseries database.
 - Format: json text as a parameter with the key 'query'- i.e url ends with ?query=json_text
 - Example::
 
-    query = {'where':{'order': {'>=' : 1}},'fields':['order','vp'],'additional':{'sort_by':'-order','limit':10}}
-    requests.get(server_url+'/select',params={'query':json.dumps(query)}).content
+    payload = {'where':{'order': {'>=' : 1}},'fields':['order','vp'],'additional':{'sort_by':'-order','limit':10}}
+    requests.get(server_url+'/select',params={'query':json.dumps(payload)}).content
 
 b. AUGMENTED SELECT
 ~~~~~~~~~~~~~~~~~~~
@@ -45,8 +45,8 @@ b. AUGMENTED SELECT
 - Format: json text as a parameter with the key 'query'- i.e url ends with ?query=json_text
 - Example::
 
-    _, query = tsmaker(0.5, 0.2, 0.1)
-    payload = {'proc':'corr','target':'d','arg':query, 'where': {'pk': v}}
+    _, queryts = tsmaker(0.5, 0.2, 0.1)
+    payload = {'proc':'corr','target':'d','arg':queryts.to_json(), 'where': {'pk': v}}
     requests.get(server_url+'/augselect',params={'query':json.dumps(payload)}).content
 
 c. INSERT TIMESERIES
@@ -82,9 +82,14 @@ e. INSERT TRIGGER
 - Verb: POST
 - Example::
 
-    _, query = tsmaker(0.5, 0.2, 0.1)
+    def make_add_trigger(proc, onwhat, target, arg):
+    if hasattr(arg,'to_json'):
+        arg = arg.to_json()
+    return json.dumps({'proc':proc,'onwhat':onwhat,'target':target,'arg':arg})
+
+    _, queryts = tsmaker(0.5, 0.2, 0.1)
     requests.post(server_url+'/add/trigger',
-                  make_add_trigger('corr', 'insert_ts', 'd', query))
+                  make_add_trigger('corr', 'insert_ts', 'd', queryts))
 
 f. REMOVE TRIGGER
 ~~~~~~~~~~~~~~~~~
