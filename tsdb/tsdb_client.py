@@ -62,7 +62,7 @@ class TSDBClient(object):
     async def _send_coro(self, msg, loop):
         # your code here
         # DNY: looking heavily at the sockets lecture
-        reader, writer = await asyncio.open_connection('',self.port,loop=loop)
+        reader, writer = await asyncio.open_connection('localhost',self.port,loop=loop)
         print('-----------')
         print('C> writing')
         writer.write(serialize(msg))
