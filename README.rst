@@ -4,7 +4,7 @@ TimeSeries Utility (CS 207 Project)
 .. image:: https://travis-ci.org/CS207Project/cs207project.svg?branch=master
     :target: https://travis-ci.org/CS207Project/cs207project
 
-.. image:: https://coveralls.io/repos/github/CS207Project/cs207project/badge.svg?branch=master 
+.. image:: https://coveralls.io/repos/github/CS207Project/cs207project/badge.svg?branch=master
     :target: https://coveralls.io/github/CS207Project/cs207project?branch=master
 
 Timeseries group project for CS207
@@ -12,8 +12,102 @@ Timeseries group project for CS207
 Description
 ===========
 
-A LONGER DESCRIPTION OF YOUR PROJECT GOES HERE...
+Usage
+=====
 
+1. Setup
+--------
+Start the Database Server::
+  python go_server.py
+
+Start the Web Server::
+  python web_server.py
+
+2. API Quick Guide
+------------------
+
+a. SELECT
+~~~~~~~~~
+Select from the timeseries database.
+
+Endpoint: /select
+Verb: GET
+Format: json text as a parameter with the key 'query'. i.e url ends with ?query=json_text
+
+Example::
+  query = {'where':{'order': {'>=' : 1}},'fields':['order','vp'],'additional':{'sort_by':'-order','limit':10}}
+  requests.get(server_url+'/select',params={'query':json.dumps(query)}).content
+
+b. AUGMENTED SELECT
+~~~~~~~~~~~~~~~~~~~
+Endpoint: /augselect
+Verb: GET
+Format: json text as a parameter with the key 'query'. i.e url ends with ?query=json_text
+
+Example::
+  _, query = tsmaker(0.5, 0.2, 0.1)
+  payload = {'proc':'corr','target':'d','arg':query, 'where': {'pk': v}}
+  requests.get(server_url+'/augselect',params={'query':json.dumps(payload)}).content
+
+c. INSERT TIMESERIES
+~~~~~~~~~~~~~~~~~~~~
+Endpoint: /tsdb/add/ts
+Verb: POST
+
+Example::
+  def make_insert_ts(primary_key,t):
+    return json.dumps({'primary_key':primary_key, 'ts':t.to_json()})
+
+  meta1,ts1 = tsmaker(0.1,0.2,0.3)
+  requests.post(server_url+'/add/ts',
+                  make_insert_ts('ts-1', ts1))
+
+
+d. UPSERT METADATA
+~~~~~~~~~~~~~~~~~~
+Endpoint: /tsdb/add/metadata
+Verb: POST
+
+Example::
+  def make_upsert_meta(primary_key, metadata_dict):
+    return json.dumps({'primary_key':primary_key, 'metadata_dict': metadata_dict})
+
+  meta1,ts1 = tsmaker(0.1,0.2,0.3)
+  requests.post(server_url+'/add/metadata',
+                    make_upsert_meta('ts-1', meta1))
+
+e. INSERT TRIGGER
+~~~~~~~~~~~~~~~~~
+Endpoint: /tsdb/add/trigger
+Verb: POST
+
+Example::
+
+  _, query = tsmaker(0.5, 0.2, 0.1)
+  requests.post(server_url+'/add/trigger',
+                  make_add_trigger('corr', 'insert_ts', 'd', query))
+
+f. REMOVE TRIGGER
+~~~~~~~~~~~~~~~~~
+Endpoint: /tsdb/remove/trigger
+Verb: POST
+
+
+
+Modules
+=======
+
+timeseries
+----------
+
+tsdb
+----
+
+procs
+-----
+
+pype
+----
 
 Note
 ====
