@@ -34,6 +34,7 @@ Select from the timeseries database.
 - Verb: GET
 - Format: json text as a parameter with the key 'query'- i.e url ends with ?query=json_text
 - Example::
+
     query = {'where':{'order': {'>=' : 1}},'fields':['order','vp'],'additional':{'sort_by':'-order','limit':10}}
     requests.get(server_url+'/select',params={'query':json.dumps(query)}).content
 
@@ -43,6 +44,7 @@ b. AUGMENTED SELECT
 - Verb: GET
 - Format: json text as a parameter with the key 'query'- i.e url ends with ?query=json_text
 - Example::
+
     _, query = tsmaker(0.5, 0.2, 0.1)
     payload = {'proc':'corr','target':'d','arg':query, 'where': {'pk': v}}
     requests.get(server_url+'/augselect',params={'query':json.dumps(payload)}).content
@@ -52,6 +54,7 @@ c. INSERT TIMESERIES
 - Endpoint: /tsdb/add/ts
 - Verb: POST
 - Example::
+
     def make_insert_ts(primary_key,t):
         return json.dumps({'primary_key':primary_key, 'ts':t.to_json()})
 
@@ -65,6 +68,7 @@ d. UPSERT METADATA
 - Endpoint: /tsdb/add/metadata
 - Verb: POST
 - Example::
+
     def make_upsert_meta(primary_key, metadata_dict):
         return json.dumps({'primary_key':primary_key, 'metadata_dict': metadata_dict})
 
