@@ -4,6 +4,9 @@ from functools import reduce
 import operator
 import os
 import numbers
+import struct
+import json
+import timeseries as ts
 
 #// need to install this!
 import bintrees as bt#https://pypi.python.org/pypi/bintrees/2.0.2
@@ -18,7 +21,27 @@ OPMAP = {
     '>=': operator.ge
 }
 
+# see https://docs.python.org/3.4/library/struct.html#struct-format-strings
+TYPES = {
+    'float': 'd',
+    'bool': '?',
+    'int': 'i'
+}
+
+TYPE_DEFAULT = {
+    'float': 0.0,
+    'bool': False,
+    'int': 0
+}
+
+INDEXES = {
+    1: None,#Binary Tree type here,
+    2: None#bitmask type here
+}
+
 FILES_DIR = 'files'
+
+TS_FIELD_LENGTH = 4
 
 class PersistantDB:
     "Database implementation using Binary Trees and BitMasks"
@@ -26,37 +49,153 @@ class PersistantDB:
         "initializes database with indexed and schema"
         self.dbname = db_name# all files to be found in './files/db_name/' directory
         self.data_dir = FILES_DIR+"/"+self.dbname
+        self.metaHeapFile = FILES_DIR+"/"+self.dbname+"/"+'metaheap'
+        self.tsHeapFile = FILES_DIR+"/"+self.dbname+"/"+'tsheap'
+        # TODO: DNY: Set up the indexes on file
+
         # ensure file hierarchy is set up
         if not os.path.exists(FILES_DIR):
             os.makedirs(FILES_DIR)
         if not os.path.exists(self.data_dir):
             os.makedirs(self.data_dir)
 
-        # need to figure out how to check if passed in values are the same as
-        # the information existing in memory already
+        # open the associated files for reading meta data
+        if not os.path.exists(self.metaHeapFile):
+            #DNY: buffering=0 only allowed in binary mode, see python docs
+            self.metafd = open(self.metaHeapFile, "xb+", buffering=0)
+        else:
+            self.metafd = open(self.metaHeapFile, "r+b", buffering=0)
+            # TODO: DNY: add indexing into heap files via binary trees
+        self.meta_readptr = self.metafd.tell()
+        self.metafd.seek(0,2)#DNY: seek the end of the file
+        self.meta_writeptr = self.metafd.tell()
+
+        # open the associated files for reading meta data
+        if not os.path.exists(self.tsHeapFile):
+            #DNY: buffering=0 only allowed in binary mode, see python docs
+            self.tsfd = open(self.tsHeapFile, "xb+", buffering=0)
+        else:
+            self.tsfd = open(self.tsHeapFile, "r+b", buffering=0)
+            # TODO: DNY: add indexing into heap files via binary trees
+        self.ts_readptr = self.tsfd.tell()
+        self.tsfd.seek(0,2)#DNY: seek the end of the file
+        self.ts_writeptr = self.tsfd.tell()
+
+        # TODO: DNY: need to figure out how to check if passed in values are the
+        # same as the information existing in memory already
+
+        # marker for later garbage collection in the metaheap and tsheap files
+        schema['deleted'] = {'type': 'bool', 'index': None}
+        # marker for reading off timeseries heap file
+        schema['ts_offset'] = {'type': 'int', 'index': None} #DNY: temporary, is 'int' large enough?
 
         self.pkfield = pk_field
         self.tsLength = ts_length
+        self.compression_string = self._create_compression_string(schema)
+        self.canonicalByteArrayLength = len(struct.pack(self.compression_string,*self.defaultMeta))
         self.schema = schema
 
-        self.pkIndex = bt.RBTree()# tree keyed on 'pk'
-        self.otherIndexes = {}
+        # self.pkIndex = bt.RBTree()# tree keyed on 'pk'
+        # self.otherIndexes = {}
+        self.pks = {} #DNY: temporary, for testing
 
-        # for s in schema:
-        #     indexinfo = schema[s]['index']
-        #     # convert = schema[s]['convert']
-        #     # later use binary search trees for highcard/numeric
-        #     # bitmaps for lowcard/str_or_factor
-        #     if indexinfo is not None:
-        #         self.indexes[s] = defaultdict(set)# create an index for every non-None schema
+        # TODO DNY: create indexes
+
+    def _create_compression_string(self, schema):
+        fieldList = list(schema.keys())
+        fieldList.remove('ts')
+        fieldList.remove('pk')# pk and ts will be stored in the index file and tsheap file respectively
+        sorted(fieldList)
+        self.metaFields = []# DNY: ordered list of storage of fields
+        self.defaultMeta = []# DNY: to store default values of each field, as placeholders
+        compression_string = ''
+        for field in fieldList:
+            compression_string += TYPES[schema[field]['type']]
+            self.metaFields.append(field)
+            self.defaultMeta.append(TYPE_DEFAULT[schema[field]['type']])
+            if schema[field]['type'] != "bool":# to check whether field is set, later
+                compression_string += TYPES['bool']
+                self.metaFields.append(field+"_set")
+                self.defaultMeta.append(False)
+        return compression_string
 
     def insert_ts(self, pk, ts):
         "given a pk and a timeseries, insert them"
-        pass
+        # print("in db insert",pk,ts)
+        # TODO DNY: temporary storage for pk. to move to binary tree on disk
+        if pk not in self.pks:
+            self.pks[pk] = {'pk': pk}
+        else:
+            raise ValueError('Duplicate primary key found during insert')
 
-    def upsert_meta(self, pk, meta):
+        ts_offset = self._encode_and_write_ts(ts) # write ts to tsheap file
+
+        # DNY: write default
+        meta = list(self.defaultMeta)
+        meta[self.metaFields.index('ts_offset')] = ts_offset
+        meta[self.metaFields.index('ts_offset_set')] = True
+        self._encode_and_write_meta(pk, meta)
+        # self.update_indices(pk)
+
+    def _encode_and_write_ts(self, ts):
+        dataBytes = json.dumps(ts.to_json()).encode()
+        lengthFieldBytes = (len(dataBytes)+TS_FIELD_LENGTH).to_bytes(TS_FIELD_LENGTH, byteorder='little')
+        byteArray = lengthFieldBytes + dataBytes
+
+        self.tsfd.seek(self.ts_writeptr)
+        ts_offset = self.tsfd.tell()
+        self.tsfd.write(byteArray)
+        self.tsfd.seek(0,2)#DNY: seek the end of the file
+        self.ts_writeptr = self.tsfd.tell()
+        return ts_offset
+
+    def _read_and_decode_ts(self, offset):
+        self.tsfd.seek(offset)
+        ts_length = int.from_bytes(self.tsfd.read(TS_FIELD_LENGTH), byteorder='little')
+        self.tsfd.seek(offset + TS_FIELD_LENGTH)
+        buff = self.tsfd.read(ts_length)
+        return ts.TimeSeries.from_json(json.loads(buff.decode()))
+
+    def _encode_and_write_meta(self, pk, meta):
+        byteArray = struct.pack(self.compression_string,*meta)
+        self._check_byteArray(byteArray)
+        if 'offset' not in self.pks[pk].keys():# if not set, find correct spot
+            self.pks[pk]['offset'] = self.meta_writeptr
+        self.metafd.seek(self.pks[pk]['offset'])
+        self.metafd.write(byteArray)
+        # self.metafd.seek(0,2)#DNY: seek the end of the file
+        # self.meta_writeptr = self.metafd.tell()
+
+    def _check_byteArray(self,byteArray):
+        assert(len(byteArray) == self.canonicalByteArrayLength)
+
+    def _read_and_return_meta(self,pk):
+        offset = self.pks[pk]['offset']
+        self.metafd.seek(offset)
+        buff = self.metafd.read(self.canonicalByteArrayLength)
+        #check that reading and writing worked
+        # print(self.metaFields)
+        # print(struct.unpack(self.compression_string,buff))
+        return list(struct.unpack(self.compression_string,buff))
+
+    def upsert_meta(self, pk, new_meta):
+        # DNY: Does not support updating primary keys
+        # DNY: Does not support deleting metadata once inserted
         "implement upserting field values, as long as the fields are in the schema."
-        pass
+        #TODO DNY: catch error if pk not in db already
+        offset = self.pks[pk]['offset']#temporary
+        meta = self._read_and_return_meta(pk)
+        for n, field in enumerate(self.metaFields):
+            # will skip all the *_set entries
+            if field in new_meta.keys():
+                #TODO DNY: implement type/ error checking of the inserted values
+                meta[n] = new_meta[field]
+                if self.schema[field]['type'] != "bool":
+                    meta[n+1] = True
+
+        self._encode_and_write_meta(pk, meta)
+
+        # self.update_indices(pk)
 
     def index_bulk(self, pks=[]):
         pass
