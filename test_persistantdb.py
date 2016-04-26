@@ -26,8 +26,7 @@ def main():
     # we augment the schema by adding columns for 5 vantage points
     # for i in range(NUMVPS):
     #     schema["d_vp-{}".format(i)] = {'convert': float, 'index': 1}
-    if not os.path.exists(FILES_DIR):
-        os.makedirs(FILES_DIR)
+
 
     db = PersistantDB(schema, pk_field='pk', db_name='test', ts_length=TS_LENGTH)
     # server = TSDBServer(db)

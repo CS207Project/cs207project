@@ -7,8 +7,6 @@ to_int = lambda x:int(x)
 to_float = lambda x:float(x)
 to_bool = lambda x:bool(x)
 
-TS_LENGTH = 1024
-
 schema = {
   'pk': {'convert': identity, 'index': None},  #will be indexed anyways
   'ts': {'convert': identity, 'index': None},
@@ -20,14 +18,14 @@ schema = {
   'vp': {'convert': to_bool, 'index': 1}
 }
 
+TS_LENGTH = 1024
 NUMVPS = 5
-
 
 def main():
     # we augment the schema by adding columns for 5 vantage points
     for i in range(NUMVPS):
         schema["d_vp-{}".format(i)] = {'convert': float, 'index': 1}
-    db = DictDB(schema, pk_field = 'pk', db_name = 'test', ts_length = TS_LENGTH)
+    db = DictDB(schema, pk_field='pk', db_name='test', ts_length=TS_LENGTH)
     server = TSDBServer(db)
     server.run()
 
