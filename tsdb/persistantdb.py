@@ -8,8 +8,9 @@ import struct
 import json
 import timeseries as ts
 
-#// need to install this!
+#// need to install these!
 import bintrees as bt#https://pypi.python.org/pypi/bintrees/2.0.2
+import pybloomfilter as bf
 
 # this dictionary will help you in writing a generic select operation
 OPMAP = {
@@ -76,7 +77,6 @@ class PersistantDB:
             self.tsfd = open(self.tsHeapFile, "xb+", buffering=0)
         else:
             self.tsfd = open(self.tsHeapFile, "r+b", buffering=0)
-            # TODO: DNY: add indexing into heap files via binary trees
         self.ts_readptr = self.tsfd.tell()
         self.tsfd.seek(0,2)#DNY: seek the end of the file
         self.ts_writeptr = self.tsfd.tell()

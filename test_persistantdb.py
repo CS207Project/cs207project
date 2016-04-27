@@ -24,15 +24,20 @@ schema = {
 persistantSchema = {
   'pk':    {'type': 'string', 'index': None},  #will be indexed anyways
   'ts':    {'type': None,     'index': None}, #DNY: TimeSeries has no type
-  'order': {'type': 'int',    'index': 1},
-  'blarg': {'type': 'int',    'index': 1},
+  'order': {'type': 'int',    'index': 2,    'values': [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]},
+  'blarg': {'type': 'int',    'index': 2,    'values': [1, 2]},
   'mean':  {'type': 'float',  'index': 1},
   'std':   {'type': 'float',  'index': 1},
-  'vp':    {'type': 'bool',   'index': 1},
+  'vp':    {'type': 'bool',   'index': 2,    'values': [0,1]},
   'd-vp1': {'type': 'float',  'index': 1}
 }#DNY: in the persistantdb, I will add categories for deleted ts and offsets
 # in the tsheap file
 # entries in TSDB are strongly typed
+
+# One thought I had was to use a numpy array and associating that with a stored,
+# temporally ordered list of primary keys. Then, if a primary key is updated, i
+# can simply change the array, and if a new key comes in, I can add it to the
+# list and add a new element onto the back of the array. Is that a good way
 
 TS_LENGTH = 1024
 NUMVPS = 5
