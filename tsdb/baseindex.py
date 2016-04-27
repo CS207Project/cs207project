@@ -1,12 +1,13 @@
-class BaseIndex:
-	def __init__(self, name=‘default’, data_dir='files/default'):
-        # DNY: usage to create file name-->
-        # filename = data_dir+"/"+name+".idx"
+from persistantdb import FILES_DIR
 
+class BaseIndex:
+	def __init__(self, fieldName=‘default’, database_name='default'):
+        # DNY: usage to create file name-->
 		# create desired file if it doesn’t exist
 		# load file if it does exist
-        self.name = name
-        self.type = type
+        self.database_name = database_name
+        self.name = fieldName
+        self.filename = FILES_DIR+'/'+database_name+'/'+fieldName+'.idx'
 		pass
 
 	def insert(self, fieldValue, pk):
