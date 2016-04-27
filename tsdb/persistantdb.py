@@ -9,8 +9,7 @@ import json
 import timeseries as ts
 
 #// need to install these!
-import bintrees as bt#https://pypi.python.org/pypi/bintrees/2.0.2
-import pybloomfilter as bf
+import bintrees as bt #https://pypi.python.org/pypi/bintrees/2.0.2
 
 # this dictionary will help you in writing a generic select operation
 OPMAP = {
