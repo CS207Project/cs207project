@@ -1,5 +1,8 @@
 class BaseIndex:
-	def __init__(self, name=‘default’, type=float):
+	def __init__(self, name=‘default’, data_dir='files/default'):
+        # DNY: usage to create file name-->
+        # filename = data_dir+"/"+name+".idx"
+
 		# create desired file if it doesn’t exist
 		# load file if it does exist
         self.name = name
