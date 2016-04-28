@@ -6,6 +6,7 @@ before_install:
     - pip install coveralls
     - pip install ply
     - pip install sphinx
+    - pip install bintrees
     - pip install .
 script:
     - python setup.py test

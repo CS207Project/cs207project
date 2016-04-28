@@ -10,6 +10,10 @@ import timeseries as ts
 from .baseindex import BaseIndex, PKIndex
 from .heap import MetaHeapFile, TSHeapFile
 
+#// need to install these!
+# import bintrees as bt #https://pypi.python.org/pypi/bintrees/2.0.2
+# >>>>>>> c9bfe460ee5dee9813b69f35234642ec3947a8d4
+
 # this dictionary will help you in writing a generic select operation
 OPMAP = {
     '<': operator.lt,
