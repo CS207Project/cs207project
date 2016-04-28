@@ -1,9 +1,15 @@
 import unittest
 from tsdb import TreeIndex
+import os
 
 class TreeIndexTests(unittest.TestCase):
 
     def setUp(self):
+        self.dirPath = "files/test"
+        if not os.path.isdir(self.dirPath):
+            os.makedirs(self.dirPath)
+            self._createdDirs = True
+
         self.blarg_index = TreeIndex(database_name='test',fieldName='blarg')
         self.blarg_index.insert(1,'ts-1')
         self.blarg_index.insert(1,'ts-2')
@@ -18,6 +24,8 @@ class TreeIndexTests(unittest.TestCase):
 
     def tearDown(self):
         self.blarg_index.deleteIndex()
+        if self._createdDirs:
+            os.removedirs(self.dirPath)
 
     def test_get(self):
         self.assertEqual(set(self.blarg_index.getEqual(8)),set(['ts-8','ts-10']))
