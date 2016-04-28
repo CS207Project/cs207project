@@ -9,6 +9,7 @@ import json
 import timeseries as ts
 from .baseindex import BaseIndex, PKIndex
 from .heap import MetaHeapFile, TSHeapFile
+import pickle
 
 #// need to install these!
 # import bintrees as bt #https://pypi.python.org/pypi/bintrees/2.0.2
@@ -32,19 +33,30 @@ INDEXES = {
 FILES_DIR = 'files'
 MAX_CARD = 8
 
+def dict_eq(dict1, dict2):
+    if not sorted(list(dict1.keys()))==sorted(list(dict2.keys())):
+        return False
+    eq = True
+    for key in dict1.keys():
+        if isinstance(dict1[key], dict) and isinstance(dict2[key], dict):
+            eq = eq and dict_eq(dict1[key],dict2[key])
+        else:
+            eq = eq and (dict1[key]==dict2[key])
+        if not eq:
+            break
+    return eq
+
+
 class PersistantDB:
     "Database implementation using Binary Trees and BitMasks"
-    def __init__(self, schema, pk_field='pk', db_name='default', ts_length=1024):
+    def __init__(self, schema=None, pk_field='pk', db_name='default', ts_length=1024):
         "initializes database with indexed and schema"
-        # TODO DNY: if db_name already created, check to ensure that the schema
-        # is the same as before
         # TODO DNY: Akhil + Christian are setting up the indexes on file
-        # TODO DNY: add header file to store schema, compression string, index
-        # list, etc. so that it can be loaded
-        # TODO DNY: create function that eliminates deleted values in the heaps
-        # TODO DNY: support non-string primary keys
         # TODO DNY: 'select' function
-        # TODO DNY: change ts serialization to be fixed size
+        # TODO DNY: write tests for loading and unloading
+
+        # COULD DO DNY: create function that eliminates deleted values in the heaps
+        # COULD DO DNY: support non-string primary keys
 
         # DNY: ensure file hierarchy is set up
         # all files to be found in './files/db_name/' directory
@@ -55,22 +67,37 @@ class PersistantDB:
         if not os.path.exists(self.data_dir):
             os.makedirs(self.data_dir)
 
+        # load db_metadata if it exists, or write it if new
+        if os.path.exists(self.data_dir+"/db_metadata.met"):
+            with open(self.data_dir+"/db_metadata.met", 'rb', buffering=0) as fd:
+                self.tsLength, self.pkfield, self.schema = pickle.load(fd)
+                if schema is not None:
+                    try:
+                        assert(dict_eq(schema, self.schema))
+                    except:
+                        raise(RuntimeError, "schema does not match stored schema. pass in schema=None")
+                try:
+                    assert(self.pkfield == pk_field)
+                except:
+                    raise(RuntimeError, "PK field does not match stored pk. PK field should be '{}'".format(self.pkfield))
+                try:
+                    assert(self.tsLength == ts_length)
+                except:
+                    raise(RuntimeError, "ts_length field does not match stored value. ts_length field should be '{}'".format(self.tsLength))
+                print("old db values loaded, assertions passed")
+        else:
+            self.tsLength = ts_length
+            self.pkfield = pk_field
+            self.schema = dict(schema)
+            with open(self.data_dir+"/db_metadata.met",'xb',buffering=0) as fd:
+                pickle.dump((self.tsLength, self.pkfield, self.schema), fd)
+            # add metavalues to schema here
+            schema['deleted'] = {'type': 'bool', 'index': None}
+            schema['ts_offset'] = {'type': 'int', 'index': None}
+
         # open heap files
-        self.metaheap = MetaHeapFile(FILES_DIR+"/"+self.dbname+"/"+'metaheap')
-        self.tsheap = TSHeapFile(FILES_DIR+"/"+self.dbname+"/"+'tsheap')
-
-        self.schema = dict(schema)
-
-        # add marker for later garbage collection upon heap compaction
-        schema['deleted'] = {'type': 'bool', 'index': None}
-        # marker for reading off timeseries heap file
-        schema['ts_offset'] = {'type': 'int', 'index': None}
-
-        self.pkfield = pk_field
-        self.tsLength = ts_length
-
-        # create compression schema
-        self.metaheap.create_compression_string(schema)
+        self.metaheap = MetaHeapFile(FILES_DIR+"/"+self.dbname+"/"+'metaheap', schema)
+        self.tsheap = TSHeapFile(FILES_DIR+"/"+self.dbname+"/"+'tsheap', self.tsLength)
 
         self.pks = PKIndex(self.dbname)
 
