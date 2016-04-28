@@ -19,6 +19,7 @@ def tsmaker(m, s, j):
 
 
 async def run():
+    np.random.seed(12345)
     print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
     client = TSDBClient()
     N_ts = 50
