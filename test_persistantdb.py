@@ -49,26 +49,30 @@ def main():
 
 
     db = PersistantDB(persistantSchema, pk_field='pk', db_name='test', ts_length=TS_LENGTH)
+    ts_samp = ts.TimeSeries(list(range(1024)),list(range(1024)))
     meta_ex, ts_ex = tsmaker(1024)
-    meta_ex2, ts_ex2 = tsmaker(1024)
+    # meta_ex2, ts_ex2 = tsmaker(1024)
 
-    db.insert_ts('test', ts_ex)
+    # db.insert_ts('testperm', ts_samp)
+    db.insert_ts('test34', ts_ex)
     # check that the default values were set
-    print(db.metaFields)
-    print(db._read_and_return_meta('test'))
+    # print(db.metaheap.fields)
+    # meta = db._return_meta('test')
+    #print(meta)#check that these are default value
 
     # check that the stored timeseries is the same
-    offset = db._read_and_return_meta('test')[db.metaFields.index('ts_offset')]
-    print(ts_ex)
-    read_ts = db._read_and_decode_ts(offset)
-    print(read_ts)
-    print(ts_ex == read_ts)
+    read_ts = db._return_ts('test34')
+    # print(ts_ex)
+    # print(read_ts)
+    assert(ts_ex == read_ts)
 
     # check that the new values are set
-    db.upsert_meta('test', meta_ex)
-    print(db.metaFields)
-    print(meta_ex)
-    print(db._read_and_return_meta('test'))
+    db.upsert_meta('test34', meta_ex)
+    # print(db.metaheap.fields)
+    # print(meta_ex)
+    meta = db._return_meta('test34')
+    for field in meta_ex.keys():
+        assert(meta_ex[field]==meta[db.metaheap.fields.index(field)])
 
     # db.insert_ts('test2', ts_ex)
     # print(db._read_and_return_meta('test2'))
