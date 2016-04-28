@@ -33,6 +33,9 @@ class HeapFile:
         self.fd.seek(0,2)#DNY: seek the end of the file
         self.writeptr = self.fd.tell()
 
+    def close(self):
+        self.fd.close()
+
 class MetaHeapFile(HeapFile):
     def __init__(self, heap_file_name, schema):
         super().__init__(heap_file_name)

@@ -69,20 +69,23 @@ class PKIndex:
         self.fd.seek(0,2)#DNY: seek the end of the file
         self.writeptr = self.fd.tell()
 
-    def load_and_clear_log(self, loaded=False):
+    def load_and_clear_log(self, loaded=False, close=False):
         """
         if loaded, writelog assumed to be open. otherwise, closed.
-        loads values, clears writelog and opens
+        loads values, clears writelog and opens.
+        if close, then file descriptor not return.
         """
-        if not loaded:
-            self.fd = open(self.writelog,'r')
+        if loaded:
+            self.fd.close()
+        self.fd = open(self.writelog,'r')
         items = [l.strip().split(':') for l in self.fd.readlines()]
         writelog_dict = {k:int(v) for k,v in items}
         self.dict.update(writelog_dict)
         self.save_pickle()
         self.fd.close()
         open(self.writelog, 'w').close() # this deletes the log
-        return open(self.writelog, 'w')
+        if not close:
+            return open(self.writelog, 'w')
 
     def save_pickle(self, new=False):
         form = 'xb' if new else 'wb'
@@ -102,7 +105,7 @@ class PKIndex:
             self.dict[key] = value
             self.fd.write(key+':'+str(value)+'\n')
             if self.pk_count % REFRESH_RATE == 0:
-                self.load_and_clear_log(loaded=True)
+                self.fd = self.load_and_clear_log(loaded=True)
         else:
             self.dict[key] = value
 
@@ -111,6 +114,12 @@ class PKIndex:
 
     def __contains__(self, key):
         return key in self.dict.keys()
+
+    def __len__(self):
+        return self.pk_count
+
+    def close(self):
+        self.load_and_clear_log(loaded=True, close=True)
 
 class TreeIndex(BaseIndex):
 
@@ -206,13 +215,13 @@ class BitmapIndex(BaseIndex):
         # Empty list to store the the boolean arrays for the values of this field.
         #CJ: I am storing the indices as a list of numpy boolean arrays because it
         # is more memory-efficient to append to append to this list than it is to keep
-        # vertically stacking numpy arrays.  
+        # vertically stacking numpy arrays.
         self.bmindex_list = []
-   
+
         # Create desired files if they don’t exist.
         # Load files if they do exist.
 
-        # Open the associated files for updating 
+        # Open the associated files for updating
         if not os.path.exists(self.filename):
             self.bmindex = open(self.filename, "xb+", buffering=0)
 
@@ -251,7 +260,7 @@ class BitmapIndex(BaseIndex):
 
     def insert(self, fieldValue, pk):
         # Updates the boolean array that indicates the field's values for the appropriate pk.
-        # Adds pk's that are not already present, and updates pk's that are already present.  
+        # Adds pk's that are not already present, and updates pk's that are already present.
 
         # Operate on string representations of pk's.
         pk_str = bytes(str(pk),'utf-8')
@@ -259,10 +268,10 @@ class BitmapIndex(BaseIndex):
         # Check if the fieldValue is valid.  If not, throw an error.
         if fieldValue not in self.values:
             raise ValueError('\"{}\" not in the set of user-specified values: {}'.format(fieldValue, self.values))
-        else: 
+        else:
             # Check if the pk is already in the file or not.
             if pk_str not in self.pks_dict.keys():
-                
+
                 # Add the pk to the dictionary along with its index
                 self.pks_dict.update({pk_str:self.pks_len})
                 self.dict_pks.update({self.pks_len:pk_str})
@@ -294,7 +303,7 @@ class BitmapIndex(BaseIndex):
                 array_to_add = np.zeros(self.values_len, dtype='bool')
                 array_to_add[self.values.index(fieldValue)] = True
 
-                # Set the list entry equal to the new array. 
+                # Set the list entry equal to the new array.
                 self.bmindex_list[pk_index] = array_to_add
 
                 # Update the bmindex file
@@ -337,4 +346,3 @@ def str_to_bool(string_line):
 	for ii in range(line_len):
 		bool_array[ii] = int(decoded_string_line[ii])
 	return bool_array
-

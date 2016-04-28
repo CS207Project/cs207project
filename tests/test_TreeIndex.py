@@ -5,12 +5,14 @@ import os
 class TreeIndexTests(unittest.TestCase):
 
     def setUp(self):
-        self.dirPath = "files/test"
+        self.dirPath = "files/testing"
         if not os.path.isdir(self.dirPath):
             os.makedirs(self.dirPath)
             self._createdDirs = True
+        else:
+            self._createdDirs = False
 
-        self.blarg_index = TreeIndex(database_name='test',fieldName='blarg')
+        self.blarg_index = TreeIndex(database_name='testing',fieldName='blarg')
         self.blarg_index.insert(1,'ts-1')
         self.blarg_index.insert(1,'ts-2')
         self.blarg_index.insert(1,'ts-3')

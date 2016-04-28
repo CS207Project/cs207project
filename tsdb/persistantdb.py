@@ -6,10 +6,11 @@ import os
 import numbers
 # import struct
 import json
-import timeseries as ts
+import timeseries
 from .baseindex import BaseIndex, PKIndex
 from .heap import MetaHeapFile, TSHeapFile
 import pickle
+import shutil
 
 #// need to install these!
 # import bintrees as bt #https://pypi.python.org/pypi/bintrees/2.0.2
@@ -35,14 +36,17 @@ MAX_CARD = 8
 
 def dict_eq(dict1, dict2):
     if not sorted(list(dict1.keys()))==sorted(list(dict2.keys())):
+        # import pdb; pdb.set_trace()
         return False
     eq = True
     for key in dict1.keys():
         if isinstance(dict1[key], dict) and isinstance(dict2[key], dict):
-            eq = eq and dict_eq(dict1[key],dict2[key])
+            eq = (eq and dict_eq(dict1[key],dict2[key]))
         else:
-            eq = eq and (dict1[key]==dict2[key])
+            eq = (eq and (dict1[key]==dict2[key]))
         if not eq:
+            # import pdb; pdb.set_trace()
+            print("not equal on ",key)
             break
     return eq
 
@@ -54,6 +58,7 @@ class PersistantDB:
         # TODO DNY: Akhil + Christian are setting up the indexes on file
         # TODO DNY: 'select' function
         # TODO DNY: write tests for loading and unloading
+        # TODO DNY: figure out how to close and delete database
 
         # COULD DO DNY: create function that eliminates deleted values in the heaps
         # COULD DO DNY: support non-string primary keys
@@ -75,15 +80,16 @@ class PersistantDB:
                     try:
                         assert(dict_eq(schema, self.schema))
                     except:
-                        raise(RuntimeError, "schema does not match stored schema. pass in schema=None")
+                        # import pdb; pdb.set_trace()
+                        raise ValueError("schema does not match stored schema. pass in schema=None")
                 try:
                     assert(self.pkfield == pk_field)
                 except:
-                    raise(RuntimeError, "PK field does not match stored pk. PK field should be '{}'".format(self.pkfield))
+                    raise ValueError("PK field does not match stored pk. PK field should be '{}'".format(self.pkfield))
                 try:
                     assert(self.tsLength == ts_length)
                 except:
-                    raise(RuntimeError, "ts_length field does not match stored value. ts_length field should be '{}'".format(self.tsLength))
+                    raise ValueError("ts_length field does not match stored value. ts_length field should be '{}'".format(self.tsLength))
                 print("old db values loaded, assertions passed")
         else:
             self.tsLength = ts_length
@@ -91,7 +97,8 @@ class PersistantDB:
             self.schema = dict(schema)
             with open(self.data_dir+"/db_metadata.met",'xb',buffering=0) as fd:
                 pickle.dump((self.tsLength, self.pkfield, self.schema), fd)
-            # add metavalues to schema here
+            # add metavalues to a copy of schema here
+            schema = dict(schema)
             schema['deleted'] = {'type': 'bool', 'index': None}
             schema['ts_offset'] = {'type': 'int', 'index': None}
 
@@ -115,12 +122,30 @@ class PersistantDB:
             #     # self.indexes[field] = TreeIndex()
             #     pass
 
+    def delete_database(self):
+        shutil.rmtree(self.data_dir)
+
+    def close(self):
+        self.metaheap.close()
+        self.tsheap.close()
+        self.pks.close()
+
+    def _check_pk(self,pk):
+        "method to check that 'pk' is a string"
+        try:
+            assert isinstance(pk,str), "Invalid PK"
+        except:
+            raise ValueError('ts must be a timeseries.Timeseries object')
+
     def insert_ts(self, pk, ts):
         "given a pk and a timeseries, insert them"
-        # print("in db insert",pk,ts)
-        # TODO DNY: rewrite once primary key index completed
+        self._check_pk(pk)
+        if not isinstance(ts, timeseries.TimeSeries):
+            raise ValueError('ts must be a timeseries.Timeseries object')
         if pk in self.pks:
             raise ValueError('Duplicate primary key found during insert')
+        if len(ts) != self.tsLength:
+            raise ValueError('TimeSeries must have length {}. Current length: {}'.format(self.tsLength, len(ts)))
 
         ts_offset = self.tsheap.encode_and_write_ts(ts) # write ts to tsheap file
 
@@ -141,6 +166,9 @@ class PersistantDB:
         # DNY: temporary testing function
         ts_offset = self._return_meta(pk)[self.metaheap.fields.index('ts_offset')]
         return self.tsheap.read_and_decode_ts(ts_offset)
+
+    def __len__(self):
+        return len(self.pks)
 
     def upsert_meta(self, pk, new_meta):
         "implement upserting field values, as long as the fields are in the schema."
