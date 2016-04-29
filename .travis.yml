@@ -7,6 +7,7 @@ before_install:
     - pip install ply
     - pip install sphinx
     - pip install bintrees
+    - pip install asynctest
     - pip install .
 script:
     - python setup.py test

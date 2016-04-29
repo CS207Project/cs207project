@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-from tsdb import TSDBClient
+from webserver import WebServer
 import timeseries as ts
-import time
-import asyncio
-import asynctest
-import numpy as np
 import subprocess
+import time
+import unittest
+import numpy as np
+import requests
+import json
 
 identity = lambda x: x
 to_int = lambda x:int(x)
@@ -39,29 +40,57 @@ def tsmaker(m, s, j):
     v = norm.pdf(t, m, s) + j*np.random.randn(100)
     return meta, ts.TimeSeries(t, v)
 
-class TSDBTests(asynctest.TestCase):
+def make_insert_ts(primary_key,t):
+    return json.dumps({'primary_key':primary_key, 'ts':t.to_json()})
+
+def make_upsert_meta(primary_key, metadata_dict):
+    return json.dumps({'primary_key':primary_key, 'metadata_dict': metadata_dict})
+
+def make_add_trigger(proc, onwhat, target, arg):
+    if hasattr(arg,'to_json'):
+        arg = arg.to_json()
+    return json.dumps({'proc':proc,'onwhat':onwhat,'target':target,'arg':arg})
+
+def make_remove_trigger(proc, onwhat):
+    return json.dumps({'proc':proc,'onwhat':onwhat})
+
+class WebServerTests(unittest.TestCase):
 
     def setUp(self):
-        self.server_log_file = open('.tsdb_server.log.test','w')
+        # start DB server
+        self.server_log_file = open('.tsdb_server.log.testweb','w')
         self.server_proc = subprocess.Popen(['python', 'go_server.py']
                 ,stdout=self.server_log_file,stderr=subprocess.STDOUT)
+        time.sleep(1)
+
+        # start webserver
+        self.server_url = 'http://localhost:8080/tsdb'
+        self.webserver_log_file = open('.web_server.log.testweb','w')
+        self.webserver_proc = subprocess.Popen(['python', 'go_webserver.py']
+                ,stdout=self.webserver_log_file,stderr=subprocess.STDOUT)
         time.sleep(1)
 
     def tearDown(self):
         self.server_proc.terminate()
         self.server_log_file.close()
 
-    async def test_run(self):
+        self.webserver_proc.terminate()
+        self.webserver_log_file.close()
+
+    def test_addTrigger(self):
+        r = requests.post(self.server_url+'/add/trigger',make_add_trigger(
+                                'junk', 'insert_ts', None, 'db:one:ts'))
+        self.assertEqual(r.status_code, 200)
+
+        r = requests.post(self.server_url+'/add/trigger',make_add_trigger(
+                                'stats', 'insert_ts', ['mean', 'std'], None))
+        self.assertEqual(r.status_code, 200)
+
+    def test_main(self):
         np.random.seed(12345)
-        print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
-        client = TSDBClient()
         N_ts = 50
         N_vp = 5
-        # add a trigger. notice the argument. It does not do anything here but
-        # could be used to save a shlep of data from client to server.
-        await client.add_trigger('junk', 'insert_ts', None, 'db:one:ts')
-        # our stats trigger
-        await client.add_trigger('stats', 'insert_ts', ['mean', 'std'], None)
+
         #Set up 50 time series
         mus = np.random.uniform(low=0.0, high=1.0, size=N_ts)
         sigs = np.random.uniform(low=0.05, high=0.4, size=N_ts)
@@ -82,62 +111,16 @@ class TSDBTests(asynctest.TestCase):
         vpkeys = ["ts-{}".format(i) for i in np.random.choice(range(N_ts), size=N_vp, replace=False)]
         for i in range(N_vp):
             # add 5 triggers to upsert distances to these vantage points
-            await client.add_trigger('junk', 'insert_ts', None, 23)
-            await client.add_trigger('corr', 'insert_ts', ["d_vp-{}".format(i)], tsdict[vpkeys[i]])
+            requests.post(self.server_url+'/add/trigger',
+                          make_add_trigger('corr', 'insert_ts', ["d_vp-{}".format(i)], tsdict[vpkeys[i]]))
             # change the metadata for the vantage points to have meta['vp']=True
             metadict[vpkeys[i]]['vp']=True
         # Having set up the triggers, now inser the time series, and upsert the metadata
         for k in tsdict:
-            print(tsdict[k])
-            await client.insert_ts(k, tsdict[k])
-            await client.upsert_meta(k, metadict[k])
-
-        print("UPSERTS FINISHED")
-        print('---------------------')
-        print("STARTING SELECTS")
-
-        print('---------DEFAULT------------')
-        await client.select()
-
-        #in this version, select has sprouted an additional keyword argument
-        # to allow for sorting. Limits could also be enforced through this.
-        print('---------ADDITIONAL------------')
-        await client.select(additional={'sort_by': '-order'})
-
-        print('----------ORDER FIELD-----------')
-        _, results = await client.select(fields=['order'])
-        for k in results:
-            print(k, results[k])
-
-        print('---------ALL FILEDS------------')
-        await client.select(fields=[])
-
-        print('------------TS with order 1---------')
-        await client.select({'order': 1}, fields=['ts'])
-
-        print('------------All fields, blarg 1 ---------')
-        await client.select({'blarg': 1}, fields=[])
-
-        print('------------order 1 blarg 2 no fields---------')
-        _, bla = await client.select({'order': 1, 'blarg': 2})
-        print(bla)
-
-        print('------------order >= 4  order, blarg and mean sent back, also sorted---------')
-        _, results = await client.select({'order': {'>=': 4}}, fields=['order', 'blarg', 'mean'], additional={'sort_by': '-order'})
-        for k in results:
-            print(k, results[k])
-
-        print('------------order 1 blarg >= 1 fields blarg and std---------')
-        _, results = await client.select({'blarg': {'>=': 1}, 'order': 1}, fields=['blarg', 'std','order'])
-        for k in results:
-            print(k, results[k])
-
-        print('------------pk = ts-1 ---------')
-        _, results = await client.select({'pk': 'ts-1'})
-        print(len(results))
-
-        print('------now computing vantage point stuff---------------------')
-        print("VPS", vpkeys)
+            requests.post(self.server_url+'/add/ts',
+                          make_insert_ts(k, tsdict[k]))
+            requests.post(self.server_url+'/add/metadata',
+                          make_upsert_meta(k, metadict[k]))
 
         #we first create a query time series.
         _, query = tsmaker(0.5, 0.2, 0.1)
@@ -145,21 +128,21 @@ class TSDBTests(asynctest.TestCase):
         # Step 1: in the vpdist key, get  distances from query to vantage points
         # this is an augmented select
         vpdist = {}
+        payload = {'proc':'corr','target':'d','arg':query.to_json()}
         for v in vpkeys:
-            _, results = await client.augmented_select('corr','d',query, {'pk':v})
+            payload['where'] = {'pk': v}
+            r = requests.get(self.server_url+'/augselect',params={'query':json.dumps(payload)})
+            results = json.loads(r.content.decode('utf-8'))
             vpdist[v] = results[v]['d']
 
-        #1b: choose the lowest distance vantage point
-        # you can do this in local code
-        print("VP DIST")
-        print(vpdist)
         closest_vpk = min(vpkeys,key=lambda v:vpdist[v])
 
         # Step 2: find all time series within 2*d(query, nearest_vp_to_query)
         #this is an augmented select to the same proc in correlation
-
-        _, results = await client.augmented_select('corr','d',query,
-                                        {'d_'+closest_vpk: {'<=': 2*vpdist[closest_vpk]}})
+        payload = {'proc':'corr','target':'d','arg':query.to_json()}
+        payload['where'] = {'d_'+closest_vpk: {'<=': 2*vpdist[closest_vpk]}}
+        r = requests.get(self.server_url+'/augselect',params={'query':json.dumps(payload)})
+        results = json.loads(r.content.decode('utf-8'))
 
         #2b: find the smallest distance amongst this ( or k smallest)
         #you can do this in local code
