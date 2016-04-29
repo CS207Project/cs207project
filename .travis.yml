@@ -6,8 +6,11 @@ before_install:
     - pip install coveralls
     - pip install ply
     - pip install sphinx
+    - pip install scipy
     - pip install bintrees
     - pip install asynctest
+    - pip install asyncio
+    - pip install aiohttp
     - pip install .
 script:
     - python setup.py test
