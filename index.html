@@ -100,20 +100,28 @@ Select from the timeseries database.</p>
     <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;query&#39;</span><span class="p">:</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">)})</span><span class="o">.</span><span class="n">content</span>
 </pre></div>
 </div>
-<p>b. AUGMENTED SELECT
-- Endpoint: <strong>/augselect</strong>
-- Verb: <strong>GET</strong>
-- Format: json text as a parameter with the key &#8216;query&#8217;- i.e url ends with <cite>?query=json_text</cite>
-- Example:</p>
+<ol class="loweralpha simple" start="2">
+<li>AUGMENTED SELECT</li>
+</ol>
+<ul class="simple">
+<li>Endpoint: <strong>/augselect</strong></li>
+<li>Verb: <strong>GET</strong></li>
+<li>Format: json text as a parameter with the key &#8216;query&#8217;- i.e url ends with <cite>?query=json_text</cite></li>
+<li>Example:</li>
+</ul>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">m</span><span class="p">,</span> <span class="n">queryts</span> <span class="o">=</span> <span class="n">tsmaker</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
 <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;proc&#39;</span><span class="p">:</span><span class="s1">&#39;corr&#39;</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">:</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;arg&#39;</span><span class="p">:</span><span class="n">queryts</span><span class="o">.</span><span class="n">to_json</span><span class="p">(),</span> <span class="s1">&#39;where&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;pk&#39;</span><span class="p">:</span> <span class="n">v</span><span class="p">}}</span>
 <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">server_url</span><span class="o">+</span><span class="s1">&#39;/augselect&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;query&#39;</span><span class="p">:</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">)})</span><span class="o">.</span><span class="n">content</span>
 </pre></div>
 </div>
-<p>c. INSERT TIMESERIES
-- Endpoint: <strong>/tsdb/add/ts</strong>
-- Verb: <strong>POST</strong>
-- Example:</p>
+<ol class="loweralpha simple" start="3">
+<li>INSERT TIMESERIES</li>
+</ol>
+<ul class="simple">
+<li>Endpoint: <strong>/tsdb/add/ts</strong></li>
+<li>Verb: <strong>POST</strong></li>
+<li>Example:</li>
+</ul>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">make_insert_ts</span><span class="p">(</span><span class="n">primary_key</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s1">&#39;primary_key&#39;</span><span class="p">:</span><span class="n">primary_key</span><span class="p">,</span><span class="s1">&#39;ts&#39;</span><span class="p">:</span><span class="n">t</span><span class="o">.</span><span class="n">to_json</span><span class="p">()})</span>
 
@@ -121,10 +129,14 @@ Select from the timeseries database.</p>
 <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">server_url</span><span class="o">+</span><span class="s1">&#39;/add/ts&#39;</span><span class="p">,</span> <span class="n">make_insert_ts</span><span class="p">(</span><span class="s1">&#39;ts-1&#39;</span><span class="p">,</span> <span class="n">ts1</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>d. UPSERT METADATA
-- Endpoint: <strong>/tsdb/add/metadata</strong>
-- Verb: <strong>POST</strong>
-- Example:</p>
+<ol class="loweralpha simple" start="4">
+<li>UPSERT METADATA</li>
+</ol>
+<ul class="simple">
+<li>Endpoint: <strong>/tsdb/add/metadata</strong></li>
+<li>Verb: <strong>POST</strong></li>
+<li>Example:</li>
+</ul>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">make_upsert_meta</span><span class="p">(</span><span class="n">primary_key</span><span class="p">,</span> <span class="n">metadata_dict</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s1">&#39;primary_key&#39;</span><span class="p">:</span><span class="n">primary_key</span><span class="p">,</span> <span class="s1">&#39;metadata_dict&#39;</span><span class="p">:</span> <span class="n">metadata_dict</span><span class="p">})</span>
 
@@ -132,10 +144,14 @@ Select from the timeseries database.</p>
 <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">server_url</span><span class="o">+</span><span class="s1">&#39;/add/metadata&#39;</span><span class="p">,</span> <span class="n">make_upsert_meta</span><span class="p">(</span><span class="s1">&#39;ts-1&#39;</span><span class="p">,</span> <span class="n">meta1</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>e. INSERT TRIGGER
-- Endpoint: <strong>/tsdb/add/trigger</strong>
-- Verb: <strong>POST</strong>
-- Example:</p>
+<ol class="loweralpha simple" start="5">
+<li>INSERT TRIGGER</li>
+</ol>
+<ul class="simple">
+<li>Endpoint: <strong>/tsdb/add/trigger</strong></li>
+<li>Verb: <strong>POST</strong></li>
+<li>Example:</li>
+</ul>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">make_add_trigger</span><span class="p">(</span><span class="n">proc</span><span class="p">,</span> <span class="n">onwhat</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span><span class="s1">&#39;to_json&#39;</span><span class="p">):</span>
         <span class="n">arg</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
@@ -145,9 +161,13 @@ Select from the timeseries database.</p>
 <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">server_url</span><span class="o">+</span><span class="s1">&#39;/add/trigger&#39;</span><span class="p">,</span> <span class="n">make_add_trigger</span><span class="p">(</span><span class="s1">&#39;corr&#39;</span><span class="p">,</span> <span class="s1">&#39;insert_ts&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="n">queryts</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>f. REMOVE TRIGGER
-- Endpoint: <strong>/tsdb/remove/trigger</strong>
-- Verb: <strong>POST</strong></p>
+<ol class="loweralpha simple" start="6">
+<li>REMOVE TRIGGER</li>
+</ol>
+<ul class="simple">
+<li>Endpoint: <strong>/tsdb/remove/trigger</strong></li>
+<li>Verb: <strong>POST</strong></li>
+</ul>
 </div>
 </div>
 <div class="section" id="note">
