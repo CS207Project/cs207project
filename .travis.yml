@@ -1,6 +1,13 @@
 language: python
 python:
     - "3.5"
+addons:
+  apt:
+    packages:
+    - libatlas-dev
+    - libatlas-base-dev
+    - liblapack-dev
+    - gfortran
 before_install:
     - pip install pytest pytest-cov
     - pip install coveralls
