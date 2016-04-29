@@ -20,7 +20,7 @@ class DictDB:
         "initializes database with indexed and schema"
         self.indexes = {}
         self.rows = {} # contains the row data, each entry points to another dictionary
-        self.schema = schema # DNY: see drivers/go_server.py for example schema
+        self.schema = schema # DNY: see go_server.py for example schema
         self.pkfield = pk_field
         for s in schema:
             indexinfo = schema[s]['index']
