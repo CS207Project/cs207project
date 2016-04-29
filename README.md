@@ -14,7 +14,7 @@ Usage
 
 ### 1. Setup
 
-- Start the Database Server: `python go_server.py`
+- Start the Database Server: `python drivers/go_server.py`
 
 - Start the Web Server: `python web_server.py`
 
