@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to cs207project’s documentation! &mdash; cs207project 0.1 documentation</title>
+    <title>TimeSeries Utility (team CS207Project) &mdash; cs207project 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -37,21 +37,168 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="welcome-to-cs207project-s-documentation">
-<h1>Welcome to cs207project&#8217;s documentation!<a class="headerlink" href="#welcome-to-cs207project-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p>Contents:</p>
+  <div class="section" id="timeseries-utility-team-cs207project">
+<h1>TimeSeries Utility (team CS207Project)<a class="headerlink" href="#timeseries-utility-team-cs207project" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul class="simple">
 </ul>
 </div>
 </div>
+<div class="section" id="description">
+<h1>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="setup">
+<h2>1. Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><dl class="first docutils">
+<dt>Start the Database Server::</dt>
+<dd><p class="first last">python go_server.py</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Start the Web Server::</dt>
+<dd><p class="first last">python web_server.py</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="api-quick-guide">
+<h2>2. API Quick Guide<a class="headerlink" href="#api-quick-guide" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="a-select">
+<h3>a. SELECT<a class="headerlink" href="#a-select" title="Permalink to this headline">¶</a></h3>
+<p>Select from the timeseries database.</p>
+<ul>
+<li><p class="first">Endpoint: /select</p>
+</li>
+<li><p class="first">Verb: GET</p>
+</li>
+<li><p class="first">Format: json text as a parameter with the key &#8216;query&#8217;- i.e url ends with ?query=json_text</p>
+</li>
+<li><p class="first">Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;where&#39;</span><span class="p">:{</span><span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;&gt;=&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">}},</span><span class="s1">&#39;fields&#39;</span><span class="p">:[</span><span class="s1">&#39;order&#39;</span><span class="p">,</span><span class="s1">&#39;vp&#39;</span><span class="p">],</span><span class="s1">&#39;additional&#39;</span><span class="p">:{</span><span class="s1">&#39;sort_by&#39;</span><span class="p">:</span><span class="s1">&#39;-order&#39;</span><span class="p">,</span><span class="s1">&#39;limit&#39;</span><span class="p">:</span><span class="mi">10</span><span class="p">}}</span>
+<span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">server_url</span><span class="o">+</span><span class="s1">&#39;/select&#39;</span><span class="p">,</span><span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;query&#39;</span><span class="p">:</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">)})</span><span class="o">.</span><span class="n">content</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="b-augmented-select">
+<h3>b. AUGMENTED SELECT<a class="headerlink" href="#b-augmented-select" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p class="first">Endpoint: /augselect</p>
+</li>
+<li><p class="first">Verb: GET</p>
+</li>
+<li><p class="first">Format: json text as a parameter with the key &#8216;query&#8217;- i.e url ends with ?query=json_text</p>
+</li>
+<li><p class="first">Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">_</span><span class="p">,</span> <span class="n">queryts</span> <span class="o">=</span> <span class="n">tsmaker</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;proc&#39;</span><span class="p">:</span><span class="s1">&#39;corr&#39;</span><span class="p">,</span><span class="s1">&#39;target&#39;</span><span class="p">:</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="s1">&#39;arg&#39;</span><span class="p">:</span><span class="n">queryts</span><span class="o">.</span><span class="n">to_json</span><span class="p">(),</span> <span class="s1">&#39;where&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;pk&#39;</span><span class="p">:</span> <span class="n">v</span><span class="p">}}</span>
+<span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">server_url</span><span class="o">+</span><span class="s1">&#39;/augselect&#39;</span><span class="p">,</span><span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;query&#39;</span><span class="p">:</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">)})</span><span class="o">.</span><span class="n">content</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="c-insert-timeseries">
+<h3>c. INSERT TIMESERIES<a class="headerlink" href="#c-insert-timeseries" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p class="first">Endpoint: /tsdb/add/ts</p>
+</li>
+<li><p class="first">Verb: POST</p>
+</li>
+<li><p class="first">Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">make_insert_ts</span><span class="p">(</span><span class="n">primary_key</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s1">&#39;primary_key&#39;</span><span class="p">:</span><span class="n">primary_key</span><span class="p">,</span> <span class="s1">&#39;ts&#39;</span><span class="p">:</span><span class="n">t</span><span class="o">.</span><span class="n">to_json</span><span class="p">()})</span>
+
+<span class="n">meta1</span><span class="p">,</span><span class="n">ts1</span> <span class="o">=</span> <span class="n">tsmaker</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.2</span><span class="p">,</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">server_url</span><span class="o">+</span><span class="s1">&#39;/add/ts&#39;</span><span class="p">,</span>
+              <span class="n">make_insert_ts</span><span class="p">(</span><span class="s1">&#39;ts-1&#39;</span><span class="p">,</span> <span class="n">ts1</span><span class="p">))</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="d-upsert-metadata">
+<h3>d. UPSERT METADATA<a class="headerlink" href="#d-upsert-metadata" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p class="first">Endpoint: /tsdb/add/metadata</p>
+</li>
+<li><p class="first">Verb: POST</p>
+</li>
+<li><p class="first">Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">make_upsert_meta</span><span class="p">(</span><span class="n">primary_key</span><span class="p">,</span> <span class="n">metadata_dict</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s1">&#39;primary_key&#39;</span><span class="p">:</span><span class="n">primary_key</span><span class="p">,</span> <span class="s1">&#39;metadata_dict&#39;</span><span class="p">:</span> <span class="n">metadata_dict</span><span class="p">})</span>
+
+<span class="n">meta1</span><span class="p">,</span><span class="n">ts1</span> <span class="o">=</span> <span class="n">tsmaker</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.2</span><span class="p">,</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">server_url</span><span class="o">+</span><span class="s1">&#39;/add/metadata&#39;</span><span class="p">,</span>
+                <span class="n">make_upsert_meta</span><span class="p">(</span><span class="s1">&#39;ts-1&#39;</span><span class="p">,</span> <span class="n">meta1</span><span class="p">))</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="e-insert-trigger">
+<h3>e. INSERT TRIGGER<a class="headerlink" href="#e-insert-trigger" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p class="first">Endpoint: /tsdb/add/trigger</p>
+</li>
+<li><p class="first">Verb: POST</p>
+</li>
+<li><p class="first">Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>def make_add_trigger(proc, onwhat, target, arg):
+if hasattr(arg,&#39;to_json&#39;):
+    arg = arg.to_json()
+return json.dumps({&#39;proc&#39;:proc,&#39;onwhat&#39;:onwhat,&#39;target&#39;:target,&#39;arg&#39;:arg})
+
+_, queryts = tsmaker(0.5, 0.2, 0.1)
+requests.post(server_url+&#39;/add/trigger&#39;,
+              make_add_trigger(&#39;corr&#39;, &#39;insert_ts&#39;, &#39;d&#39;, queryts))
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="f-remove-trigger">
+<h3>f. REMOVE TRIGGER<a class="headerlink" href="#f-remove-trigger" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Endpoint: /tsdb/remove/trigger</li>
+<li>Verb: POST</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="modules">
+<h1>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="timeseries">
+<h2>timeseries<a class="headerlink" href="#timeseries" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="tsdb">
+<h2>tsdb<a class="headerlink" href="#tsdb" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="procs">
+<h2>procs<a class="headerlink" href="#procs" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="pype">
+<h2>pype<a class="headerlink" href="#pype" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+<div class="section" id="note">
+<h1>Note<a class="headerlink" href="#note" title="Permalink to this headline">¶</a></h1>
+<p>This project has been set up using PyScaffold 2.5.5. For details and usage
+information on PyScaffold see <a class="reference external" href="http://pyscaffold.readthedocs.org/">http://pyscaffold.readthedocs.org/</a>.</p>
 <div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><a class="reference internal" href="genindex.html"><span>Index</span></a></li>
 <li><a class="reference internal" href="py-modindex.html"><span>Module Index</span></a></li>
 <li><a class="reference internal" href="search.html"><span>Search Page</span></a></li>
 </ul>
+</div>
 </div>
 
 
@@ -62,8 +209,32 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Welcome to cs207project&#8217;s documentation!</a></li>
+<li><a class="reference internal" href="#">TimeSeries Utility (team CS207Project)</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#usage">Usage</a><ul>
+<li><a class="reference internal" href="#setup">1. Setup</a></li>
+<li><a class="reference internal" href="#api-quick-guide">2. API Quick Guide</a><ul>
+<li><a class="reference internal" href="#a-select">a. SELECT</a></li>
+<li><a class="reference internal" href="#b-augmented-select">b. AUGMENTED SELECT</a></li>
+<li><a class="reference internal" href="#c-insert-timeseries">c. INSERT TIMESERIES</a></li>
+<li><a class="reference internal" href="#d-upsert-metadata">d. UPSERT METADATA</a></li>
+<li><a class="reference internal" href="#e-insert-trigger">e. INSERT TRIGGER</a></li>
+<li><a class="reference internal" href="#f-remove-trigger">f. REMOVE TRIGGER</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#modules">Modules</a><ul>
+<li><a class="reference internal" href="#timeseries">timeseries</a></li>
+<li><a class="reference internal" href="#tsdb">tsdb</a></li>
+<li><a class="reference internal" href="#procs">procs</a></li>
+<li><a class="reference internal" href="#pype">pype</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#note">Note</a><ul>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
