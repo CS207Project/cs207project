@@ -8,12 +8,12 @@ addons:
     - libatlas-base-dev
     - liblapack-dev
     - gfortran
+    - python3-scipy
 before_install:
     - pip install pytest pytest-cov
     - pip install coveralls
     - pip install ply
     - pip install sphinx
-    - pip install scipy
     - pip install bintrees
     - pip install asynctest
     - pip install asyncio
