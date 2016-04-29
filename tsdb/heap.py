@@ -47,12 +47,12 @@ class MetaHeapFile(HeapFile):
                              self.fields,
                              self.fieldsDefaultValues,
                              self.byteArrayLength), fd)
-            print("new metaheap meta values written to disk")
+            # print("new metaheap meta values written to disk")
         # otherwise load it
         else:
             with open(heap_file_name+'_metadata.met','rb',buffering=0) as fd:
                 self.compression_string, self.fields, self.fieldsDefaultValues, self.byteArrayLength = pickle.load(fd)
-            print("old metaheap meta values loaded from disk")
+            # print("old metaheap meta values loaded from disk")
 
     def _create_compression_string(self, schema):
         fieldList = sorted(list(schema.keys()))
@@ -110,12 +110,12 @@ class TSHeapFile(HeapFile):
             self.byteArrayLength = self.ts_length * 2 * BYTES_PER_NUM
             with open(heap_file_name+'_metadata.met','xb',buffering=0) as fd:
                 pickle.dump((self.ts_length,self.byteArrayLength), fd)
-            print("new tsheap meta values written to disk")
+            # print("new tsheap meta values written to disk")
         # otherwise load it
         else:
             with open(heap_file_name+'_metadata.met','rb',buffering=0) as fd:
                 self.ts_length, self.byteArrayLength = pickle.load(fd)
-            print("old tsheap meta values loaded from disk")
+            # print("old tsheap meta values loaded from disk")
 
 
     def encode_and_write_ts(self, ts):

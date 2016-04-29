@@ -46,7 +46,10 @@ class BaseIndex:
         return self.dict[fieldValue]
 
 class PKIndex:
-    "PK Index using Pickle serialization and a write ahead log"
+    """
+    PK Index using Pickle serialization and a write ahead log.
+    Essentially a (pk: offset) dictionary with writelog and disk storage.
+    """
     def __init__(self, database_name='default'):
         # TODO DNY: write separate class for write ahead log?
         self.filename = 'files/'+database_name+'/'+'pks.p'
@@ -115,6 +118,9 @@ class PKIndex:
     def __contains__(self, key):
         return key in self.dict.keys()
 
+    def keys(self):
+        return self.dict.keys()
+
     def __len__(self):
         return self.pk_count
 
@@ -123,77 +129,106 @@ class PKIndex:
 
 class TreeIndex(BaseIndex):
 
-	def _loadFromFile(self):
-		if os.path.isfile(self.filename):
-			with open(self.filename,'rb') as f:
-				self.tree = pickle.load(f)
-		else:
-			print("Loading Empty Tree")
-			self.tree = bintrees.AVLTree()
+    def _loadFromFile(self):
+        if os.path.isfile(self.filename):
+            with open(self.filename,'rb') as f:
+                self.tree = pickle.load(f)
+        else:
+            # print("Loading Empty Tree")
+            self.tree = bintrees.AVLTree()
 
-	def _saveToFile(self):
-		with open(self.filename,'wb') as f:
-			pickle.dump(self.tree, f)
+    def _saveToFile(self):
+        with open(self.filename,'wb') as f:
+            pickle.dump(self.tree, f)
 
-	def deleteIndex(self):
-		if os.path.isfile(self.filename):
-			os.remove(self.filename)
+    def deleteIndex(self):
+        if os.path.isfile(self.filename):
+            os.remove(self.filename)
 
-	def _checkStale(self):
-		if self._stale:
-			self._loadFromFile()
-			self._stale = False
+    def _checkStale(self):
+        if self._stale:
+            self._loadFromFile()
+            self._stale = False
 
-	def insert(self,fieldValue, pk):
-		self._checkStale()
+    def insert(self,fieldValue, pk):
+        self._checkStale()
 
-		if fieldValue in self.tree:
-			if pk in self.tree[fieldValue]:
-				raise ValueError("primary_key already in index")
-			self.tree[fieldValue] = self.tree[fieldValue] + [pk]
-		else:
-			self.tree[fieldValue] = [pk]
-		self._saveToFile()
-		self._stale = True
+        if fieldValue in self.tree:
+            if pk not in self.tree[fieldValue]:
+                self.tree[fieldValue] = self.tree[fieldValue] + [pk]
+        else:
+            self.tree[fieldValue] = [pk]
+        self._saveToFile()
+        self._stale = True
 
-	def remove(self, fieldValue, pk):
-		self._checkStale()
+    def remove(self, fieldValue, pk):
+        self._checkStale()
+        if fieldValue in self.tree:
+            matchingPks = self.tree[fieldValue]
+            if pk in matchingPks:
+                del matchingPks[matchingPks.index(pk)]
+                self.tree[fieldValue] = matchingPks
+            else:
+                raise ValueError("TreeIndex.remove():: primary_key is not in the index")
+        else:
+            import pdb; pdb.set_trace()
+            raise ValueError("TreeIndex.remove():: fieldValue is not in the index")
+        self._saveToFile()
+        self._stale = True
 
-		if fieldValue in self.tree:
-			matchingPks = self.tree[fieldValue]
-			if pk in matchingPks:
-				del matchingPks[matchingPks.index(pk)]
-				self.tree[fieldValue] = matchingPks
-			else:
-				raise ValueError("TreeIndex.remove():: primary_key is not in the index")
-		else:
-			raise ValueError("TreeIndex.remove():: fieldValue is not in the index")
-		self._saveToFile()
-		self._stale = True
+    def get(self, fieldValue, operator_num=2):
+        if operator_num == 0:
+            return self.getLowerThan(fieldValue)
+        elif operator_num == 1:
+            return self.getHigherThan(fieldValue)
+        elif operator_num == 2:
+            return self.getEqual(fieldValue)
+        elif operator_num == 3:
+            return self.getNotEq(fieldValue)
+        elif operator_num == 4:
+            return self.getLowerOrEq(fieldValue)
+        elif operator_num == 5:
+            return self.getHigherOrEq(fieldValue)
+        raise RuntimeError("should be impossible")
 
-	def getEqual(self, fieldValue):
-		self._checkStale()
+    def getEqual(self, fieldValue):
+        self._checkStale()
 
-		if fieldValue in self.tree:
-			return self.tree[fieldValue]
-		else:
-			return []
+        if fieldValue in self.tree:
+            return set(self.tree[fieldValue])
+        else:
+            return set()
 
-	def getLowerThan(self, fieldValue):
-		self._checkStale()
-		retList = []
-		for v in  self.tree[:fieldValue]:
-			retList = retList + self.getEqual(v)
+    def getLowerThan(self, fieldValue):
+        self._checkStale()
+        retList = set()
+        for v in self.tree[:fieldValue]:
+            retList = retList | self.getEqual(v)
 
-		return retList
+        return set(retList)
 
-	def getHigherThan(self, fieldValue):
-		self._checkStale()
-		retList = []
-		for v in  self.tree[fieldValue:]:
-			retList = retList + self.getEqual(v)
+    def getHigherThan(self, fieldValue):
+        self._checkStale()
+        retList = set()
+        for v in self.tree[fieldValue:]:
+            if v != fieldValue:
+                retList = retList | self.getEqual(v)
+        return set(retList)
 
-		return retList
+    def allKeys(self):
+        pks = set()
+        for value in self.trees.values():
+            pks = pks | value
+        return pks
+
+    def getHigherOrEq(self, fieldValue):
+        return self.getHigherThan(fieldValue) | self.getEqual(fieldValue)
+
+    def getLowerOrEq(self, fieldValue):
+        return self.getLowerThan(fieldValue) | self.getEqual(fieldValue)
+
+    def getNotEq(self, fieldValue):
+        return self.allKeys() - self.getEqual(fieldValue)
 
 class BitmapIndex(BaseIndex):
 
@@ -340,9 +375,9 @@ def bool_to_str(bool_array):
 
 # Helper function to convert boolean strings to boolean arrays
 def str_to_bool(string_line):
-	decoded_string_line = string_line.decode('utf-8')
-	line_len = len(decoded_string_line)
-	bool_array = np.zeros(line_len, dtype='bool')
-	for ii in range(line_len):
-		bool_array[ii] = int(decoded_string_line[ii])
-	return bool_array
+    decoded_string_line = string_line.decode('utf-8')
+    line_len = len(decoded_string_line)
+    bool_array = np.zeros(line_len, dtype='bool')
+    for ii in range(line_len):
+        bool_array[ii] = int(decoded_string_line[ii])
+    return bool_array

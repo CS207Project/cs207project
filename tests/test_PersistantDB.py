@@ -28,7 +28,7 @@ class PersistantDBTests(unittest.TestCase):
 
         self.tsLength = 1024
 
-        self.db = PersistantDB(schema, pk_field='pk', db_name='testing', ts_length=self.tsLength)
+        self.db = PersistantDB(schema, pk_field='pk', db_name='testing', ts_length=self.tsLength, testing=True)
 
         for i in range(100):
             pk = 'ts-'+str(i)
@@ -50,19 +50,19 @@ class PersistantDBTests(unittest.TestCase):
 
     def test_meta_save_ts(self):
         self.db.close()
-        self.db = PersistantDB(pk_field='pk', db_name='testing', ts_length=self.tsLength)
+        self.db = PersistantDB(pk_field='pk', db_name='testing', ts_length=self.tsLength, testing=True)
         self.assertEqual(len(self.db),100)
 
     def test_schema_change_good(self):
         self.db.close()
-        self.db = PersistantDB(self.schema, pk_field='pk', db_name='testing', ts_length=self.tsLength)
+        self.db = PersistantDB(self.schema, pk_field='pk', db_name='testing', ts_length=self.tsLength, testing=True)
 
     def test_schema_change_bad(self):
         badschema = dict(self.schema)
         badschema['blarg'] = {'type': 'int',    'index': 2,    'values': [1, 2, 3]}
         self.db.close()
         with self.assertRaises(ValueError):
-            self.db = PersistantDB(badschema, pk_field='pk', db_name='testing', ts_length=self.tsLength)
+            self.db = PersistantDB(badschema, pk_field='pk', db_name='testing', ts_length=self.tsLength, testing=True)
 
     def test_bad_insert(self):
         pk = 'bad'
@@ -79,7 +79,7 @@ class PersistantDBTests(unittest.TestCase):
             pk = 'ts-'+str(i)
             values = np.array(range(self.tsLength)) + i
             series = ts.TimeSeries(values, values)
-            r_meta = self.db._return_meta(pk)
+            r_meta = self.db._get_meta_list(pk)
             n_order = len(self.schema['order']['values'])# 11
             assert(r_meta[self.db.metaheap.fields.index('order')] == self.schema['order']['values'][i % n_order])
             n_blarg = 2
@@ -94,10 +94,15 @@ class PersistantDBTests(unittest.TestCase):
             series = ts.TimeSeries(values, values)
             r_ts = self.db._return_ts(pk)
             assert(series == r_ts)
-    #
-    # def test_(self):
-    #     pass
 
+    def test_select(self):
+        self.db.select({'pk':'ts-0'})
+        self.db.select({'pk':'ts-35'})
+        self.db.select({'order':2})
+        self.db.select({'order':{'>=':2}},['blarg'],{'sort_by':'+blarg'})
+        # TODO Need to add in tests to trip the associated errors here
+
+    # TODO : Need to test indexing functions
     # def test_(self):
     #     pass
     #

@@ -69,7 +69,8 @@ def t_error(t):
     #print(vars(t.lexer)['lexdata'])
 
 # This actually builds the lexer.
-lexer = ply.lex.lex()
+# lexer = ply.lex.lex()
+lexer = ply.lex.lex(optimize=1)#DNY changed to stop debug printing
 
 """ commented 3/10 by DNY
 # Test it out

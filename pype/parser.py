@@ -103,7 +103,7 @@ def p_op_mul_expression(p):
 def p_op_div_expression(p):
     r'''expression : LPAREN OP_DIV parameter_list RPAREN'''
     p[0] = ASTEvalExpr(ASTID(name='__truediv__'), p[3])
-  
+
 """ ignoring through combination in p_operator (see examples)
     r'''expression : LPAREN OP_SUB parameter_list RPAREN'''
     r'''expression : LPAREN OP_MUL parameter_list RPAREN'''
@@ -146,4 +146,5 @@ def p_error(p): #TODO
     #p.parser.skip(1) figure out how to skip token
 
 start = 'program'
-parser = ply.yacc.yacc() # To get more information, add debug=True
+# parser = ply.yacc.yacc() # To get more information, add debug=True
+parser = ply.yacc.yacc(debug=0, write_tables=0)# DNY changed to stop printing
