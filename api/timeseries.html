@@ -25,6 +25,9 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="cs207project 0.1 documentation" href="../index.html" />
+    <link rel="up" title="Modules" href="modules.html" />
+    <link rel="next" title="tsdb package" href="tsdb.html" />
+    <link rel="prev" title="pype package" href="pype.html" />
    
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
@@ -48,63 +51,71 @@
 <dt id="timeseries.TimeSeries.TimeSeries">
 <em class="property">class </em><code class="descclassname">timeseries.TimeSeries.</code><code class="descname">TimeSeries</code><span class="sig-paren">(</span><em>times</em>, <em>values</em><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
-<p>times : list of times that data were collected
-values: list of magnitudes of observations at each time
-items: list of time, value tuples</p>
-<dl class="method">
-<dt>
-<code class="descname">__init__: instantiate TimeSeries class object</code></dt>
-<dd></dd></dl>
+<dl class="attribute">
+<dt id="timeseries.TimeSeries.TimeSeries.times">
+<code class="descname">times</code><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.times" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of times that data were collected</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="timeseries.TimeSeries.TimeSeries.values">
+<code class="descname">values</code><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of magnitudes of observations at each time</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="timeseries.TimeSeries.TimeSeries.items">
+<code class="descname">items</code><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.items" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of time, value tuples</p>
+</dd></dl>
 
 <dl class="method">
 <dt>
-<code class="descname">__len__: length of TimeSeries</code></dt>
-<dd></dd></dl>
+<code class="descname">__init__:</code></dt>
+<dd><p>instantiate TimeSeries class object</p>
+</dd></dl>
 
 <dl class="method">
 <dt>
-<code class="descname">__get_index: Helper function to get the array index of a time</code></dt>
-<dd></dd></dl>
+<code class="descname">__len__:</code></dt>
+<dd><p>length of TimeSeries</p>
+</dd></dl>
 
 <dl class="method">
 <dt>
-<code class="descname">__getitem__: Returns value at a given time</code></dt>
-<dd></dd></dl>
+<code class="descname">__get_index:</code></dt>
+<dd><p>Helper function to get the array index of a time</p>
+</dd></dl>
 
 <dl class="method">
 <dt>
-<code class="descname">__setitem__: Set value at a given time</code></dt>
-<dd></dd></dl>
+<code class="descname">__getitem__:</code></dt>
+<dd><p>Returns value at a given time</p>
+</dd></dl>
 
 <dl class="method">
 <dt>
-<code class="descname">__contains__: Truth value of a given time</code></dt>
-<dd></dd></dl>
+<code class="descname">__setitem__:</code></dt>
+<dd><p>Set value at a given time</p>
+</dd></dl>
 
 <dl class="method">
 <dt>
-<code class="descname">__repr__: Represents TimeSeries</code></dt>
-<dd></dd></dl>
+<code class="descname">__contains__:</code></dt>
+<dd><p>Truth value of a given time</p>
+</dd></dl>
 
 <dl class="method">
 <dt>
-<code class="descname">__str__: Returns TimeSeries as a string</code></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="timeseries.TimeSeries.TimeSeries.Tests">
-<code class="descname">Tests</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.Tests" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descname">__repr__:</code></dt>
+<dd><p>Represents TimeSeries</p>
+</dd></dl>
 
 <dl class="method">
 <dt>
-<code class="descname">-----</code></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descname">Tests are in the Test.py file</code></dt>
-<dd></dd></dl>
+<code class="descname">__str__:</code></dt>
+<dd><p>Returns TimeSeries as a string</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="timeseries.TimeSeries.TimeSeries.__str__">
@@ -124,8 +135,8 @@ items: list of time, value tuples</p>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="timeseries.TimeSeries.TimeSeries.items">
-<code class="descname">items</code><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.items" title="Permalink to this definition">¶</a></dt>
+<dt>
+<code class="descname">items</code></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -159,8 +170,8 @@ items: list of time, value tuples</p>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="timeseries.TimeSeries.TimeSeries.times">
-<code class="descname">times</code><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.times" title="Permalink to this definition">¶</a></dt>
+<dt>
+<code class="descname">times</code></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -169,8 +180,8 @@ items: list of time, value tuples</p>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="timeseries.TimeSeries.TimeSeries.values">
-<code class="descname">values</code><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.values" title="Permalink to this definition">¶</a></dt>
+<dt>
+<code class="descname">values</code></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -200,6 +211,10 @@ items: list of time, value tuples</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">Modules</a><ul>
+      <li>Previous: <a href="pype.html" title="previous chapter">pype package</a></li>
+      <li>Next: <a href="tsdb.html" title="next chapter">tsdb package</a></li>
+  </ul></li>
   </ul></li>
 </ul>
 </div>

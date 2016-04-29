@@ -4,11 +4,16 @@
    contain the root `toctree` directive.
 
 TimeSeries Utility
-=========
+==================
 (team CS207Project)
 
 .. toctree::
    :maxdepth: 2
+
+   authors
+   changes
+   license
+   api/modules
 
 Description
 -----------
@@ -54,14 +59,9 @@ Select from the timeseries database.
 - Example:
 
 
-    _, queryts = tsmaker(0.5, 0.2, 0.1)
-
-    payload = {'proc':'corr',
-        'target':'d',
-        'arg':queryts.to_json(),
-        'where': {'pk': v}}
-    requests.get(server_url+'/augselect',
-        params={'query':json.dumps(payload)}).content
+    m, queryts = tsmaker(0.5, 0.2, 0.1)
+    payload = {'proc':'corr', 'target':'d', 'arg':queryts.to_json(), 'where': {'pk': v}}
+    requests.get(server_url+'/augselect', params={'query':json.dumps(payload)}).content
 
 #### c. INSERT TIMESERIES
 - Endpoint: **/tsdb/add/ts**
@@ -70,12 +70,10 @@ Select from the timeseries database.
 
 
     def make_insert_ts(primary_key,t):
-        return json.dumps({'primary_key':primary_key,
-            'ts':t.to_json()})
+        return json.dumps({'primary_key':primary_key,'ts':t.to_json()})
 
     meta1,ts1 = tsmaker(0.1,0.2,0.3)
-    requests.post(server_url+'/add/ts',
-                  make_insert_ts('ts-1', ts1))
+    requests.post(server_url+'/add/ts', make_insert_ts('ts-1', ts1))
 
 
 #### d. UPSERT METADATA
@@ -88,13 +86,13 @@ Select from the timeseries database.
         return json.dumps({'primary_key':primary_key, 'metadata_dict': metadata_dict})
 
     meta1,ts1 = tsmaker(0.1,0.2,0.3)
-    requests.post(server_url+'/add/metadata',
-                    make_upsert_meta('ts-1', meta1))
+    requests.post(server_url+'/add/metadata', make_upsert_meta('ts-1', meta1))
 
 #### e. INSERT TRIGGER
 - Endpoint: **/tsdb/add/trigger**
 - Verb: **POST**
 - Example:
+::
 
 
     def make_add_trigger(proc, onwhat, target, arg):
@@ -102,9 +100,8 @@ Select from the timeseries database.
             arg = arg.to_json()
         return json.dumps({'proc':proc,'onwhat':onwhat,'target':target,'arg':arg})
 
-    _, queryts = tsmaker(0.5, 0.2, 0.1)
-    requests.post(server_url+'/add/trigger',
-                  make_add_trigger('corr', 'insert_ts', 'd', queryts))
+    m, queryts = tsmaker(0.5, 0.2, 0.1)
+    requests.post(server_url+'/add/trigger', make_add_trigger('corr', 'insert_ts', 'd', queryts))
 
 #### f. REMOVE TRIGGER
 - Endpoint: **/tsdb/remove/trigger**
