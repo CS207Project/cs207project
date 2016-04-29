@@ -7,7 +7,7 @@ import numbers
 # this dictionary will help you in writing a generic select operation
 OPMAP = {
     '<': operator.lt,
-    '>': operator.le,
+    '>': operator.gt,
     '==': operator.eq,
     '!=': operator.ne,
     '<=': operator.le,
