@@ -24,15 +24,9 @@ Usage
 
 1. Setup
 ~~~~~~~~
-- Start the Database Server:
+- Start the Database Server: `python go_server.py`
 
-
-    python go_server.py
-
-- Start the Web Server:
-
-
-    python web_server.py
+- Start the Web Server: `python web_server.py`
 
 2. API Quick Guide
 ~~~~~~~~~~~~~~~~~~
@@ -56,6 +50,7 @@ Select from the timeseries database.
         params={'query':json.dumps(payload)}).content
 
 b. AUGMENTED SELECT
+Select a set of rows and then run s predefined stored procedure on it
 
 - Endpoint: **/augselect**
 - Verb: **GET**
@@ -69,6 +64,7 @@ b. AUGMENTED SELECT
     requests.get(server_url+'/augselect', params={'query':json.dumps(payload)}).content
 
 c. INSERT TIMESERIES
+Insert a new timeseries into the database
 
 - Endpoint: **/tsdb/add/ts**
 - Verb: **POST**
@@ -84,6 +80,7 @@ c. INSERT TIMESERIES
 
 
 d. UPSERT METADATA
+Update or Insert metadata for a particular timeseries into the database
 
 - Endpoint: **/tsdb/add/metadata**
 - Verb: **POST**
@@ -98,6 +95,8 @@ d. UPSERT METADATA
     requests.post(server_url+'/add/metadata', make_upsert_meta('ts-1', meta1))
 
 e. INSERT TRIGGER
+Setup a predefined stored procedure to be run when a particular event occurs in the database.
+This is called a trigger.
 
 - Endpoint: **/tsdb/add/trigger**
 - Verb: **POST**
@@ -114,6 +113,7 @@ e. INSERT TRIGGER
     requests.post(server_url+'/add/trigger', make_add_trigger('corr', 'insert_ts', 'd', queryts))
 
 f. REMOVE TRIGGER
+Remove a trigger from the database.
 
 - Endpoint: **/tsdb/remove/trigger**
 - Verb: **POST**

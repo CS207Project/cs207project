@@ -68,17 +68,9 @@
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="setup">
 <h3>1. Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h3>
-<ul>
-<li><p class="first">Start the Database Server:</p>
-<blockquote>
-<div><p>python go_server.py</p>
-</div></blockquote>
-</li>
-<li><p class="first">Start the Web Server:</p>
-<blockquote>
-<div><p>python web_server.py</p>
-</div></blockquote>
-</li>
+<ul class="simple">
+<li>Start the Database Server: <cite>python go_server.py</cite></li>
+<li>Start the Web Server: <cite>python web_server.py</cite></li>
 </ul>
 </div>
 <div class="section" id="api-quick-guide">
@@ -100,9 +92,8 @@ Select from the timeseries database.</p>
     <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;query&#39;</span><span class="p">:</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">)})</span><span class="o">.</span><span class="n">content</span>
 </pre></div>
 </div>
-<ol class="loweralpha simple" start="2">
-<li>AUGMENTED SELECT</li>
-</ol>
+<p>b. AUGMENTED SELECT
+Select a set of rows and then run s predefined stored procedure on it</p>
 <ul class="simple">
 <li>Endpoint: <strong>/augselect</strong></li>
 <li>Verb: <strong>GET</strong></li>
@@ -114,9 +105,8 @@ Select from the timeseries database.</p>
 <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">server_url</span><span class="o">+</span><span class="s1">&#39;/augselect&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;query&#39;</span><span class="p">:</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">)})</span><span class="o">.</span><span class="n">content</span>
 </pre></div>
 </div>
-<ol class="loweralpha simple" start="3">
-<li>INSERT TIMESERIES</li>
-</ol>
+<p>c. INSERT TIMESERIES
+Insert a new timeseries into the database</p>
 <ul class="simple">
 <li>Endpoint: <strong>/tsdb/add/ts</strong></li>
 <li>Verb: <strong>POST</strong></li>
@@ -129,9 +119,8 @@ Select from the timeseries database.</p>
 <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">server_url</span><span class="o">+</span><span class="s1">&#39;/add/ts&#39;</span><span class="p">,</span> <span class="n">make_insert_ts</span><span class="p">(</span><span class="s1">&#39;ts-1&#39;</span><span class="p">,</span> <span class="n">ts1</span><span class="p">))</span>
 </pre></div>
 </div>
-<ol class="loweralpha simple" start="4">
-<li>UPSERT METADATA</li>
-</ol>
+<p>d. UPSERT METADATA
+Update or Insert metadata for a particular timeseries into the database</p>
 <ul class="simple">
 <li>Endpoint: <strong>/tsdb/add/metadata</strong></li>
 <li>Verb: <strong>POST</strong></li>
@@ -144,9 +133,9 @@ Select from the timeseries database.</p>
 <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">server_url</span><span class="o">+</span><span class="s1">&#39;/add/metadata&#39;</span><span class="p">,</span> <span class="n">make_upsert_meta</span><span class="p">(</span><span class="s1">&#39;ts-1&#39;</span><span class="p">,</span> <span class="n">meta1</span><span class="p">))</span>
 </pre></div>
 </div>
-<ol class="loweralpha simple" start="5">
-<li>INSERT TRIGGER</li>
-</ol>
+<p>e. INSERT TRIGGER
+Setup a predefined stored procedure to be run when a particular event occurs in the database.
+This is called a trigger.</p>
 <ul class="simple">
 <li>Endpoint: <strong>/tsdb/add/trigger</strong></li>
 <li>Verb: <strong>POST</strong></li>
@@ -161,9 +150,8 @@ Select from the timeseries database.</p>
 <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">server_url</span><span class="o">+</span><span class="s1">&#39;/add/trigger&#39;</span><span class="p">,</span> <span class="n">make_add_trigger</span><span class="p">(</span><span class="s1">&#39;corr&#39;</span><span class="p">,</span> <span class="s1">&#39;insert_ts&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="n">queryts</span><span class="p">))</span>
 </pre></div>
 </div>
-<ol class="loweralpha simple" start="6">
-<li>REMOVE TRIGGER</li>
-</ol>
+<p>f. REMOVE TRIGGER
+Remove a trigger from the database.</p>
 <ul class="simple">
 <li>Endpoint: <strong>/tsdb/remove/trigger</strong></li>
 <li>Verb: <strong>POST</strong></li>
