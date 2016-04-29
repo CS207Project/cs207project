@@ -59,14 +59,14 @@ class WebServerTests(unittest.TestCase):
     def setUp(self):
         # start DB server
         self.server_log_file = open('.tsdb_server.log.testweb','w')
-        self.server_proc = subprocess.Popen(['python', 'go_server.py']
+        self.server_proc = subprocess.Popen(['python', 'drivers/go_server.py']
                 ,stdout=self.server_log_file,stderr=subprocess.STDOUT)
         time.sleep(1)
 
         # start webserver
         self.server_url = 'http://localhost:8080/tsdb'
         self.webserver_log_file = open('.web_server.log.testweb','w')
-        self.webserver_proc = subprocess.Popen(['python', 'go_webserver.py']
+        self.webserver_proc = subprocess.Popen(['python', 'drivers/go_webserver.py']
                 ,stdout=self.webserver_log_file,stderr=subprocess.STDOUT)
         time.sleep(1)
 

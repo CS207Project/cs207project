@@ -43,7 +43,7 @@ class TSDBTests(asynctest.TestCase):
 
     def setUp(self):
         self.server_log_file = open('.tsdb_server.log.test','w')
-        self.server_proc = subprocess.Popen(['python', 'go_server.py']
+        self.server_proc = subprocess.Popen(['python', 'drivers/go_server.py']
                 ,stdout=self.server_log_file,stderr=subprocess.STDOUT)
         time.sleep(1)
 
