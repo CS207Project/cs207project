@@ -21,8 +21,8 @@ Description
 Usage
 -----
 
-### 1. Setup
-
+1. Setup
+~~~~~~~~
 - Start the Database Server:
 
 
@@ -33,15 +33,16 @@ Usage
 
     python web_server.py
 
-### 2. API Quick Guide
-
-#### a. SELECT
+2. API Quick Guide
+~~~~~~~~~~~~~~~~~~
+a. SELECT
 Select from the timeseries database.
 
 - Endpoint: **/select**
 - Verb: **GET**
 - Format: json text as a parameter with the key 'query'- i.e url ends with `?query=json_text`
 - Example:
+::
 
 
     payload = {'where':{'order': {'>=' : 1}},
@@ -52,21 +53,23 @@ Select from the timeseries database.
     requests.get(server_url+'/select',
         params={'query':json.dumps(payload)}).content
 
-#### b. AUGMENTED SELECT
+b. AUGMENTED SELECT
 - Endpoint: **/augselect**
 - Verb: **GET**
 - Format: json text as a parameter with the key 'query'- i.e url ends with `?query=json_text`
 - Example:
+::
 
 
     m, queryts = tsmaker(0.5, 0.2, 0.1)
     payload = {'proc':'corr', 'target':'d', 'arg':queryts.to_json(), 'where': {'pk': v}}
     requests.get(server_url+'/augselect', params={'query':json.dumps(payload)}).content
 
-#### c. INSERT TIMESERIES
+c. INSERT TIMESERIES
 - Endpoint: **/tsdb/add/ts**
 - Verb: **POST**
 - Example:
+::
 
 
     def make_insert_ts(primary_key,t):
@@ -76,10 +79,11 @@ Select from the timeseries database.
     requests.post(server_url+'/add/ts', make_insert_ts('ts-1', ts1))
 
 
-#### d. UPSERT METADATA
+d. UPSERT METADATA
 - Endpoint: **/tsdb/add/metadata**
 - Verb: **POST**
 - Example:
+::
 
 
     def make_upsert_meta(primary_key, metadata_dict):
@@ -88,7 +92,7 @@ Select from the timeseries database.
     meta1,ts1 = tsmaker(0.1,0.2,0.3)
     requests.post(server_url+'/add/metadata', make_upsert_meta('ts-1', meta1))
 
-#### e. INSERT TRIGGER
+e. INSERT TRIGGER
 - Endpoint: **/tsdb/add/trigger**
 - Verb: **POST**
 - Example:
@@ -103,7 +107,7 @@ Select from the timeseries database.
     m, queryts = tsmaker(0.5, 0.2, 0.1)
     requests.post(server_url+'/add/trigger', make_add_trigger('corr', 'insert_ts', 'd', queryts))
 
-#### f. REMOVE TRIGGER
+f. REMOVE TRIGGER
 - Endpoint: **/tsdb/remove/trigger**
 - Verb: **POST**
 
