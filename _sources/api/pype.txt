@@ -1,0 +1,126 @@
+pype package
+============
+
+Submodules
+----------
+
+pype.ast module
+---------------
+
+.. automodule:: pype.ast
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pype.error module
+-----------------
+
+.. automodule:: pype.error
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pype.fgir module
+----------------
+
+.. automodule:: pype.fgir
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pype.lexer module
+-----------------
+
+.. automodule:: pype.lexer
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pype.lextab module
+------------------
+
+.. automodule:: pype.lextab
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pype.lib_import module
+----------------------
+
+.. automodule:: pype.lib_import
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pype.optimize module
+--------------------
+
+.. automodule:: pype.optimize
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pype.parser module
+------------------
+
+.. automodule:: pype.parser
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pype.parsetab module
+--------------------
+
+.. automodule:: pype.parsetab
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pype.pcode module
+-----------------
+
+.. automodule:: pype.pcode
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pype.pipeline module
+--------------------
+
+.. automodule:: pype.pipeline
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pype.semantic_analysis module
+-----------------------------
+
+.. automodule:: pype.semantic_analysis
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pype.symtab module
+------------------
+
+.. automodule:: pype.symtab
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pype.translate module
+---------------------
+
+.. automodule:: pype.translate
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: pype
+    :members:
+    :undoc-members:
+    :show-inheritance:

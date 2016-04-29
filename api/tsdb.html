@@ -1,0 +1,691 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tsdb package &mdash; cs207project 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="cs207project 0.1 documentation" href="../index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="tsdb-package">
+<h1>tsdb package<a class="headerlink" href="#tsdb-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-tsdb.baseindex">
+<span id="tsdb-baseindex-module"></span><h2>tsdb.baseindex module<a class="headerlink" href="#module-tsdb.baseindex" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tsdb.baseindex.BaseIndex">
+<em class="property">class </em><code class="descclassname">tsdb.baseindex.</code><code class="descname">BaseIndex</code><span class="sig-paren">(</span><em>fieldName='default'</em>, <em>database_name='default'</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.BaseIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="tsdb.baseindex.BaseIndex.deleteIndex">
+<code class="descname">deleteIndex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.BaseIndex.deleteIndex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.baseindex.BaseIndex.getEqual">
+<code class="descname">getEqual</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.BaseIndex.getEqual" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.baseindex.BaseIndex.insert">
+<code class="descname">insert</code><span class="sig-paren">(</span><em>fieldValue</em>, <em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.BaseIndex.insert" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.baseindex.BaseIndex.remove">
+<code class="descname">remove</code><span class="sig-paren">(</span><em>fieldValue</em>, <em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.BaseIndex.remove" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tsdb.baseindex.BitmapIndex">
+<em class="property">class </em><code class="descclassname">tsdb.baseindex.</code><code class="descname">BitmapIndex</code><span class="sig-paren">(</span><em>values</em>, <em>fieldName='default'</em>, <em>database_name='default'</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.BitmapIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tsdb.baseindex.BaseIndex" title="tsdb.baseindex.BaseIndex"><code class="xref py py-class docutils literal"><span class="pre">tsdb.baseindex.BaseIndex</span></code></a></p>
+<dl class="method">
+<dt id="tsdb.baseindex.BitmapIndex.getEqual">
+<code class="descname">getEqual</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.BitmapIndex.getEqual" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.baseindex.BitmapIndex.insert">
+<code class="descname">insert</code><span class="sig-paren">(</span><em>fieldValue</em>, <em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.BitmapIndex.insert" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tsdb.baseindex.PKIndex">
+<em class="property">class </em><code class="descclassname">tsdb.baseindex.</code><code class="descname">PKIndex</code><span class="sig-paren">(</span><em>database_name='default'</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.PKIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>PK Index using Pickle serialization and a write ahead log.
+Essentially a (pk: offset) dictionary with writelog and disk storage.</p>
+<dl class="method">
+<dt id="tsdb.baseindex.PKIndex.close">
+<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.PKIndex.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.baseindex.PKIndex.keys">
+<code class="descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.PKIndex.keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.baseindex.PKIndex.load_and_clear_log">
+<code class="descname">load_and_clear_log</code><span class="sig-paren">(</span><em>loaded=False</em>, <em>close=False</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.PKIndex.load_and_clear_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>if loaded, writelog assumed to be open. otherwise, closed.
+loads values, clears writelog and opens.
+if close, then file descriptor not return.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tsdb.baseindex.PKIndex.load_pickle">
+<code class="descname">load_pickle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.PKIndex.load_pickle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.baseindex.PKIndex.save_pickle">
+<code class="descname">save_pickle</code><span class="sig-paren">(</span><em>new=False</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.PKIndex.save_pickle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tsdb.baseindex.TreeIndex">
+<em class="property">class </em><code class="descclassname">tsdb.baseindex.</code><code class="descname">TreeIndex</code><span class="sig-paren">(</span><em>fieldName='default'</em>, <em>database_name='default'</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.TreeIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tsdb.baseindex.BaseIndex" title="tsdb.baseindex.BaseIndex"><code class="xref py py-class docutils literal"><span class="pre">tsdb.baseindex.BaseIndex</span></code></a></p>
+<dl class="method">
+<dt id="tsdb.baseindex.TreeIndex.allKeys">
+<code class="descname">allKeys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.TreeIndex.allKeys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.baseindex.TreeIndex.deleteIndex">
+<code class="descname">deleteIndex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.TreeIndex.deleteIndex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.baseindex.TreeIndex.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>fieldValue</em>, <em>operator_num=2</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.TreeIndex.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.baseindex.TreeIndex.getEqual">
+<code class="descname">getEqual</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.TreeIndex.getEqual" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.baseindex.TreeIndex.getHigherOrEq">
+<code class="descname">getHigherOrEq</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.TreeIndex.getHigherOrEq" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.baseindex.TreeIndex.getHigherThan">
+<code class="descname">getHigherThan</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.TreeIndex.getHigherThan" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.baseindex.TreeIndex.getLowerOrEq">
+<code class="descname">getLowerOrEq</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.TreeIndex.getLowerOrEq" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.baseindex.TreeIndex.getLowerThan">
+<code class="descname">getLowerThan</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.TreeIndex.getLowerThan" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.baseindex.TreeIndex.getNotEq">
+<code class="descname">getNotEq</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.TreeIndex.getNotEq" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.baseindex.TreeIndex.insert">
+<code class="descname">insert</code><span class="sig-paren">(</span><em>fieldValue</em>, <em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.TreeIndex.insert" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.baseindex.TreeIndex.remove">
+<code class="descname">remove</code><span class="sig-paren">(</span><em>fieldValue</em>, <em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.TreeIndex.remove" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="tsdb.baseindex.bool_to_str">
+<code class="descclassname">tsdb.baseindex.</code><code class="descname">bool_to_str</code><span class="sig-paren">(</span><em>bool_array</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.bool_to_str" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="tsdb.baseindex.str_to_bool">
+<code class="descclassname">tsdb.baseindex.</code><code class="descname">str_to_bool</code><span class="sig-paren">(</span><em>string_line</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.str_to_bool" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-tsdb.dictdb">
+<span id="tsdb-dictdb-module"></span><h2>tsdb.dictdb module<a class="headerlink" href="#module-tsdb.dictdb" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tsdb.dictdb.DictDB">
+<em class="property">class </em><code class="descclassname">tsdb.dictdb.</code><code class="descname">DictDB</code><span class="sig-paren">(</span><em>schema</em>, <em>pk_field='pk'</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.dictdb.DictDB" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>Database implementation in a dict</p>
+<dl class="method">
+<dt id="tsdb.dictdb.DictDB.index_bulk">
+<code class="descname">index_bulk</code><span class="sig-paren">(</span><em>pks=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.dictdb.DictDB.index_bulk" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.dictdb.DictDB.insert_ts">
+<code class="descname">insert_ts</code><span class="sig-paren">(</span><em>pk</em>, <em>ts</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.dictdb.DictDB.insert_ts" title="Permalink to this definition">¶</a></dt>
+<dd><p>given a pk and a timeseries, insert them</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tsdb.dictdb.DictDB.select">
+<code class="descname">select</code><span class="sig-paren">(</span><em>meta</em>, <em>fields_to_ret</em>, <em>additional</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.dictdb.DictDB.select" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.dictdb.DictDB.update_indices">
+<code class="descname">update_indices</code><span class="sig-paren">(</span><em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.dictdb.DictDB.update_indices" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.dictdb.DictDB.upsert_meta">
+<code class="descname">upsert_meta</code><span class="sig-paren">(</span><em>pk</em>, <em>meta</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.dictdb.DictDB.upsert_meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>implement upserting field values, as long as the fields are in the schema.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tsdb.heap">
+<span id="tsdb-heap-module"></span><h2>tsdb.heap module<a class="headerlink" href="#module-tsdb.heap" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tsdb.heap.HeapFile">
+<em class="property">class </em><code class="descclassname">tsdb.heap.</code><code class="descname">HeapFile</code><span class="sig-paren">(</span><em>heap_file_name</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.heap.HeapFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="tsdb.heap.HeapFile.close">
+<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.heap.HeapFile.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tsdb.heap.MetaHeapFile">
+<em class="property">class </em><code class="descclassname">tsdb.heap.</code><code class="descname">MetaHeapFile</code><span class="sig-paren">(</span><em>heap_file_name</em>, <em>schema</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.heap.MetaHeapFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tsdb.heap.HeapFile" title="tsdb.heap.HeapFile"><code class="xref py py-class docutils literal"><span class="pre">tsdb.heap.HeapFile</span></code></a></p>
+<dl class="method">
+<dt id="tsdb.heap.MetaHeapFile.check_byteArray">
+<code class="descname">check_byteArray</code><span class="sig-paren">(</span><em>byteArray</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.heap.MetaHeapFile.check_byteArray" title="Permalink to this definition">¶</a></dt>
+<dd><p>method to double check compression succeeded</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tsdb.heap.MetaHeapFile.encode_and_write_meta">
+<code class="descname">encode_and_write_meta</code><span class="sig-paren">(</span><em>meta</em>, <em>pk_offset=None</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.heap.MetaHeapFile.encode_and_write_meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>takes metadata and writes to file, return the offset of the write</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tsdb.heap.MetaHeapFile.read_and_return_meta">
+<code class="descname">read_and_return_meta</code><span class="sig-paren">(</span><em>pk_offset</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.heap.MetaHeapFile.read_and_return_meta" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tsdb.heap.TSHeapFile">
+<em class="property">class </em><code class="descclassname">tsdb.heap.</code><code class="descname">TSHeapFile</code><span class="sig-paren">(</span><em>heap_file_name</em>, <em>ts_length</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.heap.TSHeapFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tsdb.heap.HeapFile" title="tsdb.heap.HeapFile"><code class="xref py py-class docutils literal"><span class="pre">tsdb.heap.HeapFile</span></code></a></p>
+<dl class="method">
+<dt id="tsdb.heap.TSHeapFile.encode_and_write_ts">
+<code class="descname">encode_and_write_ts</code><span class="sig-paren">(</span><em>ts</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.heap.TSHeapFile.encode_and_write_ts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.heap.TSHeapFile.read_and_decode_ts">
+<code class="descname">read_and_decode_ts</code><span class="sig-paren">(</span><em>offset</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.heap.TSHeapFile.read_and_decode_ts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tsdb.persistantdb">
+<span id="tsdb-persistantdb-module"></span><h2>tsdb.persistantdb module<a class="headerlink" href="#module-tsdb.persistantdb" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tsdb.persistantdb.PersistantDB">
+<em class="property">class </em><code class="descclassname">tsdb.persistantdb.</code><code class="descname">PersistantDB</code><span class="sig-paren">(</span><em>schema=None</em>, <em>pk_field='pk'</em>, <em>db_name='default'</em>, <em>ts_length=1024</em>, <em>testing=False</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>Database implementation using Binary Trees and BitMasks</p>
+<dl class="method">
+<dt id="tsdb.persistantdb.PersistantDB.close">
+<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.persistantdb.PersistantDB.delete_database">
+<code class="descname">delete_database</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB.delete_database" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.persistantdb.PersistantDB.index_bulk">
+<code class="descname">index_bulk</code><span class="sig-paren">(</span><em>pks=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB.index_bulk" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.persistantdb.PersistantDB.insert_ts">
+<code class="descname">insert_ts</code><span class="sig-paren">(</span><em>pk</em>, <em>ts</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB.insert_ts" title="Permalink to this definition">¶</a></dt>
+<dd><p>given a pk and a timeseries, insert them</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tsdb.persistantdb.PersistantDB.remove_indices">
+<code class="descname">remove_indices</code><span class="sig-paren">(</span><em>pk</em>, <em>old_meta_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB.remove_indices" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.persistantdb.PersistantDB.select">
+<code class="descname">select</code><span class="sig-paren">(</span><em>meta</em>, <em>fields_to_ret=[]</em>, <em>additional=None</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB.select" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.persistantdb.PersistantDB.update_indices">
+<code class="descname">update_indices</code><span class="sig-paren">(</span><em>pk</em>, <em>old_meta_dict=None</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB.update_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>updates indices of pk with the most recent metadata</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tsdb.persistantdb.PersistantDB.upsert_meta">
+<code class="descname">upsert_meta</code><span class="sig-paren">(</span><em>pk</em>, <em>new_meta</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB.upsert_meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>implement upserting field values, as long as the fields are in the schema.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="tsdb.persistantdb.dict_eq">
+<code class="descclassname">tsdb.persistantdb.</code><code class="descname">dict_eq</code><span class="sig-paren">(</span><em>dict1</em>, <em>dict2</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.dict_eq" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-tsdb.tsdb_client">
+<span id="tsdb-tsdb-client-module"></span><h2>tsdb.tsdb_client module<a class="headerlink" href="#module-tsdb.tsdb_client" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tsdb.tsdb_client.TSDBClient">
+<em class="property">class </em><code class="descclassname">tsdb.tsdb_client.</code><code class="descname">TSDBClient</code><span class="sig-paren">(</span><em>port=9999</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_client.TSDBClient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>The client. This could be used in a python program, web server, or REPL!</p>
+<dl class="method">
+<dt id="tsdb.tsdb_client.TSDBClient.add_trigger">
+<code class="descname">add_trigger</code><span class="sig-paren">(</span><em>proc</em>, <em>onwhat</em>, <em>target</em>, <em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_client.TSDBClient.add_trigger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.tsdb_client.TSDBClient.augmented_select">
+<code class="descname">augmented_select</code><span class="sig-paren">(</span><em>proc</em>, <em>target</em>, <em>arg=None</em>, <em>metadata_dict={}</em>, <em>additional=None</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_client.TSDBClient.augmented_select" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.tsdb_client.TSDBClient.insert_ts">
+<code class="descname">insert_ts</code><span class="sig-paren">(</span><em>primary_key</em>, <em>ts</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_client.TSDBClient.insert_ts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.tsdb_client.TSDBClient.remove_trigger">
+<code class="descname">remove_trigger</code><span class="sig-paren">(</span><em>proc</em>, <em>onwhat</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_client.TSDBClient.remove_trigger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.tsdb_client.TSDBClient.select">
+<code class="descname">select</code><span class="sig-paren">(</span><em>metadata_dict={}</em>, <em>fields=None</em>, <em>additional=None</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_client.TSDBClient.select" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.tsdb_client.TSDBClient.upsert_meta">
+<code class="descname">upsert_meta</code><span class="sig-paren">(</span><em>primary_key</em>, <em>metadata_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_client.TSDBClient.upsert_meta" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tsdb.tsdb_error">
+<span id="tsdb-tsdb-error-module"></span><h2>tsdb.tsdb_error module<a class="headerlink" href="#module-tsdb.tsdb_error" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tsdb.tsdb_error.TSDBStatus">
+<em class="property">class </em><code class="descclassname">tsdb.tsdb_error.</code><code class="descname">TSDBStatus</code><a class="headerlink" href="#tsdb.tsdb_error.TSDBStatus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">enum.IntEnum</span></code></p>
+<p>An enumeration.</p>
+<dl class="attribute">
+<dt id="tsdb.tsdb_error.TSDBStatus.INVALID_KEY">
+<code class="descname">INVALID_KEY</code><em class="property"> = &lt;TSDBStatus.INVALID_KEY: 3&gt;</em><a class="headerlink" href="#tsdb.tsdb_error.TSDBStatus.INVALID_KEY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tsdb.tsdb_error.TSDBStatus.INVALID_OPERATION">
+<code class="descname">INVALID_OPERATION</code><em class="property"> = &lt;TSDBStatus.INVALID_OPERATION: 2&gt;</em><a class="headerlink" href="#tsdb.tsdb_error.TSDBStatus.INVALID_OPERATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tsdb.tsdb_error.TSDBStatus.OK">
+<code class="descname">OK</code><em class="property"> = &lt;TSDBStatus.OK: 0&gt;</em><a class="headerlink" href="#tsdb.tsdb_error.TSDBStatus.OK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tsdb.tsdb_error.TSDBStatus.UNKNOWN_ERROR">
+<code class="descname">UNKNOWN_ERROR</code><em class="property"> = &lt;TSDBStatus.UNKNOWN_ERROR: 1&gt;</em><a class="headerlink" href="#tsdb.tsdb_error.TSDBStatus.UNKNOWN_ERROR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.tsdb_error.TSDBStatus.encode">
+<code class="descname">encode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_error.TSDBStatus.encode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="tsdb.tsdb_error.TSDBStatus.encoded_length">
+<em class="property">static </em><code class="descname">encoded_length</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_error.TSDBStatus.encoded_length" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="tsdb.tsdb_error.TSDBStatus.from_bytes">
+<em class="property">classmethod </em><code class="descname">from_bytes</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_error.TSDBStatus.from_bytes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tsdb.tsdb_ops">
+<span id="tsdb-tsdb-ops-module"></span><h2>tsdb.tsdb_ops module<a class="headerlink" href="#module-tsdb.tsdb_ops" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tsdb.tsdb_ops.TSDBOp">
+<em class="property">class </em><code class="descclassname">tsdb.tsdb_ops.</code><code class="descname">TSDBOp</code><span class="sig-paren">(</span><em>op</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a></p>
+<dl class="classmethod">
+<dt id="tsdb.tsdb_ops.TSDBOp.from_json">
+<em class="property">classmethod </em><code class="descname">from_json</code><span class="sig-paren">(</span><em>json_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp.from_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.tsdb_ops.TSDBOp.to_json">
+<code class="descname">to_json</code><span class="sig-paren">(</span><em>obj=None</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp.to_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tsdb.tsdb_ops.TSDBOp_AddTrigger">
+<em class="property">class </em><code class="descclassname">tsdb.tsdb_ops.</code><code class="descname">TSDBOp_AddTrigger</code><span class="sig-paren">(</span><em>proc</em>, <em>onwhat</em>, <em>target</em>, <em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp_AddTrigger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tsdb.tsdb_ops.TSDBOp" title="tsdb.tsdb_ops.TSDBOp"><code class="xref py py-class docutils literal"><span class="pre">tsdb.tsdb_ops.TSDBOp</span></code></a></p>
+<dl class="classmethod">
+<dt id="tsdb.tsdb_ops.TSDBOp_AddTrigger.from_json">
+<em class="property">classmethod </em><code class="descname">from_json</code><span class="sig-paren">(</span><em>json_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp_AddTrigger.from_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tsdb.tsdb_ops.TSDBOp_AugmentedSelect">
+<em class="property">class </em><code class="descclassname">tsdb.tsdb_ops.</code><code class="descname">TSDBOp_AugmentedSelect</code><span class="sig-paren">(</span><em>proc</em>, <em>target</em>, <em>arg</em>, <em>md</em>, <em>additional</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp_AugmentedSelect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tsdb.tsdb_ops.TSDBOp" title="tsdb.tsdb_ops.TSDBOp"><code class="xref py py-class docutils literal"><span class="pre">tsdb.tsdb_ops.TSDBOp</span></code></a></p>
+<p>A hybrid of select, and add trigger, we only miss the onwhat key as this op
+is used as an add on to selects. We remove the fields arg from select, as
+the only fields sent back are the ones in target, which is used as in
+add_trigger, except that instead of upserting meta with the targets, that
+data is sent back to the user.</p>
+<dl class="classmethod">
+<dt id="tsdb.tsdb_ops.TSDBOp_AugmentedSelect.from_json">
+<em class="property">classmethod </em><code class="descname">from_json</code><span class="sig-paren">(</span><em>json_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp_AugmentedSelect.from_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tsdb.tsdb_ops.TSDBOp_InsertTS">
+<em class="property">class </em><code class="descclassname">tsdb.tsdb_ops.</code><code class="descname">TSDBOp_InsertTS</code><span class="sig-paren">(</span><em>pk</em>, <em>ts</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp_InsertTS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tsdb.tsdb_ops.TSDBOp" title="tsdb.tsdb_ops.TSDBOp"><code class="xref py py-class docutils literal"><span class="pre">tsdb.tsdb_ops.TSDBOp</span></code></a></p>
+<dl class="classmethod">
+<dt id="tsdb.tsdb_ops.TSDBOp_InsertTS.from_json">
+<em class="property">classmethod </em><code class="descname">from_json</code><span class="sig-paren">(</span><em>json_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp_InsertTS.from_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tsdb.tsdb_ops.TSDBOp_RemoveTrigger">
+<em class="property">class </em><code class="descclassname">tsdb.tsdb_ops.</code><code class="descname">TSDBOp_RemoveTrigger</code><span class="sig-paren">(</span><em>proc</em>, <em>onwhat</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp_RemoveTrigger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tsdb.tsdb_ops.TSDBOp" title="tsdb.tsdb_ops.TSDBOp"><code class="xref py py-class docutils literal"><span class="pre">tsdb.tsdb_ops.TSDBOp</span></code></a></p>
+<dl class="classmethod">
+<dt id="tsdb.tsdb_ops.TSDBOp_RemoveTrigger.from_json">
+<em class="property">classmethod </em><code class="descname">from_json</code><span class="sig-paren">(</span><em>json_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp_RemoveTrigger.from_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tsdb.tsdb_ops.TSDBOp_Return">
+<em class="property">class </em><code class="descclassname">tsdb.tsdb_ops.</code><code class="descname">TSDBOp_Return</code><span class="sig-paren">(</span><em>status</em>, <em>op</em>, <em>payload=None</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp_Return" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tsdb.tsdb_ops.TSDBOp" title="tsdb.tsdb_ops.TSDBOp"><code class="xref py py-class docutils literal"><span class="pre">tsdb.tsdb_ops.TSDBOp</span></code></a></p>
+<dl class="classmethod">
+<dt id="tsdb.tsdb_ops.TSDBOp_Return.from_json">
+<em class="property">classmethod </em><code class="descname">from_json</code><span class="sig-paren">(</span><em>json_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp_Return.from_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tsdb.tsdb_ops.TSDBOp_Select">
+<em class="property">class </em><code class="descclassname">tsdb.tsdb_ops.</code><code class="descname">TSDBOp_Select</code><span class="sig-paren">(</span><em>md</em>, <em>fields</em>, <em>additional</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp_Select" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tsdb.tsdb_ops.TSDBOp" title="tsdb.tsdb_ops.TSDBOp"><code class="xref py py-class docutils literal"><span class="pre">tsdb.tsdb_ops.TSDBOp</span></code></a></p>
+<dl class="classmethod">
+<dt id="tsdb.tsdb_ops.TSDBOp_Select.from_json">
+<em class="property">classmethod </em><code class="descname">from_json</code><span class="sig-paren">(</span><em>json_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp_Select.from_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tsdb.tsdb_ops.TSDBOp_UpsertMeta">
+<em class="property">class </em><code class="descclassname">tsdb.tsdb_ops.</code><code class="descname">TSDBOp_UpsertMeta</code><span class="sig-paren">(</span><em>pk</em>, <em>md</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp_UpsertMeta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tsdb.tsdb_ops.TSDBOp" title="tsdb.tsdb_ops.TSDBOp"><code class="xref py py-class docutils literal"><span class="pre">tsdb.tsdb_ops.TSDBOp</span></code></a></p>
+<dl class="classmethod">
+<dt id="tsdb.tsdb_ops.TSDBOp_UpsertMeta.from_json">
+<em class="property">classmethod </em><code class="descname">from_json</code><span class="sig-paren">(</span><em>json_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp_UpsertMeta.from_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tsdb.tsdb_serialization">
+<span id="tsdb-tsdb-serialization-module"></span><h2>tsdb.tsdb_serialization module<a class="headerlink" href="#module-tsdb.tsdb_serialization" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tsdb.tsdb_serialization.Deserializer">
+<em class="property">class </em><code class="descclassname">tsdb.tsdb_serialization.</code><code class="descname">Deserializer</code><a class="headerlink" href="#tsdb.tsdb_serialization.Deserializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>A buffering and bytes-to-json engine.</p>
+<p>Data can be received in arbitrary chunks of bytes, and we need a way to
+reconstruct variable-length JSON objects from that interface. This class
+buffers up bytes until it can detect that it has a full JSON object (via
+a length field pulled off the wire). To use this, shove bytes in with the
+append() function and call ready() to check if we&#8217;ve reconstructed a JSON
+object. If True, then call deserialize to return it. That object will be
+removed from this buffer after it is returned.</p>
+<dl class="method">
+<dt id="tsdb.tsdb_serialization.Deserializer.append">
+<code class="descname">append</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_serialization.Deserializer.append" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.tsdb_serialization.Deserializer.deserialize">
+<code class="descname">deserialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_serialization.Deserializer.deserialize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.tsdb_serialization.Deserializer.ready">
+<code class="descname">ready</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_serialization.Deserializer.ready" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="tsdb.tsdb_serialization.serialize">
+<code class="descclassname">tsdb.tsdb_serialization.</code><code class="descname">serialize</code><span class="sig-paren">(</span><em>json_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_serialization.serialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn a JSON object into bytes suitable for writing out to the network.</p>
+<p>Includes a fixed-width length field to simplify reconstruction on the other
+end of the wire.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tsdb.tsdb_server">
+<span id="tsdb-tsdb-server-module"></span><h2>tsdb.tsdb_server module<a class="headerlink" href="#module-tsdb.tsdb_server" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tsdb.tsdb_server.TSDBProtocol">
+<em class="property">class </em><code class="descclassname">tsdb.tsdb_server.</code><code class="descname">TSDBProtocol</code><span class="sig-paren">(</span><em>server</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_server.TSDBProtocol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">asyncio.protocols.Protocol</span></code></p>
+<dl class="method">
+<dt id="tsdb.tsdb_server.TSDBProtocol.connection_lost">
+<code class="descname">connection_lost</code><span class="sig-paren">(</span><em>transport</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_server.TSDBProtocol.connection_lost" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.tsdb_server.TSDBProtocol.connection_made">
+<code class="descname">connection_made</code><span class="sig-paren">(</span><em>conn</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_server.TSDBProtocol.connection_made" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.tsdb_server.TSDBProtocol.data_received">
+<code class="descname">data_received</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_server.TSDBProtocol.data_received" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tsdb.tsdb_server.TSDBServer">
+<em class="property">class </em><code class="descclassname">tsdb.tsdb_server.</code><code class="descname">TSDBServer</code><span class="sig-paren">(</span><em>db</em>, <em>port=9999</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_server.TSDBServer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="tsdb.tsdb_server.TSDBServer.exception_handler">
+<code class="descname">exception_handler</code><span class="sig-paren">(</span><em>loop</em>, <em>context</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_server.TSDBServer.exception_handler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.tsdb_server.TSDBServer.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_server.TSDBServer.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="tsdb.tsdb_server.trigger_callback_maker">
+<code class="descclassname">tsdb.tsdb_server.</code><code class="descname">trigger_callback_maker</code><span class="sig-paren">(</span><em>pk</em>, <em>target</em>, <em>calltomake</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_server.trigger_callback_maker" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-tsdb">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-tsdb" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">tsdb package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-tsdb.baseindex">tsdb.baseindex module</a></li>
+<li><a class="reference internal" href="#module-tsdb.dictdb">tsdb.dictdb module</a></li>
+<li><a class="reference internal" href="#module-tsdb.heap">tsdb.heap module</a></li>
+<li><a class="reference internal" href="#module-tsdb.persistantdb">tsdb.persistantdb module</a></li>
+<li><a class="reference internal" href="#module-tsdb.tsdb_client">tsdb.tsdb_client module</a></li>
+<li><a class="reference internal" href="#module-tsdb.tsdb_error">tsdb.tsdb_error module</a></li>
+<li><a class="reference internal" href="#module-tsdb.tsdb_ops">tsdb.tsdb_ops module</a></li>
+<li><a class="reference internal" href="#module-tsdb.tsdb_serialization">tsdb.tsdb_serialization module</a></li>
+<li><a class="reference internal" href="#module-tsdb.tsdb_server">tsdb.tsdb_server module</a></li>
+<li><a class="reference internal" href="#module-tsdb">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/tsdb.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Akhil Daniel Hilawi Christian Joaquin.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="../_sources/api/tsdb.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,38 @@
+procs package
+=============
+
+Submodules
+----------
+
+procs.corr module
+-----------------
+
+.. automodule:: procs.corr
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+procs.junk module
+-----------------
+
+.. automodule:: procs.junk
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+procs.stats module
+------------------
+
+.. automodule:: procs.stats
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: procs
+    :members:
+    :undoc-members:
+    :show-inheritance:

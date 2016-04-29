@@ -1,0 +1,22 @@
+timeseries package
+==================
+
+Submodules
+----------
+
+timeseries.TimeSeries module
+----------------------------
+
+.. automodule:: timeseries.TimeSeries
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: timeseries
+    :members:
+    :undoc-members:
+    :show-inheritance:

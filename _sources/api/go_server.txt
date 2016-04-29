@@ -1,0 +1,7 @@
+go_server module
+================
+
+.. automodule:: go_server
+    :members:
+    :undoc-members:
+    :show-inheritance:

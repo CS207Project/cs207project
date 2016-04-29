@@ -1,0 +1,1096 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pype package &mdash; cs207project 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="cs207project 0.1 documentation" href="../index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pype-package">
+<h1>pype package<a class="headerlink" href="#pype-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pype.ast">
+<span id="pype-ast-module"></span><h2>pype.ast module<a class="headerlink" href="#module-pype.ast" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pype.ast.ASTAssignmentExpr">
+<em class="property">class </em><code class="descclassname">pype.ast.</code><code class="descname">ASTAssignmentExpr</code><span class="sig-paren">(</span><em>IDname</em>, <em>expression</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.ast.ASTAssignmentExpr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pype.ast.ASTNode" title="pype.ast.ASTNode"><code class="xref py py-class docutils literal"><span class="pre">pype.ast.ASTNode</span></code></a></p>
+<dl class="attribute">
+<dt id="pype.ast.ASTAssignmentExpr.binding">
+<code class="descname">binding</code><a class="headerlink" href="#pype.ast.ASTAssignmentExpr.binding" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pype.ast.ASTAssignmentExpr.value">
+<code class="descname">value</code><a class="headerlink" href="#pype.ast.ASTAssignmentExpr.value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.ast.ASTComponent">
+<em class="property">class </em><code class="descclassname">pype.ast.</code><code class="descname">ASTComponent</code><span class="sig-paren">(</span><em>IDname</em>, <em>expression_list</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.ast.ASTComponent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pype.ast.ASTNode" title="pype.ast.ASTNode"><code class="xref py py-class docutils literal"><span class="pre">pype.ast.ASTNode</span></code></a></p>
+<dl class="attribute">
+<dt id="pype.ast.ASTComponent.expressions">
+<code class="descname">expressions</code><a class="headerlink" href="#pype.ast.ASTComponent.expressions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pype.ast.ASTComponent.name">
+<code class="descname">name</code><a class="headerlink" href="#pype.ast.ASTComponent.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.ast.ASTEvalExpr">
+<em class="property">class </em><code class="descclassname">pype.ast.</code><code class="descname">ASTEvalExpr</code><span class="sig-paren">(</span><em>operation</em>, <em>arguments_list=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.ast.ASTEvalExpr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pype.ast.ASTNode" title="pype.ast.ASTNode"><code class="xref py py-class docutils literal"><span class="pre">pype.ast.ASTNode</span></code></a></p>
+<dl class="attribute">
+<dt id="pype.ast.ASTEvalExpr.args">
+<code class="descname">args</code><a class="headerlink" href="#pype.ast.ASTEvalExpr.args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pype.ast.ASTEvalExpr.op">
+<code class="descname">op</code><a class="headerlink" href="#pype.ast.ASTEvalExpr.op" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.ast.ASTID">
+<em class="property">class </em><code class="descclassname">pype.ast.</code><code class="descname">ASTID</code><span class="sig-paren">(</span><em>name</em>, <em>typedecl=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.ast.ASTID" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pype.ast.ASTNode" title="pype.ast.ASTNode"><code class="xref py py-class docutils literal"><span class="pre">pype.ast.ASTNode</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.ast.ASTImport">
+<em class="property">class </em><code class="descclassname">pype.ast.</code><code class="descname">ASTImport</code><span class="sig-paren">(</span><em>module</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.ast.ASTImport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pype.ast.ASTNode" title="pype.ast.ASTNode"><code class="xref py py-class docutils literal"><span class="pre">pype.ast.ASTNode</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.ast.ASTInputExpr">
+<em class="property">class </em><code class="descclassname">pype.ast.</code><code class="descname">ASTInputExpr</code><span class="sig-paren">(</span><em>declaration_list</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.ast.ASTInputExpr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pype.ast.ASTNode" title="pype.ast.ASTNode"><code class="xref py py-class docutils literal"><span class="pre">pype.ast.ASTNode</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.ast.ASTLiteral">
+<em class="property">class </em><code class="descclassname">pype.ast.</code><code class="descname">ASTLiteral</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.ast.ASTLiteral" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pype.ast.ASTNode" title="pype.ast.ASTNode"><code class="xref py py-class docutils literal"><span class="pre">pype.ast.ASTNode</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.ast.ASTModVisitor">
+<em class="property">class </em><code class="descclassname">pype.ast.</code><code class="descname">ASTModVisitor</code><a class="headerlink" href="#pype.ast.ASTModVisitor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pype.ast.ASTVisitor" title="pype.ast.ASTVisitor"><code class="xref py py-class docutils literal"><span class="pre">pype.ast.ASTVisitor</span></code></a></p>
+<p>A visitor class that can also construct a new, modified AST.</p>
+<p>Two methods are offered: the normal visit() method, which focuses on analyzing
+and/or modifying a single node; and the post_visit() method, which allows you
+to modify the child list of a node.
+The default implementation does nothing; it simply builds up itself, unmodified.</p>
+<dl class="method">
+<dt id="pype.ast.ASTModVisitor.post_visit">
+<code class="descname">post_visit</code><span class="sig-paren">(</span><em>visit_value</em>, <em>child_values</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.ast.ASTModVisitor.post_visit" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function which constructs a return value out of its children.</p>
+<p>This can be used to modify an AST by returning a different or modified
+ASTNode than the original. The top-level return value will then be the
+new AST.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pype.ast.ASTModVisitor.visit">
+<code class="descname">visit</code><span class="sig-paren">(</span><em>astnode</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.ast.ASTModVisitor.visit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.ast.ASTNode">
+<em class="property">class </em><code class="descclassname">pype.ast.</code><code class="descname">ASTNode</code><a class="headerlink" href="#pype.ast.ASTNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="attribute">
+<dt id="pype.ast.ASTNode.children">
+<code class="descname">children</code><a class="headerlink" href="#pype.ast.ASTNode.children" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.ast.ASTNode.mod_walk">
+<code class="descname">mod_walk</code><span class="sig-paren">(</span><em>mod_visitor</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.ast.ASTNode.mod_walk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Traverses an AST, building up a return value from visitor methods.</p>
+<p>Similar to walk(), but constructs a return value from the result of
+postvisit() calls. This can be used to modify an AST by building up the
+desired new AST with return values.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pype.ast.ASTNode.pprint">
+<code class="descname">pprint</code><span class="sig-paren">(</span><em>indent=''</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.ast.ASTNode.pprint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursively prints a formatted string representation of the AST.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pype.ast.ASTNode.walk">
+<code class="descname">walk</code><span class="sig-paren">(</span><em>visitor</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.ast.ASTNode.walk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Traverses an AST, calling visitor.visit() on every node.</p>
+<p>This is a depth-first, pre-order traversal. Parents will be visited before
+any children, children will be visited in order, and (by extension) a node&#8217;s
+children will all be visited before its siblings.
+The visitor may modify attributes, but may not add or delete nodes.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.ast.ASTOutputExpr">
+<em class="property">class </em><code class="descclassname">pype.ast.</code><code class="descname">ASTOutputExpr</code><span class="sig-paren">(</span><em>declaration_list</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.ast.ASTOutputExpr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pype.ast.ASTNode" title="pype.ast.ASTNode"><code class="xref py py-class docutils literal"><span class="pre">pype.ast.ASTNode</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.ast.ASTProgram">
+<em class="property">class </em><code class="descclassname">pype.ast.</code><code class="descname">ASTProgram</code><span class="sig-paren">(</span><em>statements</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.ast.ASTProgram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pype.ast.ASTNode" title="pype.ast.ASTNode"><code class="xref py py-class docutils literal"><span class="pre">pype.ast.ASTNode</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.ast.ASTVisitor">
+<em class="property">class </em><code class="descclassname">pype.ast.</code><code class="descname">ASTVisitor</code><a class="headerlink" href="#pype.ast.ASTVisitor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="pype.ast.ASTVisitor.return_value">
+<code class="descname">return_value</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pype.ast.ASTVisitor.return_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.ast.ASTVisitor.visit">
+<code class="descname">visit</code><span class="sig-paren">(</span><em>astnode</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.ast.ASTVisitor.visit" title="Permalink to this definition">¶</a></dt>
+<dd><p>A read-only function which looks at a single AST node.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pype.error">
+<span id="pype-error-module"></span><h2>pype.error module<a class="headerlink" href="#module-pype.error" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="pype.error.PypeSyntaxError">
+<em class="property">exception </em><code class="descclassname">pype.error.</code><code class="descname">PypeSyntaxError</code><a class="headerlink" href="#pype.error.PypeSyntaxError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="pype.error.PypeTypeError">
+<em class="property">exception </em><code class="descclassname">pype.error.</code><code class="descname">PypeTypeError</code><a class="headerlink" href="#pype.error.PypeTypeError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pype.error.Warn">
+<code class="descclassname">pype.error.</code><code class="descname">Warn</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.error.Warn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-pype.fgir">
+<span id="pype-fgir-module"></span><h2>pype.fgir module<a class="headerlink" href="#module-pype.fgir" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pype.fgir.FGIR">
+<em class="property">class </em><code class="descclassname">pype.fgir.</code><code class="descname">FGIR</code><a class="headerlink" href="#pype.fgir.FGIR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="pype.fgir.FGIR.flowgraph_pass">
+<code class="descname">flowgraph_pass</code><span class="sig-paren">(</span><em>flowgraph_optimizer</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.fgir.FGIR.flowgraph_pass" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.fgir.FGIR.node_pass">
+<code class="descname">node_pass</code><span class="sig-paren">(</span><em>node_optimizer</em>, <em>*args</em>, <em>topological=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.fgir.FGIR.node_pass" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.fgir.FGIR.topological_flowgraph_pass">
+<code class="descname">topological_flowgraph_pass</code><span class="sig-paren">(</span><em>topo_flowgraph_optimizer</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.fgir.FGIR.topological_flowgraph_pass" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.fgir.FGIR.topological_node_pass">
+<code class="descname">topological_node_pass</code><span class="sig-paren">(</span><em>topo_optimizer</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.fgir.FGIR.topological_node_pass" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.fgir.FGNode">
+<em class="property">class </em><code class="descclassname">pype.fgir.</code><code class="descname">FGNode</code><span class="sig-paren">(</span><em>nodeid</em>, <em>nodetype</em>, <em>ref=None</em>, <em>inputs=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.fgir.FGNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.fgir.FGNodeType">
+<em class="property">class </em><code class="descclassname">pype.fgir.</code><code class="descname">FGNodeType</code><a class="headerlink" href="#pype.fgir.FGNodeType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">enum.Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="attribute">
+<dt id="pype.fgir.FGNodeType.assignment">
+<code class="descname">assignment</code><em class="property"> = &lt;FGNodeType.assignment: 6&gt;</em><a class="headerlink" href="#pype.fgir.FGNodeType.assignment" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pype.fgir.FGNodeType.component">
+<code class="descname">component</code><em class="property"> = &lt;FGNodeType.component: 1&gt;</em><a class="headerlink" href="#pype.fgir.FGNodeType.component" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pype.fgir.FGNodeType.forward">
+<code class="descname">forward</code><em class="property"> = &lt;FGNodeType.forward: 8&gt;</em><a class="headerlink" href="#pype.fgir.FGNodeType.forward" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pype.fgir.FGNodeType.input">
+<code class="descname">input</code><em class="property"> = &lt;FGNodeType.input: 4&gt;</em><a class="headerlink" href="#pype.fgir.FGNodeType.input" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pype.fgir.FGNodeType.libraryfunction">
+<code class="descname">libraryfunction</code><em class="property"> = &lt;FGNodeType.libraryfunction: 2&gt;</em><a class="headerlink" href="#pype.fgir.FGNodeType.libraryfunction" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pype.fgir.FGNodeType.librarymethod">
+<code class="descname">librarymethod</code><em class="property"> = &lt;FGNodeType.librarymethod: 3&gt;</em><a class="headerlink" href="#pype.fgir.FGNodeType.librarymethod" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pype.fgir.FGNodeType.literal">
+<code class="descname">literal</code><em class="property"> = &lt;FGNodeType.literal: 7&gt;</em><a class="headerlink" href="#pype.fgir.FGNodeType.literal" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pype.fgir.FGNodeType.output">
+<code class="descname">output</code><em class="property"> = &lt;FGNodeType.output: 5&gt;</em><a class="headerlink" href="#pype.fgir.FGNodeType.output" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pype.fgir.FGNodeType.unknown">
+<code class="descname">unknown</code><em class="property"> = &lt;FGNodeType.unknown: 9&gt;</em><a class="headerlink" href="#pype.fgir.FGNodeType.unknown" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.fgir.Flowgraph">
+<em class="property">class </em><code class="descclassname">pype.fgir.</code><code class="descname">Flowgraph</code><span class="sig-paren">(</span><em>name='?'</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.fgir.Flowgraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="pype.fgir.Flowgraph.add_input">
+<code class="descname">add_input</code><span class="sig-paren">(</span><em>nodeid</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.fgir.Flowgraph.add_input" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.fgir.Flowgraph.add_output">
+<code class="descname">add_output</code><span class="sig-paren">(</span><em>nodeid</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.fgir.Flowgraph.add_output" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.fgir.Flowgraph.dotfile">
+<code class="descname">dotfile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pype.fgir.Flowgraph.dotfile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.fgir.Flowgraph.get_var">
+<code class="descname">get_var</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.fgir.Flowgraph.get_var" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.fgir.Flowgraph.new_node">
+<code class="descname">new_node</code><span class="sig-paren">(</span><em>nodetype</em>, <em>ref=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.fgir.Flowgraph.new_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.fgir.Flowgraph.post">
+<code class="descname">post</code><span class="sig-paren">(</span><em>nodeid</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.fgir.Flowgraph.post" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.fgir.Flowgraph.pre">
+<code class="descname">pre</code><span class="sig-paren">(</span><em>nodeid</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.fgir.Flowgraph.pre" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.fgir.Flowgraph.set_var">
+<code class="descname">set_var</code><span class="sig-paren">(</span><em>name</em>, <em>nodeid</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.fgir.Flowgraph.set_var" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.fgir.Flowgraph.topo_vistnode">
+<code class="descname">topo_vistnode</code><span class="sig-paren">(</span><em>nid</em>, <em>nodes_left</em>, <em>topo_sorted</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.fgir.Flowgraph.topo_vistnode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.fgir.Flowgraph.topological_sort">
+<code class="descname">topological_sort</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pype.fgir.Flowgraph.topological_sort" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pype.lexer">
+<span id="pype-lexer-module"></span><h2>pype.lexer module<a class="headerlink" href="#module-pype.lexer" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pype.lexer.find_column">
+<code class="descclassname">pype.lexer.</code><code class="descname">find_column</code><span class="sig-paren">(</span><em>input</em>, <em>token</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.lexer.find_column" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="pype.lexer.lexer">
+<code class="descclassname">pype.lexer.</code><code class="descname">lexer</code><em class="property"> = &lt;ply.lex.Lexer object&gt;</em><a class="headerlink" href="#pype.lexer.lexer" title="Permalink to this definition">¶</a></dt>
+<dd><p>commented 3/10 by DNY
+# Test it out
+data = &#8216;&#8217;&#8217;
+3 + 4 * 10</p>
+<blockquote>
+<div><ul class="simple">
+<li>-20 <a href="#id1"><span class="problematic" id="id2">*</span></a>2 + a</li>
+</ul>
+</div></blockquote>
+<p># Give the lexer some input
+lexer.input(data)</p>
+<p>print(vars(lexer).keys())</p>
+<p># Tokenize
+while True:</p>
+<blockquote>
+<div><p>tok = lexer.token()
+if not tok:</p>
+<blockquote>
+<div>break      # No more input</div></blockquote>
+<p>print(tok)
+print(type(tok.value))
+print(tok.type)</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="pype.lexer.t_COMMENT">
+<code class="descclassname">pype.lexer.</code><code class="descname">t_COMMENT</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.lexer.t_COMMENT" title="Permalink to this definition">¶</a></dt>
+<dd><p>#.*</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pype.lexer.t_ID">
+<code class="descclassname">pype.lexer.</code><code class="descname">t_ID</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.lexer.t_ID" title="Permalink to this definition">¶</a></dt>
+<dd><p>[<a href="#id3"><span class="problematic" id="id4">a-zA-Z_</span></a>][a-zA-Z_0-9]*</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pype.lexer.t_error">
+<code class="descclassname">pype.lexer.</code><code class="descname">t_error</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.lexer.t_error" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pype.lexer.t_newline">
+<code class="descclassname">pype.lexer.</code><code class="descname">t_newline</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.lexer.t_newline" title="Permalink to this definition">¶</a></dt>
+<dd><p>n+</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pype.lextab">
+<span id="pype-lextab-module"></span><h2>pype.lextab module<a class="headerlink" href="#module-pype.lextab" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pype.lib_import">
+<span id="pype-lib-import-module"></span><h2>pype.lib_import module<a class="headerlink" href="#module-pype.lib_import" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pype.lib_import.LibraryImporter">
+<em class="property">class </em><code class="descclassname">pype.lib_import.</code><code class="descname">LibraryImporter</code><span class="sig-paren">(</span><em>modname=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.lib_import.LibraryImporter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="pype.lib_import.LibraryImporter.add_symbols">
+<code class="descname">add_symbols</code><span class="sig-paren">(</span><em>symtab</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.lib_import.LibraryImporter.add_symbols" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.lib_import.LibraryImporter.import_module">
+<code class="descname">import_module</code><span class="sig-paren">(</span><em>modname</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.lib_import.LibraryImporter.import_module" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pype.lib_import.component">
+<code class="descclassname">pype.lib_import.</code><code class="descname">component</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.lib_import.component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Marks a functions as compatible for exposing as a component in PyPE.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pype.lib_import.is_component">
+<code class="descclassname">pype.lib_import.</code><code class="descname">is_component</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.lib_import.is_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether the &#64;component decorator was applied to a function.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pype.optimize">
+<span id="pype-optimize-module"></span><h2>pype.optimize module<a class="headerlink" href="#module-pype.optimize" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pype.optimize.AssignmentEllision">
+<em class="property">class </em><code class="descclassname">pype.optimize.</code><code class="descname">AssignmentEllision</code><a class="headerlink" href="#pype.optimize.AssignmentEllision" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pype.optimize.FlowgraphOptimization" title="pype.optimize.FlowgraphOptimization"><code class="xref py py-class docutils literal"><span class="pre">pype.optimize.FlowgraphOptimization</span></code></a></p>
+<p>Eliminates all assignment nodes.</p>
+<p>Assignment nodes are useful for the programmer to reuse the output of an
+expression multiple times, and the lowering transformation generates explicit
+flowgraph nodes for these expressions. However, they are not necessary for
+execution, as they simply forward their value. This removes them and connects
+their pre- and post-dependencies.</p>
+<dl class="method">
+<dt id="pype.optimize.AssignmentEllision.visit">
+<code class="descname">visit</code><span class="sig-paren">(</span><em>flowgraph</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.optimize.AssignmentEllision.visit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.optimize.DeadCodeElimination">
+<em class="property">class </em><code class="descclassname">pype.optimize.</code><code class="descname">DeadCodeElimination</code><a class="headerlink" href="#pype.optimize.DeadCodeElimination" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pype.optimize.FlowgraphOptimization" title="pype.optimize.FlowgraphOptimization"><code class="xref py py-class docutils literal"><span class="pre">pype.optimize.FlowgraphOptimization</span></code></a></p>
+<p>Eliminates unreachable expression statements.</p>
+<p>Statements which never affect any output are effectively useless, and we call
+these &#8220;dead code&#8221; blocks. This optimization removes any expressions which can
+be shown not to affect the output.
+NOTE: input statements <em>cannot</em> safely be removed, since doing so would change
+the call signature of the component. For example, it might seem that the input
+x could be removed:</p>
+<blockquote>
+<div>{ component1 (input x y) (output y) }</div></blockquote>
+<dl class="docutils">
+<dt>but imagine this component1 was in a file alongside this one:</dt>
+<dd>{ component2 (input a b) (:= c (component a b)) (output c) }</dd>
+</dl>
+<p>By removing x from component1, it could no longer accept two arguments. So in
+this instance, component1 will end up unmodified after DCE.</p>
+<dl class="method">
+<dt id="pype.optimize.DeadCodeElimination.visit">
+<code class="descname">visit</code><span class="sig-paren">(</span><em>flowgraph</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.optimize.DeadCodeElimination.visit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.optimize.FlowgraphOptimization">
+<em class="property">class </em><code class="descclassname">pype.optimize.</code><code class="descname">FlowgraphOptimization</code><a class="headerlink" href="#pype.optimize.FlowgraphOptimization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pype.optimize.Optimization" title="pype.optimize.Optimization"><code class="xref py py-class docutils literal"><span class="pre">pype.optimize.Optimization</span></code></a></p>
+<p>Called on each flowgraph in a FGIR.</p>
+<p>May modify the flowgraph by adding or removing nodes (return a new Flowgraph).
+If you modify nodes, make sure inputs, outputs, and variables are all updated.
+May NOT add or remove flowgraphs.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.optimize.InlineComponents">
+<em class="property">class </em><code class="descclassname">pype.optimize.</code><code class="descname">InlineComponents</code><a class="headerlink" href="#pype.optimize.InlineComponents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pype.optimize.TopologicalFlowgraphOptimization" title="pype.optimize.TopologicalFlowgraphOptimization"><code class="xref py py-class docutils literal"><span class="pre">pype.optimize.TopologicalFlowgraphOptimization</span></code></a></p>
+<p>Replaces every component invocation with a copy of that component&#8217;s flowgraph.</p>
+<p>Topological order guarantees that we inline components before they are invoked.</p>
+<dl class="method">
+<dt id="pype.optimize.InlineComponents.visit">
+<code class="descname">visit</code><span class="sig-paren">(</span><em>flowgraph</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.optimize.InlineComponents.visit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.optimize.NodeOptimization">
+<em class="property">class </em><code class="descclassname">pype.optimize.</code><code class="descname">NodeOptimization</code><a class="headerlink" href="#pype.optimize.NodeOptimization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pype.optimize.Optimization" title="pype.optimize.Optimization"><code class="xref py py-class docutils literal"><span class="pre">pype.optimize.Optimization</span></code></a></p>
+<p>Called on each node in a FGIR.</p>
+<p>May modify the node (return a new Node object, and it will be assigned).
+May NOT remove or add nodes (use a component pass).</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.optimize.Optimization">
+<em class="property">class </em><code class="descclassname">pype.optimize.</code><code class="descname">Optimization</code><a class="headerlink" href="#pype.optimize.Optimization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="pype.optimize.Optimization.visit">
+<code class="descname">visit</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.optimize.Optimization.visit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.optimize.PrintIR">
+<em class="property">class </em><code class="descclassname">pype.optimize.</code><code class="descname">PrintIR</code><a class="headerlink" href="#pype.optimize.PrintIR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pype.optimize.TopologicalNodeOptimization" title="pype.optimize.TopologicalNodeOptimization"><code class="xref py py-class docutils literal"><span class="pre">pype.optimize.TopologicalNodeOptimization</span></code></a></p>
+<p>A simple &#8220;optimization&#8221; pass which can be used to debug topological sorting</p>
+<dl class="method">
+<dt id="pype.optimize.PrintIR.visit">
+<code class="descname">visit</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.optimize.PrintIR.visit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.optimize.TopologicalFlowgraphOptimization">
+<em class="property">class </em><code class="descclassname">pype.optimize.</code><code class="descname">TopologicalFlowgraphOptimization</code><a class="headerlink" href="#pype.optimize.TopologicalFlowgraphOptimization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pype.optimize.Optimization" title="pype.optimize.Optimization"><code class="xref py py-class docutils literal"><span class="pre">pype.optimize.Optimization</span></code></a></p>
+<p>Called on each flowgraph in a FGIR, in dependent order.</p>
+<p>Components which are used by other components will be called first.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.optimize.TopologicalNodeOptimization">
+<em class="property">class </em><code class="descclassname">pype.optimize.</code><code class="descname">TopologicalNodeOptimization</code><a class="headerlink" href="#pype.optimize.TopologicalNodeOptimization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pype.optimize.NodeOptimization" title="pype.optimize.NodeOptimization"><code class="xref py py-class docutils literal"><span class="pre">pype.optimize.NodeOptimization</span></code></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pype.parser">
+<span id="pype-parser-module"></span><h2>pype.parser module<a class="headerlink" href="#module-pype.parser" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pype.parser.p_assign">
+<code class="descclassname">pype.parser.</code><code class="descname">p_assign</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.parser.p_assign" title="Permalink to this definition">¶</a></dt>
+<dd><p>expression : LPAREN ASSIGN ID expression RPAREN</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pype.parser.p_component">
+<code class="descclassname">pype.parser.</code><code class="descname">p_component</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.parser.p_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>component : LBRACE ID expression_list RBRACE</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pype.parser.p_declaration">
+<code class="descclassname">pype.parser.</code><code class="descname">p_declaration</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.parser.p_declaration" title="Permalink to this definition">¶</a></dt>
+<dd><p>declaration : LPAREN type ID RPAREN
+| ID</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pype.parser.p_declaration_list">
+<code class="descclassname">pype.parser.</code><code class="descname">p_declaration_list</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.parser.p_declaration_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>declaration_list : declaration_list declaration
+| declaration</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pype.parser.p_error">
+<code class="descclassname">pype.parser.</code><code class="descname">p_error</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.parser.p_error" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pype.parser.p_expression_list">
+<code class="descclassname">pype.parser.</code><code class="descname">p_expression_list</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.parser.p_expression_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>expression_list : expression_list expression
+| expression</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pype.parser.p_functioncall">
+<code class="descclassname">pype.parser.</code><code class="descname">p_functioncall</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.parser.p_functioncall" title="Permalink to this definition">¶</a></dt>
+<dd><p>expression : LPAREN ID parameter_list RPAREN
+| LPAREN ID RPAREN</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pype.parser.p_identification">
+<code class="descclassname">pype.parser.</code><code class="descname">p_identification</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.parser.p_identification" title="Permalink to this definition">¶</a></dt>
+<dd><p>expression : ID</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pype.parser.p_import_statement">
+<code class="descclassname">pype.parser.</code><code class="descname">p_import_statement</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.parser.p_import_statement" title="Permalink to this definition">¶</a></dt>
+<dd><p>import_statement : LPAREN IMPORT ID RPAREN</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pype.parser.p_input">
+<code class="descclassname">pype.parser.</code><code class="descname">p_input</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.parser.p_input" title="Permalink to this definition">¶</a></dt>
+<dd><p>expression : LPAREN INPUT declaration_list RPAREN
+| LPAREN INPUT RPAREN</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pype.parser.p_literal">
+<code class="descclassname">pype.parser.</code><code class="descname">p_literal</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.parser.p_literal" title="Permalink to this definition">¶</a></dt>
+<dd><p>expression : NUMBER
+| STRING</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pype.parser.p_op_add_expression">
+<code class="descclassname">pype.parser.</code><code class="descname">p_op_add_expression</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.parser.p_op_add_expression" title="Permalink to this definition">¶</a></dt>
+<dd><p>expression : LPAREN OP_ADD parameter_list RPAREN</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pype.parser.p_op_div_expression">
+<code class="descclassname">pype.parser.</code><code class="descname">p_op_div_expression</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.parser.p_op_div_expression" title="Permalink to this definition">¶</a></dt>
+<dd><p>expression : LPAREN OP_DIV parameter_list RPAREN</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pype.parser.p_op_mul_expression">
+<code class="descclassname">pype.parser.</code><code class="descname">p_op_mul_expression</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.parser.p_op_mul_expression" title="Permalink to this definition">¶</a></dt>
+<dd><p>expression : LPAREN OP_MUL parameter_list RPAREN</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pype.parser.p_op_sub_expression">
+<code class="descclassname">pype.parser.</code><code class="descname">p_op_sub_expression</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.parser.p_op_sub_expression" title="Permalink to this definition">¶</a></dt>
+<dd><p>expression : LPAREN OP_SUB parameter_list RPAREN</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pype.parser.p_output">
+<code class="descclassname">pype.parser.</code><code class="descname">p_output</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.parser.p_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>expression : LPAREN OUTPUT declaration_list RPAREN
+| LPAREN OUTPUT RPAREN</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pype.parser.p_parameter_list">
+<code class="descclassname">pype.parser.</code><code class="descname">p_parameter_list</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.parser.p_parameter_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>parameter_list : parameter_list expression
+| expression</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pype.parser.p_program">
+<code class="descclassname">pype.parser.</code><code class="descname">p_program</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.parser.p_program" title="Permalink to this definition">¶</a></dt>
+<dd><p>program : statement_list</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pype.parser.p_statement_list">
+<code class="descclassname">pype.parser.</code><code class="descname">p_statement_list</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.parser.p_statement_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>statement_list : statement_list component
+| statement_list import_statement
+| import_statement
+| component</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pype.parser.p_type">
+<code class="descclassname">pype.parser.</code><code class="descname">p_type</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.parser.p_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>type : ID</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pype.parsetab">
+<span id="pype-parsetab-module"></span><h2>pype.parsetab module<a class="headerlink" href="#module-pype.parsetab" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pype.pcode">
+<span id="pype-pcode-module"></span><h2>pype.pcode module<a class="headerlink" href="#module-pype.pcode" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pype.pcode.PCode">
+<em class="property">class </em><code class="descclassname">pype.pcode.</code><code class="descname">PCode</code><a class="headerlink" href="#pype.pcode.PCode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="pype.pcode.PCode.add_op">
+<code class="descname">add_op</code><span class="sig-paren">(</span><em>pcode_op_coroutine</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.pcode.PCode.add_op" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.pcode.PCode.driver">
+<code class="descname">driver</code><span class="sig-paren">(</span><em>input_args</em>, <em>future</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.pcode.PCode.driver" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.pcode.PCode.input_generator">
+<code class="descname">input_generator</code><span class="sig-paren">(</span><em>input_args</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.pcode.PCode.input_generator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.pcode.PCode.output_collector">
+<code class="descname">output_collector</code><span class="sig-paren">(</span><em>future</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.pcode.PCode.output_collector" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.pcode.PCode.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>*input_args</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.pcode.PCode.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.pcode.PCodeGenerator">
+<em class="property">class </em><code class="descclassname">pype.pcode.</code><code class="descname">PCodeGenerator</code><a class="headerlink" href="#pype.pcode.PCodeGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pype.optimize.FlowgraphOptimization" title="pype.optimize.FlowgraphOptimization"><code class="xref py py-class docutils literal"><span class="pre">pype.optimize.FlowgraphOptimization</span></code></a></p>
+<dl class="method">
+<dt id="pype.pcode.PCodeGenerator.visit">
+<code class="descname">visit</code><span class="sig-paren">(</span><em>flowgraph</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.pcode.PCodeGenerator.visit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.pcode.PCodeOp">
+<em class="property">class </em><code class="descclassname">pype.pcode.</code><code class="descname">PCodeOp</code><a class="headerlink" href="#pype.pcode.PCodeOp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>A class interface for creating coroutines.</p>
+<p>This helps us keep track of valid computational elements. Every coroutine in
+a PCode object should be an method of PCodeOp.</p>
+<dl class="staticmethod">
+<dt id="pype.pcode.PCodeOp.forward">
+<em class="property">static </em><code class="descname">forward</code><span class="sig-paren">(</span><em>in_qs</em>, <em>out_qs</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.pcode.PCodeOp.forward" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="pype.pcode.PCodeOp.input">
+<em class="property">static </em><code class="descname">input</code><span class="sig-paren">(</span><em>in_qs</em>, <em>out_qs</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.pcode.PCodeOp.input" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="pype.pcode.PCodeOp.libraryfunction">
+<em class="property">static </em><code class="descname">libraryfunction</code><span class="sig-paren">(</span><em>in_qs</em>, <em>out_qs</em>, <em>function_ref</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.pcode.PCodeOp.libraryfunction" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="pype.pcode.PCodeOp.librarymethod">
+<em class="property">static </em><code class="descname">librarymethod</code><span class="sig-paren">(</span><em>in_qs</em>, <em>out_qs</em>, <em>method_ref</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.pcode.PCodeOp.librarymethod" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="pype.pcode.PCodeOp.literal">
+<em class="property">static </em><code class="descname">literal</code><span class="sig-paren">(</span><em>out_qs</em>, <em>value_ref</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.pcode.PCodeOp.literal" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pype.pipeline">
+<span id="pype-pipeline-module"></span><h2>pype.pipeline module<a class="headerlink" href="#module-pype.pipeline" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pype.pipeline.Pipeline">
+<em class="property">class </em><code class="descclassname">pype.pipeline.</code><code class="descname">Pipeline</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.pipeline.Pipeline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="pype.pipeline.Pipeline.compile">
+<code class="descname">compile</code><span class="sig-paren">(</span><em>file</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.pipeline.Pipeline.compile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.pipeline.Pipeline.optimize">
+<code class="descname">optimize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pype.pipeline.Pipeline.optimize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.pipeline.Pipeline.optimize_AssignmentEllision">
+<code class="descname">optimize_AssignmentEllision</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pype.pipeline.Pipeline.optimize_AssignmentEllision" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.pipeline.Pipeline.optimize_DeadCodeElimination">
+<code class="descname">optimize_DeadCodeElimination</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pype.pipeline.Pipeline.optimize_DeadCodeElimination" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pype.semantic_analysis">
+<span id="pype-semantic-analysis-module"></span><h2>pype.semantic_analysis module<a class="headerlink" href="#module-pype.semantic_analysis" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pype.semantic_analysis.CheckSingleAssignment">
+<em class="property">class </em><code class="descclassname">pype.semantic_analysis.</code><code class="descname">CheckSingleAssignment</code><a class="headerlink" href="#pype.semantic_analysis.CheckSingleAssignment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pype.ast.ASTVisitor" title="pype.ast.ASTVisitor"><code class="xref py py-class docutils literal"><span class="pre">pype.ast.ASTVisitor</span></code></a></p>
+<dl class="method">
+<dt id="pype.semantic_analysis.CheckSingleAssignment.visit">
+<code class="descname">visit</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.semantic_analysis.CheckSingleAssignment.visit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.semantic_analysis.CheckSingleIOExpression">
+<em class="property">class </em><code class="descclassname">pype.semantic_analysis.</code><code class="descname">CheckSingleIOExpression</code><a class="headerlink" href="#pype.semantic_analysis.CheckSingleIOExpression" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pype.ast.ASTVisitor" title="pype.ast.ASTVisitor"><code class="xref py py-class docutils literal"><span class="pre">pype.ast.ASTVisitor</span></code></a></p>
+<dl class="method">
+<dt id="pype.semantic_analysis.CheckSingleIOExpression.visit">
+<code class="descname">visit</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.semantic_analysis.CheckSingleIOExpression.visit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.semantic_analysis.CheckUndefinedVariables">
+<em class="property">class </em><code class="descclassname">pype.semantic_analysis.</code><code class="descname">CheckUndefinedVariables</code><span class="sig-paren">(</span><em>symtab</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.semantic_analysis.CheckUndefinedVariables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pype.ast.ASTVisitor" title="pype.ast.ASTVisitor"><code class="xref py py-class docutils literal"><span class="pre">pype.ast.ASTVisitor</span></code></a></p>
+<dl class="method">
+<dt id="pype.semantic_analysis.CheckUndefinedVariables.visit">
+<code class="descname">visit</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.semantic_analysis.CheckUndefinedVariables.visit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.semantic_analysis.PrettyPrint">
+<em class="property">class </em><code class="descclassname">pype.semantic_analysis.</code><code class="descname">PrettyPrint</code><a class="headerlink" href="#pype.semantic_analysis.PrettyPrint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pype.ast.ASTVisitor" title="pype.ast.ASTVisitor"><code class="xref py py-class docutils literal"><span class="pre">pype.ast.ASTVisitor</span></code></a></p>
+<dl class="method">
+<dt id="pype.semantic_analysis.PrettyPrint.visit">
+<code class="descname">visit</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.semantic_analysis.PrettyPrint.visit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pype.symtab">
+<span id="pype-symtab-module"></span><h2>pype.symtab module<a class="headerlink" href="#module-pype.symtab" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pype.symtab.Symbol">
+<em class="property">class </em><code class="descclassname">pype.symtab.</code><code class="descname">Symbol</code><span class="sig-paren">(</span><em>name</em>, <em>type</em>, <em>ref</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.symtab.Symbol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">tuple</span></code></p>
+<dl class="method">
+<dt id="pype.symtab.Symbol.__getnewargs__">
+<code class="descname">__getnewargs__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pype.symtab.Symbol.__getnewargs__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return self as a plain tuple.  Used by copy and pickle.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="pype.symtab.Symbol.__new__">
+<em class="property">static </em><code class="descname">__new__</code><span class="sig-paren">(</span><em>_cls</em>, <em>name</em>, <em>type</em>, <em>ref</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.symtab.Symbol.__new__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create new instance of Symbol(name, type, ref)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pype.symtab.Symbol.__repr__">
+<code class="descname">__repr__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pype.symtab.Symbol.__repr__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a nicely formatted representation string</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pype.symtab.Symbol.name">
+<code class="descname">name</code><a class="headerlink" href="#pype.symtab.Symbol.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pype.symtab.Symbol.ref">
+<code class="descname">ref</code><a class="headerlink" href="#pype.symtab.Symbol.ref" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pype.symtab.Symbol.type">
+<code class="descname">type</code><a class="headerlink" href="#pype.symtab.Symbol.type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.symtab.SymbolTable">
+<em class="property">class </em><code class="descclassname">pype.symtab.</code><code class="descname">SymbolTable</code><a class="headerlink" href="#pype.symtab.SymbolTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="pype.symtab.SymbolTable.addsym">
+<code class="descname">addsym</code><span class="sig-paren">(</span><em>sym</em>, <em>scope='global'</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.symtab.SymbolTable.addsym" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.symtab.SymbolTable.lookupsym">
+<code class="descname">lookupsym</code><span class="sig-paren">(</span><em>sym</em>, <em>scope=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.symtab.SymbolTable.lookupsym" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.symtab.SymbolTable.pprint">
+<code class="descname">pprint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pype.symtab.SymbolTable.pprint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.symtab.SymbolTable.scopes">
+<code class="descname">scopes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pype.symtab.SymbolTable.scopes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.symtab.SymbolType">
+<em class="property">class </em><code class="descclassname">pype.symtab.</code><code class="descname">SymbolType</code><a class="headerlink" href="#pype.symtab.SymbolType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">enum.Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="attribute">
+<dt id="pype.symtab.SymbolType.component">
+<code class="descname">component</code><em class="property"> = &lt;SymbolType.component: 1&gt;</em><a class="headerlink" href="#pype.symtab.SymbolType.component" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pype.symtab.SymbolType.input">
+<code class="descname">input</code><em class="property"> = &lt;SymbolType.input: 3&gt;</em><a class="headerlink" href="#pype.symtab.SymbolType.input" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pype.symtab.SymbolType.libraryfunction">
+<code class="descname">libraryfunction</code><em class="property"> = &lt;SymbolType.libraryfunction: 5&gt;</em><a class="headerlink" href="#pype.symtab.SymbolType.libraryfunction" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pype.symtab.SymbolType.librarymethod">
+<code class="descname">librarymethod</code><em class="property"> = &lt;SymbolType.librarymethod: 6&gt;</em><a class="headerlink" href="#pype.symtab.SymbolType.librarymethod" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pype.symtab.SymbolType.output">
+<code class="descname">output</code><em class="property"> = &lt;SymbolType.output: 4&gt;</em><a class="headerlink" href="#pype.symtab.SymbolType.output" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pype.symtab.SymbolType.var">
+<code class="descname">var</code><em class="property"> = &lt;SymbolType.var: 2&gt;</em><a class="headerlink" href="#pype.symtab.SymbolType.var" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pype.translate">
+<span id="pype-translate-module"></span><h2>pype.translate module<a class="headerlink" href="#module-pype.translate" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pype.translate.LoweringVisitor">
+<em class="property">class </em><code class="descclassname">pype.translate.</code><code class="descname">LoweringVisitor</code><span class="sig-paren">(</span><em>symtab</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.translate.LoweringVisitor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pype.ast.ASTModVisitor" title="pype.ast.ASTModVisitor"><code class="xref py py-class docutils literal"><span class="pre">pype.ast.ASTModVisitor</span></code></a></p>
+<p>Produces FGIR from an AST.</p>
+<dl class="method">
+<dt id="pype.translate.LoweringVisitor.post_visit">
+<code class="descname">post_visit</code><span class="sig-paren">(</span><em>node</em>, <em>visit_value</em>, <em>child_values</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.translate.LoweringVisitor.post_visit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.translate.LoweringVisitor.visit">
+<code class="descname">visit</code><span class="sig-paren">(</span><em>astnode</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.translate.LoweringVisitor.visit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pype.translate.SymbolTableVisitor">
+<em class="property">class </em><code class="descclassname">pype.translate.</code><code class="descname">SymbolTableVisitor</code><a class="headerlink" href="#pype.translate.SymbolTableVisitor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pype.ast.ASTVisitor" title="pype.ast.ASTVisitor"><code class="xref py py-class docutils literal"><span class="pre">pype.ast.ASTVisitor</span></code></a></p>
+<dl class="method">
+<dt id="pype.translate.SymbolTableVisitor.return_value">
+<code class="descname">return_value</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pype.translate.SymbolTableVisitor.return_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pype.translate.SymbolTableVisitor.visit">
+<code class="descname">visit</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.translate.SymbolTableVisitor.visit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pype">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pype" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pype package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-pype.ast">pype.ast module</a></li>
+<li><a class="reference internal" href="#module-pype.error">pype.error module</a></li>
+<li><a class="reference internal" href="#module-pype.fgir">pype.fgir module</a></li>
+<li><a class="reference internal" href="#module-pype.lexer">pype.lexer module</a></li>
+<li><a class="reference internal" href="#module-pype.lextab">pype.lextab module</a></li>
+<li><a class="reference internal" href="#module-pype.lib_import">pype.lib_import module</a></li>
+<li><a class="reference internal" href="#module-pype.optimize">pype.optimize module</a></li>
+<li><a class="reference internal" href="#module-pype.parser">pype.parser module</a></li>
+<li><a class="reference internal" href="#module-pype.parsetab">pype.parsetab module</a></li>
+<li><a class="reference internal" href="#module-pype.pcode">pype.pcode module</a></li>
+<li><a class="reference internal" href="#module-pype.pipeline">pype.pipeline module</a></li>
+<li><a class="reference internal" href="#module-pype.semantic_analysis">pype.semantic_analysis module</a></li>
+<li><a class="reference internal" href="#module-pype.symtab">pype.symtab module</a></li>
+<li><a class="reference internal" href="#module-pype.translate">pype.translate module</a></li>
+<li><a class="reference internal" href="#module-pype">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/pype.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Akhil Daniel Hilawi Christian Joaquin.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="../_sources/api/pype.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,22 @@
+webserver package
+=================
+
+Submodules
+----------
+
+webserver.web_server module
+---------------------------
+
+.. automodule:: webserver.web_server
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: webserver
+    :members:
+    :undoc-members:
+    :show-inheritance:

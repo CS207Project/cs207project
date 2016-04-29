@@ -1,0 +1,86 @@
+tsdb package
+============
+
+Submodules
+----------
+
+tsdb.baseindex module
+---------------------
+
+.. automodule:: tsdb.baseindex
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+tsdb.dictdb module
+------------------
+
+.. automodule:: tsdb.dictdb
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+tsdb.heap module
+----------------
+
+.. automodule:: tsdb.heap
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+tsdb.persistantdb module
+------------------------
+
+.. automodule:: tsdb.persistantdb
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+tsdb.tsdb_client module
+-----------------------
+
+.. automodule:: tsdb.tsdb_client
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+tsdb.tsdb_error module
+----------------------
+
+.. automodule:: tsdb.tsdb_error
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+tsdb.tsdb_ops module
+--------------------
+
+.. automodule:: tsdb.tsdb_ops
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+tsdb.tsdb_serialization module
+------------------------------
+
+.. automodule:: tsdb.tsdb_serialization
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+tsdb.tsdb_server module
+-----------------------
+
+.. automodule:: tsdb.tsdb_server
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: tsdb
+    :members:
+    :undoc-members:
+    :show-inheritance:
