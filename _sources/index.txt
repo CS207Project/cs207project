@@ -36,7 +36,7 @@ Usage
 - Start the Web Server:
 ::
 
-    python web_server.py
+    python go_webserver.py
 
 2. API Quick Guide
 ==================
