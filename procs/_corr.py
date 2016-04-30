@@ -1,9 +1,14 @@
+"""Implementation of kernel correlation distance metric between two timeseries based on
+http://www.cs.tufts.edu/~roni/PUB/ecml09-tskernels.pdf
+
+"""
 import numpy.fft as nfft
 import numpy as np
 import timeseries as ts
 from scipy.stats import norm
 
 def tsmaker(m, s, j):
+    "generates a new TimeSeries using a normal distribution with a given mean, sd and jitter"
     meta={}
     meta['order'] = int(np.random.choice([-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]))
     meta['blarg'] = int(np.random.choice([1, 2]))
@@ -12,11 +17,13 @@ def tsmaker(m, s, j):
     return meta, ts.TimeSeries(t, v)
 
 def random_ts(a):
+    "generates a new TimeSeries using a unifrom distribution"
     t = np.arange(0.0, 1.0, 0.01)
     v = a*np.random.random(100)
     return ts.TimeSeries(t, v)
 
 def stand(x, m, s):
+    "standardizes a TimeSeries to have 0 mean and 1 sd"
     return (x-m)/s
 
 def ccor(ts1, ts2):
@@ -27,6 +34,7 @@ def ccor(ts1, ts2):
 
 
 def max_corr_at_phase(ts1, ts2):
+    "compute the maximum correlation between two TimeSeries across various phases"
     ccorts = ccor(ts1, ts2)
     idx = np.argmax(ccorts)
     maxcorr = ccorts[idx]
@@ -37,7 +45,14 @@ def max_corr_at_phase(ts1, ts2):
 #normalize the kernel there by np.sqrt(K(x,x)K(y,y)) so that the correlation
 #of a time series with itself is 1.
 def kernel_corr(ts1, ts2, mult=1):
-    "compute a kernelized correlation so that we can get a real distance"
+    """compute a kernelized correlation so that we can get a real distance
+
+    The equation for the kernelized cross correlation is given at
+    http://www.cs.tufts.edu/~roni/PUB/ecml09-tskernels.pdf.
+
+    Normalize the kernel there by np.sqrt(K(x,x)K(y,y)) so that the correlation
+    of a time series with itself is 1.
+    """
     cross_corr = ccor(ts1, ts2)
     num = np.sum(np.exp(mult*cross_corr))
     denom = np.sqrt(np.sum(np.exp(mult*ccor(ts1, ts1)))*np.sum(np.exp(mult*ccor(ts2, ts2))))

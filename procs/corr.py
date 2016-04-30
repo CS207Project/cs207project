@@ -1,3 +1,14 @@
+""" This module implements the stored procedure that computes the correlation distance metric between
+a given TimeSeries argument and another TimeSeries
+
+Notes
+-----
+proc_main
+    the function called by the database on augmented selects
+
+main
+    the function called by the database on triggers
+"""
 import timeseries as ts
 import numpy as np
 
@@ -7,6 +18,27 @@ import asyncio
 
 # this function is directly used for augmented selects
 def proc_main(pk, row, arg):
+    """ Compute the kernel correlation distance of a TimeSeries to a given reference TimeSeries
+
+    Parameters
+    ----------
+    pk : string or int
+        this is the primary key of the row of the database
+    row : dict
+        dictionary consisting of column_name: value for this row in the database
+    arg : anything
+        TimeSeries to which we will compute the kerndist
+
+    Returns
+    -------
+    list
+        [kerndist] of the TimeSeries in this row of the database to the `arg`
+
+    Notes
+    -----
+    Implementation of the kernel correlation distance is done in the _corr module
+
+    """
     #The argument is a time series. But due to serialization it does
     #not come out as the "instance", and must be cast
     argts = ts.TimeSeries(*arg)
@@ -25,4 +57,5 @@ def proc_main(pk, row, arg):
 
 #the function is wrapped in a coroutine for triggers
 async def main(pk, row, arg):
+
     return proc_main(pk, row, arg)

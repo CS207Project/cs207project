@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+""" This is a utility file that starts a database server with some default settings.
+It is meant to be an example of how to start our system and also servers as a way for us to test
+our code.
+
+"""
+
 from tsdb import TSDBServer, DictDB
 import timeseries as ts
 
