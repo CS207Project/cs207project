@@ -50,6 +50,7 @@ class TSDBTests(asynctest.TestCase):
     def tearDown(self):
         self.server_proc.terminate()
         self.server_log_file.close()
+        time.sleep(1)
 
     async def test_run(self):
         np.random.seed(12345)
