@@ -47,36 +47,166 @@
 </div>
 <div class="section" id="module-procs.corr">
 <span id="procs-corr-module"></span><h2>procs.corr module<a class="headerlink" href="#module-procs.corr" title="Permalink to this headline">¶</a></h2>
+<p>This module implements the stored procedure that computes the correlation distance metric between
+a given TimeSeries argument and another TimeSeries</p>
+<p class="rubric">Notes</p>
+<dl class="docutils">
+<dt>proc_main</dt>
+<dd>the function called by the database on augmented selects</dd>
+<dt>main</dt>
+<dd>the function called by the database on triggers</dd>
+</dl>
 <dl class="function">
 <dt id="procs.corr.main">
 <code class="descclassname">procs.corr.</code><code class="descname">main</code><span class="sig-paren">(</span><em>pk</em>, <em>row</em>, <em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#procs.corr.main" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Compute the kernel correlation distance of a TimeSeries to a given reference TimeSeries</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pk</strong> (<em>string or int</em>) &#8211; this is the primary key of the row of the database</li>
+<li><strong>row</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; dictionary consisting of column_name: value for this row in the database</li>
+<li><strong>arg</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; TimeSeries in list form to which we will compute the kerndist</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">[kerndist] of the TimeSeries in this row of the database to the <cite>arg</cite></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/library/functions.html#list" title="(in Python v2.7)">list</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Implementation of the kernel correlation distance is done in the _corr module</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="procs.corr.proc_main">
 <code class="descclassname">procs.corr.</code><code class="descname">proc_main</code><span class="sig-paren">(</span><em>pk</em>, <em>row</em>, <em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#procs.corr.proc_main" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Compute the kernel correlation distance of a TimeSeries to a given reference TimeSeries</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pk</strong> (<em>string or int</em>) &#8211; this is the primary key of the row of the database</li>
+<li><strong>row</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; dictionary consisting of column_name: value for this row in the database</li>
+<li><strong>arg</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; TimeSeries in list form to which we will compute the kerndist</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">[kerndist] of the TimeSeries in this row of the database to the <cite>arg</cite></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/library/functions.html#list" title="(in Python v2.7)">list</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Implementation of the kernel correlation distance is done in the _corr module</p>
+</dd></dl>
 
 </div>
 <div class="section" id="module-procs.junk">
 <span id="procs-junk-module"></span><h2>procs.junk module<a class="headerlink" href="#module-procs.junk" title="Permalink to this headline">¶</a></h2>
+<p>This module implements a test stored procedure that does nothing</p>
+<p class="rubric">Notes</p>
+<dl class="docutils">
+<dt>proc_main</dt>
+<dd>the function called by the database on augmented selects. NOT IMPLEMENTED</dd>
+<dt>main</dt>
+<dd>the function called by the database on triggers</dd>
+</dl>
 <dl class="function">
 <dt id="procs.junk.main">
 <code class="descclassname">procs.junk.</code><code class="descname">main</code><span class="sig-paren">(</span><em>pk</em>, <em>row</em>, <em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#procs.junk.main" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>DO NOTHING</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pk</strong> (<em>string or int</em>) &#8211; this is the primary key of the row of the database</li>
+<li><strong>row</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; dictionary consisting of column_name: value for this row in the database</li>
+<li><strong>arg</strong> (<em>anything</em>) &#8211; optional argument passed to the function. ignored in this case</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">[None]</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/library/functions.html#list" title="(in Python v2.7)">list</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </div>
 <div class="section" id="module-procs.stats">
 <span id="procs-stats-module"></span><h2>procs.stats module<a class="headerlink" href="#module-procs.stats" title="Permalink to this headline">¶</a></h2>
+<p>This module implements the stored procedure that computes the mean and standard deviation
+of a TimeSeries.</p>
+<p class="rubric">Notes</p>
+<dl class="docutils">
+<dt>proc_main</dt>
+<dd>the function called by the database on augmented selects</dd>
+<dt>main</dt>
+<dd>the function called by the database on triggers</dd>
+</dl>
 <dl class="function">
 <dt id="procs.stats.main">
 <code class="descclassname">procs.stats.</code><code class="descname">main</code><span class="sig-paren">(</span><em>pk</em>, <em>row</em>, <em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#procs.stats.main" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Compute the mean and sd of a TimeSeries</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pk</strong> (<em>string or int</em>) &#8211; this is the primary key of the row of the database</li>
+<li><strong>row</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; dictionary consisting of column_name: value for this row in the database</li>
+<li><strong>arg</strong> (<em>anything</em>) &#8211; optional argument passed to the function. ignored in this case</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">[mean,sd] of the TimeSeries in this row of the database</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/library/functions.html#list" title="(in Python v2.7)">list</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="procs.stats.proc_main">
 <code class="descclassname">procs.stats.</code><code class="descname">proc_main</code><span class="sig-paren">(</span><em>pk</em>, <em>row</em>, <em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#procs.stats.proc_main" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Compute the mean and sd of a TimeSeries</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pk</strong> (<em>string or int</em>) &#8211; this is the primary key of the row of the database</li>
+<li><strong>row</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; dictionary consisting of column_name: value for this row in the database</li>
+<li><strong>arg</strong> (<em>anything</em>) &#8211; optional argument passed to the function. ignored in this case</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">[mean,sd] of the TimeSeries in this row of the database</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/library/functions.html#list" title="(in Python v2.7)">list</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </div>
 <div class="section" id="module-procs">

@@ -46,44 +46,174 @@
 </div>
 <div class="section" id="module-webserver.web_server">
 <span id="webserver-web-server-module"></span><h2>webserver.web_server module<a class="headerlink" href="#module-webserver.web_server" title="Permalink to this headline">¶</a></h2>
+<p>Implementation of an async WebServer with RESTful api that talks to the TimeSeries Database.</p>
 <dl class="class">
 <dt id="webserver.web_server.Handlers">
 <em class="property">class </em><code class="descclassname">webserver.web_server.</code><code class="descname">Handlers</code><a class="headerlink" href="#webserver.web_server.Handlers" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>These are the event handlers for the various endpoints defined in our rest API</p>
 <dl class="method">
 <dt id="webserver.web_server.Handlers.add_metadata_handler">
 <code class="descname">add_metadata_handler</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="headerlink" href="#webserver.web_server.Handlers.add_metadata_handler" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Handler for remove trigger</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>request</strong> (<em>aiotttp.request</em>) &#8211; <p>request object with details of the request that was sent to the server</p>
+<p>request must be JSON encoded</p>
+<p>request.json()[&#8216;primary_key&#8217;] &#8211;&gt; primary key for this timeseries in the database. <strong>REQUIRED</strong></p>
+<p>request.json()[&#8216;metadata_dict&#8217;] &#8211;&gt; dictionary containing the metadata that we want to add to this timeseries <strong>REQUIRED</strong></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">JSON encoded text indicating success or failure of write</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">web.Response</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="webserver.web_server.Handlers.add_trigger_handler">
 <code class="descname">add_trigger_handler</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="headerlink" href="#webserver.web_server.Handlers.add_trigger_handler" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Handler for add trigger</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>request</strong> (<em>aiotttp.request</em>) &#8211; <p>request object with details of the request that was sent to the server</p>
+<p>request must be JSON encoded</p>
+<p>request.json()[&#8216;proc&#8217;] &#8211;&gt; name of the predefined stored proc to be run <strong>REQUIRED</strong></p>
+<p>request.json()[&#8216;onwhat&#8217;] &#8211;&gt; name of the event after which trigger is run <strong>REQUIRED</strong></p>
+<p>request.json()[&#8216;target&#8217;] &#8211;&gt; list of names of the output varibles in which we store the result of the stored procedure <strong>REQUIRED</strong></p>
+<p>request.json()[&#8216;arg&#8217;] &#8211;&gt; optinal argument sent to the stored procedure</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">JSON encoded text indicating success or failure of write</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">web.Response</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="webserver.web_server.Handlers.add_ts_handler">
 <code class="descname">add_ts_handler</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="headerlink" href="#webserver.web_server.Handlers.add_ts_handler" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Handler for add time series</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>request</strong> (<em>aiotttp.request</em>) &#8211; <p>request object with details of the request that was sent to the server</p>
+<p>request must be JSON encoded</p>
+<p>request.json()[&#8216;primary_key&#8217;] &#8211;&gt; primary key for this timeseries in the database. <strong>REQUIRED</strong></p>
+<p>request.json()[&#8216;ts&#8217;] &#8211;&gt; timeseries to be added. <strong>REQUIRED</strong></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">JSON encoded text indicating success or failure of write</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">web.Response</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="webserver.web_server.Handlers.augselect_handler">
 <code class="descname">augselect_handler</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="headerlink" href="#webserver.web_server.Handlers.augselect_handler" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Handler for Augmented Select</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>request</strong> (<em>aiotttp.request</em>) &#8211; <p>request object with details of the request that was sent to the server</p>
+<p>request.GET[&#8216;query&#8217;] should exist or an error is returned <strong>REQUIRED</strong></p>
+<p>request.GET[&#8216;query&#8217;][&#8216;proc&#8217;] -&gt; the stored proc that will be called. <strong>REQUIRED</strong></p>
+<p>request.GET[&#8216;query&#8217;][&#8216;target&#8217;] -&gt; json encoded list of what the output of the stored proc
+will be called. <strong>REQUIRED</strong></p>
+<p>request.GET[&#8216;query&#8217;][&#8216;where&#8217;] -&gt; json encoded metadata_dict describing the select criteria.
+Default will return all rows in the database</p>
+<p>request.GET[&#8216;query&#8217;][&#8216;additional&#8217;] -&gt; json encoded additional information for the select.
+Default ignores the additional info.</p>
+<p>request.GET[&#8216;query&#8217;][&#8216;arg&#8217;] -&gt; json encoded additional argument sent to the stored proc.
+Default ignores the arg</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">JSON encoded results of the augmented select</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">web.Response</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="webserver.web_server.Handlers.homepage_handler">
 <code class="descname">homepage_handler</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="headerlink" href="#webserver.web_server.Handlers.homepage_handler" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Handler for Homepage</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>request</strong> (<em>aiotttp.request</em>) &#8211; request object with details of the request that was sent to the server</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Text showing the various endpoints that are available</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">web.Response</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="webserver.web_server.Handlers.remove_trigger_handler">
 <code class="descname">remove_trigger_handler</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="headerlink" href="#webserver.web_server.Handlers.remove_trigger_handler" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Handler for remove trigger</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>request</strong> (<em>aiotttp.request</em>) &#8211; <p>request object with details of the request that was sent to the server</p>
+<p>request must be JSON encoded</p>
+<p>request.json()[&#8216;proc&#8217;] &#8211;&gt; name of the predefined stored proc to be run <strong>REQUIRED</strong></p>
+<p>request.json()[&#8216;onwhat&#8217;] &#8211;&gt; name of the event after which trigger is run <strong>REQUIRED</strong></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">JSON encoded text indicating success or failure of write</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">web.Response</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="webserver.web_server.Handlers.select_handler">
 <code class="descname">select_handler</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="headerlink" href="#webserver.web_server.Handlers.select_handler" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Handler for Select</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>request</strong> (<em>aiotttp.request</em>) &#8211; <p>request object with details of the request that was sent to the server</p>
+<p>request.GET[&#8216;query&#8217;] should exist or an error is returned <strong>REQUIRED</strong></p>
+<p>request.GET[&#8216;query&#8217;][&#8216;fields&#8217;] -&gt; json encoded list of fields to be selected.
+Default is just the primary_key</p>
+<p>request.GET[&#8216;query&#8217;][&#8216;where&#8217;] -&gt; json encoded metadata_dict describing the select criteria.
+Default will return all rows in the database</p>
+<p>request.GET[&#8216;query&#8217;][&#8216;additional&#8217;] -&gt; json encoded additional information for the select.
+Default ignore the additional info.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">JSON encoded results of the select</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">web.Response</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </dd></dl>
 
@@ -91,10 +221,26 @@
 <dt id="webserver.web_server.WebServer">
 <em class="property">class </em><code class="descclassname">webserver.web_server.</code><code class="descname">WebServer</code><a class="headerlink" href="#webserver.web_server.WebServer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>Implements a webserver with some endpoints for REST api calls</p>
+<dl class="attribute">
+<dt id="webserver.web_server.WebServer.handler">
+<code class="descname">handler</code><a class="headerlink" href="#webserver.web_server.WebServer.handler" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>Handlers</em></p>
+<p>the hnadlers for the endpoints that we define the server</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="webserver.web_server.WebServer.app">
+<code class="descname">app</code><a class="headerlink" href="#webserver.web_server.WebServer.app" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>web.Application</em></p>
+<p>aiotttp web application that handles the server</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="webserver.web_server.WebServer.run">
 <code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#webserver.web_server.WebServer.run" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>run the webserver</p>
+</dd></dl>
 
 </dd></dl>
 

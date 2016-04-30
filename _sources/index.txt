@@ -16,22 +16,32 @@ TimeSeries Utility
    license
    api/modules
 
+-----------
 Description
 -----------
 
+We implement a database that can store time series data and perform fast similarly serach on it.
+
+-----
 Usage
 -----
 
 1. Setup
-~~~~~~~~
-- Start the Database Server: `python go_server.py`
+========
+- Start the Database Server:
+::
 
-- Start the Web Server: `python web_server.py`
+    python go_server.py
+
+- Start the Web Server:
+::
+
+    python web_server.py
 
 2. API Quick Guide
-~~~~~~~~~~~~~~~~~~
-
-a. SELECT
+==================
+i. SELECT
+---------
 Select from the timeseries database.
 
 - Endpoint: **/select**
@@ -49,8 +59,9 @@ Select from the timeseries database.
     requests.get(server_url+'/select',
         params={'query':json.dumps(payload)}).content
 
-b. AUGMENTED SELECT
-Select a set of rows and then run s predefined stored procedure on it
+ii. AUGMENTED SELECT
+--------------------
+Select a set of rows and then run a predefined stored procedure on it
 
 - Endpoint: **/augselect**
 - Verb: **GET**
@@ -63,7 +74,8 @@ Select a set of rows and then run s predefined stored procedure on it
     payload = {'proc':'corr', 'target':'d', 'arg':queryts.to_json(), 'where': {'pk': v}}
     requests.get(server_url+'/augselect', params={'query':json.dumps(payload)}).content
 
-c. INSERT TIMESERIES
+iii. INSERT TIMESERIES
+----------------------
 Insert a new timeseries into the database
 
 - Endpoint: **/tsdb/add/ts**
@@ -79,7 +91,8 @@ Insert a new timeseries into the database
     requests.post(server_url+'/add/ts', make_insert_ts('ts-1', ts1))
 
 
-d. UPSERT METADATA
+iv. UPSERT METADATA
+-------------------
 Update or Insert metadata for a particular timeseries into the database
 
 - Endpoint: **/tsdb/add/metadata**
@@ -94,7 +107,8 @@ Update or Insert metadata for a particular timeseries into the database
     meta1,ts1 = tsmaker(0.1,0.2,0.3)
     requests.post(server_url+'/add/metadata', make_upsert_meta('ts-1', meta1))
 
-e. INSERT TRIGGER
+v. INSERT TRIGGER
+-----------------
 Setup a predefined stored procedure to be run when a particular event occurs in the database.
 This is called a trigger.
 
@@ -112,13 +126,14 @@ This is called a trigger.
     m, queryts = tsmaker(0.5, 0.2, 0.1)
     requests.post(server_url+'/add/trigger', make_add_trigger('corr', 'insert_ts', 'd', queryts))
 
-f. REMOVE TRIGGER
+vi. REMOVE TRIGGER
+------------------
 Remove a trigger from the database.
 
 - Endpoint: **/tsdb/remove/trigger**
 - Verb: **POST**
 
-
+----
 Note
 ----
 

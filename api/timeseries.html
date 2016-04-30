@@ -47,6 +47,9 @@
 </div>
 <div class="section" id="module-timeseries.TimeSeries">
 <span id="timeseries-timeseries-module"></span><h2>timeseries.TimeSeries module<a class="headerlink" href="#module-timeseries.TimeSeries" title="Permalink to this headline">¶</a></h2>
+<p>Implements a timeseries class.</p>
+<p>Each TimeSeries object consists of a an array of times and the values recorded at those times.
+We provide a lot of functionality for manupilating these time series objects.</p>
 <dl class="class">
 <dt id="timeseries.TimeSeries.TimeSeries">
 <em class="property">class </em><code class="descclassname">timeseries.TimeSeries.</code><code class="descname">TimeSeries</code><span class="sig-paren">(</span><em>times</em>, <em>values</em><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries" title="Permalink to this definition">¶</a></dt>
@@ -70,119 +73,338 @@
 </dd></dl>
 
 <dl class="method">
-<dt>
-<code class="descname">__init__:</code></dt>
-<dd><p>instantiate TimeSeries class object</p>
+<dt id="timeseries.TimeSeries.TimeSeries.__abs__">
+<code class="descname">__abs__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.__abs__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dunder function to get the L2 norm of the values</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">L2 norm</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">double</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
-<dt>
-<code class="descname">__len__:</code></dt>
+<dt id="timeseries.TimeSeries.TimeSeries.__add__">
+<code class="descname">__add__</code><span class="sig-paren">(</span><em>rhs</em><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.__add__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dunder function to add two TimeSeries</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rhs</strong> (<em>TimeSeries object</em>) &#8211; another TimeSeries</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">sum of two TimeSeries</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#module-timeseries.TimeSeries" title="timeseries.TimeSeries">TimeSeries</a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal"><span class="pre">ValueError</span></code> &#8211;
+if the times of the two TimeSeries are not the same</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="timeseries.TimeSeries.TimeSeries.__bool__">
+<code class="descname">__bool__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.__bool__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dunder function to check if abs value of the TimeSeries is &gt; 0</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">truth value of abs of TimeSeries &gt; 0</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/library/functions.html#bool" title="(in Python v2.7)">bool</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="timeseries.TimeSeries.TimeSeries.__contains__">
+<code class="descname">__contains__</code><span class="sig-paren">(</span><em>time</em><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.__contains__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dunder Method that gives truth value of a given time</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="timeseries.TimeSeries.TimeSeries.__getitem__">
+<code class="descname">__getitem__</code><span class="sig-paren">(</span><em>time</em><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.__getitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dunder Method that returns value at a given time</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="timeseries.TimeSeries.TimeSeries.__iter__">
+<code class="descname">__iter__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.__iter__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dunder Method that returns an iterator over the values of the TimeSeries</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="timeseries.TimeSeries.TimeSeries.__len__">
+<code class="descname">__len__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.__len__" title="Permalink to this definition">¶</a></dt>
 <dd><p>length of TimeSeries</p>
 </dd></dl>
 
 <dl class="method">
-<dt>
-<code class="descname">__get_index:</code></dt>
-<dd><p>Helper function to get the array index of a time</p>
+<dt id="timeseries.TimeSeries.TimeSeries.__mul__">
+<code class="descname">__mul__</code><span class="sig-paren">(</span><em>rhs</em><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.__mul__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dunder function to multiply a TimeSeries with a number or another TimeSeries</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rhs</strong> (<em>TimeSeries object or a number</em>) &#8211; the TimeSeries or number that you want to use</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">this TimeSeries times the rhs</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#module-timeseries.TimeSeries" title="timeseries.TimeSeries">TimeSeries</a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal"><span class="pre">ValueError</span></code> &#8211;
+if the times of the two TimeSeries are not the same</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>if <cite>rhs</cite> is a number then values are values * rhs. if <cite>rhs</cite> is a TimeSeries then we perform an elementwise product</p>
 </dd></dl>
 
 <dl class="method">
-<dt>
-<code class="descname">__getitem__:</code></dt>
-<dd><p>Returns value at a given time</p>
+<dt id="timeseries.TimeSeries.TimeSeries.__neg__">
+<code class="descname">__neg__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.__neg__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dunder function that negates the values of a TimeSeries</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">same times, - the values</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#module-timeseries.TimeSeries" title="timeseries.TimeSeries">TimeSeries</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
-<dt>
-<code class="descname">__setitem__:</code></dt>
-<dd><p>Set value at a given time</p>
+<dt id="timeseries.TimeSeries.TimeSeries.__pos__">
+<code class="descname">__pos__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.__pos__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dunder function that returns the same TimeSeries</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">identity</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#module-timeseries.TimeSeries" title="timeseries.TimeSeries">TimeSeries</a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
-<dt>
-<code class="descname">__contains__:</code></dt>
-<dd><p>Truth value of a given time</p>
+<dt id="timeseries.TimeSeries.TimeSeries.__repr__">
+<code class="descname">__repr__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.__repr__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dunder method that gives a string representation for the programmer</p>
 </dd></dl>
 
 <dl class="method">
-<dt>
-<code class="descname">__repr__:</code></dt>
-<dd><p>Represents TimeSeries</p>
-</dd></dl>
-
-<dl class="method">
-<dt>
-<code class="descname">__str__:</code></dt>
-<dd><p>Returns TimeSeries as a string</p>
+<dt id="timeseries.TimeSeries.TimeSeries.__setitem__">
+<code class="descname">__setitem__</code><span class="sig-paren">(</span><em>time</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.__setitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dunder Method that Sets value at a given time</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="timeseries.TimeSeries.TimeSeries.__str__">
 <code class="descname">__str__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.__str__" title="Permalink to this definition">¶</a></dt>
-<dd><p>function that returns a shortened string representation of the time series
-&#8220;[time1, time2, ...], [value1, value2, ...]&#8221;</p>
+<dd><p>Dunder method that gives a shortened string representation of the TimeSeries
+[time1, time2, ...], [value1, value2, ...]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="timeseries.TimeSeries.TimeSeries.__sub__">
+<code class="descname">__sub__</code><span class="sig-paren">(</span><em>rhs</em><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.__sub__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dunder function to subtract two TimeSeries</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rhs</strong> (<em>TimeSeries object</em>) &#8211; another TimeSeries</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">this TimeSeries minus the other</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#module-timeseries.TimeSeries" title="timeseries.TimeSeries">TimeSeries</a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal"><span class="pre">ValueError</span></code> &#8211;
+if the times of the two TimeSeries are not the same</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="timeseries.TimeSeries.TimeSeries.__truediv__">
+<code class="descname">__truediv__</code><span class="sig-paren">(</span><em>rhs</em><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.__truediv__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dunder function to divide this TimeSeries by a number or another TimeSeries</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rhs</strong> (<em>TimeSeries object or a number</em>) &#8211; the TimeSeries or number that you want to use</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">this TimeSeries / the rhs</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#module-timeseries.TimeSeries" title="timeseries.TimeSeries">TimeSeries</a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal"><span class="pre">ValueError</span></code> &#8211;
+if the times of the two TimeSeries are not the same</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>if <cite>rhs</cite> is a number then values are values / rhs. if <cite>rhs</cite> is a v then we perform an elementwise division</p>
 </dd></dl>
 
 <dl class="classmethod">
 <dt id="timeseries.TimeSeries.TimeSeries.from_json">
 <em class="property">classmethod </em><code class="descname">from_json</code><span class="sig-paren">(</span><em>dataList</em><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.from_json" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Converts a list of lists to a TimeSeries object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dataList</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; [[times],[values]] that will form this TimeSeries</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the resulting TimeSeries</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#module-timeseries.TimeSeries" title="timeseries.TimeSeries">TimeSeries</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="timeseries.TimeSeries.TimeSeries.interpolate">
 <code class="descname">interpolate</code><span class="sig-paren">(</span><em>timesList</em><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.interpolate" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>create a new timeseries based on interpolated values of this TimeSeries</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>timesList</strong> (<em>list like object</em>) &#8211; the times for the new interpolated TimeSeries</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">new TimeSeries object who&#8217;s times are <cite>timesList</cite></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#module-timeseries.TimeSeries" title="timeseries.TimeSeries">TimeSeries</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="attribute">
 <dt>
 <code class="descname">items</code></dt>
-<dd></dd></dl>
+<dd><p>list of tuples of the TimeSeries</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="timeseries.TimeSeries.TimeSeries.iteritems">
 <code class="descname">iteritems</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.iteritems" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>iterator over tuples of (time,value) in the TimeSeries</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="timeseries.TimeSeries.TimeSeries.itertimes">
 <code class="descname">itertimes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.itertimes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>iterator over times in the TimeSeries</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="timeseries.TimeSeries.TimeSeries.itervalues">
 <code class="descname">itervalues</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.itervalues" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>iterator over values in the TimeSeries</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="timeseries.TimeSeries.TimeSeries.mean">
 <code class="descname">mean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.mean" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Mean of a TimeSeries</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">mean of values</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">double</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal"><span class="pre">ValueError</span></code> &#8211;
+if the TimeSeries is empty</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="timeseries.TimeSeries.TimeSeries.median">
 <code class="descname">median</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.median" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>compute the median of the values of a TimeSeries</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="timeseries.TimeSeries.TimeSeries.std">
 <code class="descname">std</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.std" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Standard Deviation of a TimeSeries</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">standard dev of values</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">double</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal"><span class="pre">ValueError</span></code> &#8211;
+if the length is &lt; 2</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="attribute">
 <dt>
 <code class="descname">times</code></dt>
-<dd></dd></dl>
+<dd><p>times of the TimeSeries</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="timeseries.TimeSeries.TimeSeries.to_json">
 <code class="descname">to_json</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#timeseries.TimeSeries.TimeSeries.to_json" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Converts this TimeSeries to a list of lists so that it can be converted to json</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">[[times],[values]] of this TimeSeries</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/library/functions.html#list" title="(in Python v2.7)">list</a></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<dl class="docutils">
+<dt>DNY</dt>
+<dd>to interface with TSDB objects</dd>
+<dt>ASK</dt>
+<dd>fixing DNY&#8217;s implementation (times need to be first)</dd>
+</dl>
+</dd></dl>
 
 <dl class="attribute">
 <dt>
 <code class="descname">values</code></dt>
-<dd></dd></dl>
+<dd><p>values of the TimeSeries</p>
+</dd></dl>
 
 </dd></dl>
 

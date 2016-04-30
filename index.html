@@ -63,20 +63,30 @@
 </div>
 <div class="section" id="description">
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>We implement a database that can store time series data and perform fast similarly serach on it.</p>
 </div>
 <div class="section" id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="setup">
 <h3>1. Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li>Start the Database Server: <cite>python go_server.py</cite></li>
-<li>Start the Web Server: <cite>python web_server.py</cite></li>
+<li>Start the Database Server:</li>
 </ul>
+<div class="highlight-python"><div class="highlight"><pre><span></span>python go_server.py
+</pre></div>
+</div>
+<ul class="simple">
+<li>Start the Web Server:</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span></span>python web_server.py
+</pre></div>
+</div>
 </div>
 <div class="section" id="api-quick-guide">
 <h3>2. API Quick Guide<a class="headerlink" href="#api-quick-guide" title="Permalink to this headline">¶</a></h3>
-<p>a. SELECT
-Select from the timeseries database.</p>
+<div class="section" id="i-select">
+<h4>i. SELECT<a class="headerlink" href="#i-select" title="Permalink to this headline">¶</a></h4>
+<p>Select from the timeseries database.</p>
 <ul class="simple">
 <li>Endpoint: <strong>/select</strong></li>
 <li>Verb: <strong>GET</strong></li>
@@ -92,8 +102,10 @@ Select from the timeseries database.</p>
     <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;query&#39;</span><span class="p">:</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">)})</span><span class="o">.</span><span class="n">content</span>
 </pre></div>
 </div>
-<p>b. AUGMENTED SELECT
-Select a set of rows and then run s predefined stored procedure on it</p>
+</div>
+<div class="section" id="ii-augmented-select">
+<h4>ii. AUGMENTED SELECT<a class="headerlink" href="#ii-augmented-select" title="Permalink to this headline">¶</a></h4>
+<p>Select a set of rows and then run a predefined stored procedure on it</p>
 <ul class="simple">
 <li>Endpoint: <strong>/augselect</strong></li>
 <li>Verb: <strong>GET</strong></li>
@@ -105,8 +117,10 @@ Select a set of rows and then run s predefined stored procedure on it</p>
 <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">server_url</span><span class="o">+</span><span class="s1">&#39;/augselect&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;query&#39;</span><span class="p">:</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">)})</span><span class="o">.</span><span class="n">content</span>
 </pre></div>
 </div>
-<p>c. INSERT TIMESERIES
-Insert a new timeseries into the database</p>
+</div>
+<div class="section" id="iii-insert-timeseries">
+<h4>iii. INSERT TIMESERIES<a class="headerlink" href="#iii-insert-timeseries" title="Permalink to this headline">¶</a></h4>
+<p>Insert a new timeseries into the database</p>
 <ul class="simple">
 <li>Endpoint: <strong>/tsdb/add/ts</strong></li>
 <li>Verb: <strong>POST</strong></li>
@@ -119,8 +133,10 @@ Insert a new timeseries into the database</p>
 <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">server_url</span><span class="o">+</span><span class="s1">&#39;/add/ts&#39;</span><span class="p">,</span> <span class="n">make_insert_ts</span><span class="p">(</span><span class="s1">&#39;ts-1&#39;</span><span class="p">,</span> <span class="n">ts1</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>d. UPSERT METADATA
-Update or Insert metadata for a particular timeseries into the database</p>
+</div>
+<div class="section" id="iv-upsert-metadata">
+<h4>iv. UPSERT METADATA<a class="headerlink" href="#iv-upsert-metadata" title="Permalink to this headline">¶</a></h4>
+<p>Update or Insert metadata for a particular timeseries into the database</p>
 <ul class="simple">
 <li>Endpoint: <strong>/tsdb/add/metadata</strong></li>
 <li>Verb: <strong>POST</strong></li>
@@ -133,8 +149,10 @@ Update or Insert metadata for a particular timeseries into the database</p>
 <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">server_url</span><span class="o">+</span><span class="s1">&#39;/add/metadata&#39;</span><span class="p">,</span> <span class="n">make_upsert_meta</span><span class="p">(</span><span class="s1">&#39;ts-1&#39;</span><span class="p">,</span> <span class="n">meta1</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>e. INSERT TRIGGER
-Setup a predefined stored procedure to be run when a particular event occurs in the database.
+</div>
+<div class="section" id="v-insert-trigger">
+<h4>v. INSERT TRIGGER<a class="headerlink" href="#v-insert-trigger" title="Permalink to this headline">¶</a></h4>
+<p>Setup a predefined stored procedure to be run when a particular event occurs in the database.
 This is called a trigger.</p>
 <ul class="simple">
 <li>Endpoint: <strong>/tsdb/add/trigger</strong></li>
@@ -150,21 +168,21 @@ This is called a trigger.</p>
 <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">server_url</span><span class="o">+</span><span class="s1">&#39;/add/trigger&#39;</span><span class="p">,</span> <span class="n">make_add_trigger</span><span class="p">(</span><span class="s1">&#39;corr&#39;</span><span class="p">,</span> <span class="s1">&#39;insert_ts&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="n">queryts</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>f. REMOVE TRIGGER
-Remove a trigger from the database.</p>
+</div>
+<div class="section" id="vi-remove-trigger">
+<h4>vi. REMOVE TRIGGER<a class="headerlink" href="#vi-remove-trigger" title="Permalink to this headline">¶</a></h4>
+<p>Remove a trigger from the database.</p>
 <ul class="simple">
 <li>Endpoint: <strong>/tsdb/remove/trigger</strong></li>
 <li>Verb: <strong>POST</strong></li>
 </ul>
 </div>
 </div>
+</div>
 <div class="section" id="note">
 <h2>Note<a class="headerlink" href="#note" title="Permalink to this headline">¶</a></h2>
 <p>This project has been set up using PyScaffold 2.5.5. For details and usage
 information on PyScaffold see <a class="reference external" href="http://pyscaffold.readthedocs.org/">http://pyscaffold.readthedocs.org/</a>.</p>
-</div>
-<div class="section" id="indices-and-tables">
-<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><a class="reference internal" href="genindex.html"><span>Index</span></a></li>
 <li><a class="reference internal" href="py-modindex.html"><span>Module Index</span></a></li>
@@ -185,11 +203,18 @@ information on PyScaffold see <a class="reference external" href="http://pyscaff
 <li><a class="reference internal" href="#description">Description</a></li>
 <li><a class="reference internal" href="#usage">Usage</a><ul>
 <li><a class="reference internal" href="#setup">1. Setup</a></li>
-<li><a class="reference internal" href="#api-quick-guide">2. API Quick Guide</a></li>
+<li><a class="reference internal" href="#api-quick-guide">2. API Quick Guide</a><ul>
+<li><a class="reference internal" href="#i-select">i. SELECT</a></li>
+<li><a class="reference internal" href="#ii-augmented-select">ii. AUGMENTED SELECT</a></li>
+<li><a class="reference internal" href="#iii-insert-timeseries">iii. INSERT TIMESERIES</a></li>
+<li><a class="reference internal" href="#iv-upsert-metadata">iv. UPSERT METADATA</a></li>
+<li><a class="reference internal" href="#v-insert-trigger">v. INSERT TRIGGER</a></li>
+<li><a class="reference internal" href="#vi-remove-trigger">vi. REMOVE TRIGGER</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#note">Note</a></li>
-<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 </li>
 </ul>
