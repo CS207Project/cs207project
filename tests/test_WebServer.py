@@ -24,7 +24,7 @@ schema = {
   'vp': {'convert': to_bool, 'index': 1}
 }
 
-TS_LENGTH = 1024
+TS_LENGTH = 100
 NUMVPS = 5
 
 from scipy.stats import norm
@@ -36,8 +36,8 @@ def tsmaker(m, s, j):
     meta={}
     meta['order'] = int(np.random.choice([-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]))
     meta['blarg'] = int(np.random.choice([1, 2]))
-    t = np.arange(0.0, 1.0, 0.01)
-    v = norm.pdf(t, m, s) + j*np.random.randn(100)
+    t = np.arange(0.0, 1.0, 1/TS_LENGTH)
+    v = norm.pdf(t, m, s) + j*np.random.randn(TS_LENGTH)
     return meta, ts.TimeSeries(t, v)
 
 def make_insert_ts(primary_key,t):
@@ -89,7 +89,7 @@ class WebServerTests(unittest.TestCase):
     def test_main(self):
         np.random.seed(12345)
         N_ts = 50
-        N_vp = 5
+        N_vp = NUMVPS
 
         #Set up 50 time series
         mus = np.random.uniform(low=0.0, high=1.0, size=N_ts)

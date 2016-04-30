@@ -109,9 +109,7 @@ class TSDBProtocol(asyncio.Protocol):
             response = TSDBOp_Return(status, None)  # until proven otherwise.
             try:
                 op = TSDBOp.from_json(msg)#DNY: constructs appropriate TSDBOp_... by identifying msg
-            except TypeError as e:
-                response = TSDBOp_Return(TSDBStatus.INVALID_OPERATION, None)
-            if status is TSDBStatus.OK:
+
                 if isinstance(op, TSDBOp_InsertTS):
                     response = self._insert_ts(op)
                 elif isinstance(op, TSDBOp_UpsertMeta):
@@ -126,9 +124,12 @@ class TSDBProtocol(asyncio.Protocol):
                     response = self._remove_trigger(op)
                 else:
                     response = TSDBOp_Return(TSDBStatus.UNKNOWN_ERROR, op['op'])
-
-            self.conn.write(serialize(response.to_json()))
-            self.conn.close()
+            except Exception as e:
+                status = TSDBStatus.INVALID_OPERATION
+                response = TSDBOp_Return(status, e.args)
+            finally:
+                self.conn.write(serialize(response.to_json()))
+                self.conn.close()
 
     def connection_lost(self, transport):
         print('S> connection lost')

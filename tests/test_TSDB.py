@@ -23,7 +23,7 @@ schema = {
   'vp': {'convert': to_bool, 'index': 1}
 }
 
-TS_LENGTH = 1024
+TS_LENGTH = 100
 NUMVPS = 5
 
 from scipy.stats import norm
@@ -35,8 +35,8 @@ def tsmaker(m, s, j):
     meta={}
     meta['order'] = int(np.random.choice([-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]))
     meta['blarg'] = int(np.random.choice([1, 2]))
-    t = np.arange(0.0, 1.0, 0.01)
-    v = norm.pdf(t, m, s) + j*np.random.randn(100)
+    t = np.arange(0.0, 1.0, 1/TS_LENGTH)
+    v = norm.pdf(t, m, s) + j*np.random.randn(TS_LENGTH)
     return meta, ts.TimeSeries(t, v)
 
 class TSDBTests(asynctest.TestCase):
@@ -57,7 +57,7 @@ class TSDBTests(asynctest.TestCase):
         print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
         client = TSDBClient()
         N_ts = 50
-        N_vp = 5
+        N_vp = NUMVPS
         # add a trigger. notice the argument. It does not do anything here but
         # could be used to save a shlep of data from client to server.
         await client.add_trigger('junk', 'insert_ts', None, 'db:one:ts')

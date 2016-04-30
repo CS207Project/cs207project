@@ -24,14 +24,14 @@ schema = {
   'vp': {'convert': to_bool, 'index': 1}
 }
 
-TS_LENGTH = 1024
+TS_LENGTH = 100
 NUMVPS = 5
 
 def main():
     # we augment the schema by adding columns for 5 vantage points
     for i in range(NUMVPS):
         schema["d_vp-{}".format(i)] = {'convert': float, 'index': 1}
-    db = DictDB(schema, 'pk')
+    db = DictDB(schema, 'pk',TS_LENGTH)
     server = TSDBServer(db)
     server.run()
 

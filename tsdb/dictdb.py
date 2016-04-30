@@ -7,7 +7,7 @@ import numbers
 # this dictionary will help you in writing a generic select operation
 OPMAP = {
     '<': operator.lt,
-    '>': operator.le,
+    '>': operator.gt,
     '==': operator.eq,
     '!=': operator.ne,
     '<=': operator.le,
@@ -16,12 +16,13 @@ OPMAP = {
 
 class DictDB:
     "Database implementation in a dict"
-    def __init__(self, schema,pk_field = 'pk'):
+    def __init__(self, schema, pk_field = 'pk', ts_length = 100):
         "initializes database with indexed and schema"
         self.indexes = {}
         self.rows = {} # contains the row data, each entry points to another dictionary
         self.schema = schema # DNY: see go_server.py for example schema
         self.pkfield = pk_field
+        self.ts_length = ts_length
         for s in schema:
             indexinfo = schema[s]['index']
             # convert = schema[s]['convert']
@@ -33,6 +34,8 @@ class DictDB:
     def insert_ts(self, pk, ts):
         "given a pk and a timeseries, insert them"
         print("in db insert",pk,ts)
+        if len(ts) != self.ts_length:
+            raise ValueError('TimeSeries is of the wrong length. Should be '+ str(self.ts_length))
         if pk not in self.rows:
             self.rows[pk] = {'pk': pk}
         else:
@@ -95,9 +98,8 @@ class DictDB:
         return pks_out, data_list_out
 
     def select(self, meta, fields_to_ret, additional):
-        #ASK: Implementing via a full table scan right now
-
         pks_out = set(self.rows.keys())
+        
         for field,criteria in meta.items():
             if field in self.schema:
                 fieldConvert = self.schema[field]['convert']
@@ -142,7 +144,6 @@ class DictDB:
                 raise Exception("Illdefined sort order. Must be '+' or '-'")
 
         if additional and 'limit' in additional:
-            print("Limiting")
             pks_out = pks_out[:int(additional['limit'])]
 
         return self._getDataForRows(pks_out,fields_to_ret)
