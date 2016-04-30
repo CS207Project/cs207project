@@ -16,16 +16,18 @@ TimeSeries Utility
    license
    api/modules
 
+-----------
 Description
 -----------
 
-We implement a database that can store time series data and perform fast similarly serach on it. 
+We implement a database that can store time series data and perform fast similarly serach on it.
 
+-----
 Usage
 -----
 
 1. Setup
-~~~~~~~~
+========
 - Start the Database Server:
 ::
 
@@ -37,10 +39,9 @@ Usage
     python web_server.py
 
 2. API Quick Guide
-~~~~~~~~~~~~~~~~~~
-
+==================
 i. SELECT
-
+---------
 Select from the timeseries database.
 
 - Endpoint: **/select**
@@ -59,7 +60,7 @@ Select from the timeseries database.
         params={'query':json.dumps(payload)}).content
 
 ii. AUGMENTED SELECT
-
+--------------------
 Select a set of rows and then run a predefined stored procedure on it
 
 - Endpoint: **/augselect**
@@ -74,7 +75,7 @@ Select a set of rows and then run a predefined stored procedure on it
     requests.get(server_url+'/augselect', params={'query':json.dumps(payload)}).content
 
 iii. INSERT TIMESERIES
-
+----------------------
 Insert a new timeseries into the database
 
 - Endpoint: **/tsdb/add/ts**
@@ -91,7 +92,7 @@ Insert a new timeseries into the database
 
 
 iv. UPSERT METADATA
-
+-------------------
 Update or Insert metadata for a particular timeseries into the database
 
 - Endpoint: **/tsdb/add/metadata**
@@ -107,7 +108,7 @@ Update or Insert metadata for a particular timeseries into the database
     requests.post(server_url+'/add/metadata', make_upsert_meta('ts-1', meta1))
 
 v. INSERT TRIGGER
-
+-----------------
 Setup a predefined stored procedure to be run when a particular event occurs in the database.
 This is called a trigger.
 
@@ -126,13 +127,13 @@ This is called a trigger.
     requests.post(server_url+'/add/trigger', make_add_trigger('corr', 'insert_ts', 'd', queryts))
 
 vi. REMOVE TRIGGER
-
+------------------
 Remove a trigger from the database.
 
 - Endpoint: **/tsdb/remove/trigger**
 - Verb: **POST**
 
-
+----
 Note
 ----
 
