@@ -26,8 +26,8 @@ def proc_main(pk, row, arg):
         this is the primary key of the row of the database
     row : dict
         dictionary consisting of column_name: value for this row in the database
-    arg : anything
-        TimeSeries to which we will compute the kerndist
+    arg : list
+        TimeSeries in list form to which we will compute the kerndist
 
     Returns
     -------
@@ -57,5 +57,25 @@ def proc_main(pk, row, arg):
 
 #the function is wrapped in a coroutine for triggers
 async def main(pk, row, arg):
+    """ Compute the kernel correlation distance of a TimeSeries to a given reference TimeSeries
 
+    Parameters
+    ----------
+    pk : string or int
+        this is the primary key of the row of the database
+    row : dict
+        dictionary consisting of column_name: value for this row in the database
+    arg : list
+        TimeSeries in list form to which we will compute the kerndist
+
+    Returns
+    -------
+    list
+        [kerndist] of the TimeSeries in this row of the database to the `arg`
+
+    Notes
+    -----
+    Implementation of the kernel correlation distance is done in the _corr module
+
+    """
     return proc_main(pk, row, arg)
