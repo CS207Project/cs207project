@@ -115,3 +115,6 @@ class DictDBTests(unittest.TestCase):
         with self.assertRaises(Exception):
             pks, payload = self.db.select({'order': {'>': 1}}, [], {'sort_by':'+order',
                                                             'limit':'a'})
+
+if __name__ == '__main__':
+    unittest.main()

@@ -49,3 +49,6 @@ class TreeIndexTests(unittest.TestCase):
     def test_missingPK(self):
         with self.assertRaises(ValueError):
             self.blarg_index.remove(fieldValue=8,pk='ts-100')
+
+if __name__ == '__main__':
+    unittest.main()

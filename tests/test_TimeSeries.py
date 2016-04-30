@@ -141,3 +141,6 @@ class TSTests(unittest.TestCase):
         t1 = TimeSeries([1, 2, 3], [10, 100, 1000])
         t2 = TimeSeries([4, 6, 8], [100, 1000, 10])
         self.assertEqual(t1.std(), t2.std())
+
+if __name__ == '__main__':
+    unittest.main()
