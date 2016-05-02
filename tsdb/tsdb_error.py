@@ -2,6 +2,15 @@ import enum
 
 
 class TSDBStatus(enum.IntEnum):
+    """
+    Class to report the status of the timeseries database after processing
+    a request from the client. There are four possible statuses returned.
+
+    0: Everything is okay.
+    1: An unknown error has occurred.
+    2: The client has attempted an invalid operation.
+    3: The request was for an invalid key, most likely a duplicate primary key.
+    """
     OK = 0
     UNKNOWN_ERROR = 1
     INVALID_OPERATION = 2

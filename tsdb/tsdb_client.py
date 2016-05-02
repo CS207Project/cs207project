@@ -6,12 +6,34 @@ from .tsdb_error import *
 class TSDBClient(object):
     """
     The client. This could be used in a python program, web server, or REPL!
+
+    Attributes
+    ----------
+    port :
+        the port with which to connect to the server
     """
     def __init__(self, port=9999):
+        """Instantiate a TSDBClient class object
+
+        Parameters
+        ----------
+        port : int
+            the port with which to connect to the server. Default is 9999.
+        """
         self.port = port
         self.deserializer = Deserializer()
 
     async def insert_ts(self, primary_key, ts):
+        """
+        Send the server a request to insert a timeseries into the database.
+
+        Parameters
+        ----------
+        `primary_key`: int
+            a unique identifier for the timeseries
+        `ts`: a TimeSeries object
+            the timeseries, an instance of the `TimeSeries` class
+        """
         # your code here, construct from the code in tsdb_ops.py
         msg = TSDBOp_InsertTS(primary_key, ts)
         # msg = {}
@@ -22,6 +44,17 @@ class TSDBClient(object):
         return TSDBStatus(status), payload
 
     async def upsert_meta(self, primary_key, metadata_dict):
+        """
+        Send the server a request to upsert metadata into the timeseries in
+        the database.
+
+        Parameters
+        ----------
+        `primary_key`: int
+            a unique identifier for the timeseries
+        `metadata_dict`: a dictionary object
+            the metadata to upsert into the timeseries
+        """
         # your code here
         msg = TSDBOp_UpsertMeta(primary_key, metadata_dict)
         # msg = {}
@@ -32,6 +65,21 @@ class TSDBClient(object):
         return TSDBStatus(status), payload
 
     async def select(self, metadata_dict={}, fields=None, additional=None):
+    """
+    Send the server a request for the selection of timeseries elements in
+    the database that match the criteria set in metadata_dict.
+
+    Parameters
+    ----------
+    metadata_dict: a dictionary object
+        the selection criteria (filters)
+    fields: a dictionary object
+        If not `None`, only these fields of the timeseries are returned.
+        Otherwise, the timeseries are returned.
+    additional: a dictionary object
+        additional computation to perform on the query matches before they're
+        returned. You can sort or limit the number of results that you receive.
+    """
         #DNY: TODO, need to redo
         msg = TSDBOp_Select(metadata_dict,fields,additional)
         # msg = {}
@@ -46,6 +94,16 @@ class TSDBClient(object):
         return TSDBStatus(status), payload
 
     async def add_trigger(self, proc, onwhat, target, arg):
+    """
+    Send the server a request to add a trigger.
+
+    Parameters
+    ----------
+    `proc` : which of the modules in procs. Options: 'corr', 'junk', 'stats'
+    `onwhat` : the trigger
+    `target` : metadata to be upserted
+    `arg` : additional argument
+    """
         msg = TSDBOp_AddTrigger(proc,onwhat,target,arg)
 
         status, payload =  await self._send(msg.to_json())

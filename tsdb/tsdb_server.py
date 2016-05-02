@@ -23,6 +23,14 @@ class TSDBProtocol(asyncio.Protocol):
         self.futures = []
 
     def _insert_ts(self, op):
+        """
+        Insert a timeseries into the database.
+
+        Parameters
+        ----------
+        op : a TSDBOp object
+            contains the primary key and timeseries to insert
+        """
         try:
             self.server.db.insert_ts(op['pk'], op['ts'])
         except ValueError as e:
@@ -31,11 +39,29 @@ class TSDBProtocol(asyncio.Protocol):
         return TSDBOp_Return(TSDBStatus.OK, op['op'])
 
     def _upsert_meta(self, op):
+        """
+        Upsert metadata into a timeseries on the database.
+
+        Parameters
+        ----------
+        op : a TSDBOp object
+            contains the primary key and metadata dict (`op[md]`) to upsert
+        """
         self.server.db.upsert_meta(op['pk'], op['md'])
         self._run_trigger('upsert_meta', [op['pk']])
         return TSDBOp_Return(TSDBStatus.OK, op['op'])
 
     def _select(self, op):
+        """
+        Select timeseries from the database.
+
+        Parameters
+        ----------
+        op : a TSDBOp object
+            contains metadata specifications (`op[md]`) to match in the query. Also
+            contains fields of the matched timeseries to return. If left to
+            default value of `None`, everything is returned.
+        """
         loids, fields = self.server.db.select(op['md'], op['fields'], op['additional'])
         self._run_trigger('select', loids)
         if fields is not None:
@@ -47,7 +73,21 @@ class TSDBProtocol(asyncio.Protocol):
 
 
     def _augmented_select(self, op):
-        "run a select and then synchronously run some computation on it"
+        """
+        Run a select and then synchronously run some computation on it
+
+        Parameters
+        ----------
+        op : a TSDBOp object
+            contains metadata specifications (`op[md]`) to match in the query. Also
+            contains fields of the matched timeseries (`op[fields]`) to return.
+            If left to default value of `None`, everything is returned.
+
+            Additional elements are:
+                `op[proc]` : module in proc to run
+                `op[arg]` : an additional argument
+                `op[target]` : will return targets mapped to return values of `op[proc]`
+        """
         loids, fields = self.server.db.select(op['md'], None, op['additional'])
         proc = op['proc']  # the module in procs
         arg = op['arg']  # an additional argument, could be a constant
@@ -64,6 +104,16 @@ class TSDBProtocol(asyncio.Protocol):
         return TSDBOp_Return(TSDBStatus.OK, op['op'], dict(zip(loids, results)))
 
     def _add_trigger(self, op):#DNY: Trigger is "if something happens, run this particular process", similar to a stored procedure.
+        """
+        Send the server a request to add a trigger.
+
+        Parameters
+        ----------
+        `op[proc]` : which of the modules in procs. Options: 'corr', 'junk', 'stats'
+        `op[onwha]t` : the trigger
+        `op[target]` : metadata to be upserted
+        `op[arg]` : additional argument
+        """
         trigger_proc = op['proc']  # the module in procs DNY: proc = 'process', should be an async co-routine
         # see procs/ directory, at the same level as tsdb
         trigger_onwhat = op['onwhat']  # on what operation? eg `insert_ts`
@@ -95,6 +145,7 @@ class TSDBProtocol(asyncio.Protocol):
 
 
     def connection_made(self, conn):
+        "Connection established"
         print('S> connection made')
         #connection or transport is saved as an instance variable
         self.conn = conn#DNY: conn is a 'asyncio.WriteTransport' object
@@ -136,8 +187,31 @@ class TSDBProtocol(asyncio.Protocol):
 
 
 class TSDBServer(object):
+    """
+    The server. This accepts requests from the client, processes them, and
+    dispatches a response.
 
+    Attributes
+    ----------
+    port :
+        the port with which to connect to the server
+    db :
+        database engine
+    triggers :
+        a default dict of triggers
+    """
     def __init__(self, db, port=9999):
+        """
+        Instantiate an instance of the server. This accepts requests from the
+        client, processes them, and dispatches a response.
+
+        Parameters
+        ----------
+        port : int
+            port to listen on. Defaults to 9999.
+        db : a DictDB
+            database engine
+        """
         self.port = port
         self.db = db
         self.triggers = defaultdict(list)
@@ -148,6 +222,7 @@ class TSDBServer(object):
         loop.stop()
 
     def run(self):
+        "Run the server."
         loop = asyncio.get_event_loop()
         # NOTE: enable this if you'd rather have the server stop on an error
         #       currently it dumps the protocol and keeps going; new connections

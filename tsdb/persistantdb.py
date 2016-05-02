@@ -52,9 +52,12 @@ def dict_eq(dict1, dict2):
 
 
 class PersistantDB:
-    "Database implementation using Binary Trees and BitMasks"
+    """
+    Database implementation to allow for persistant storage. It's implemented
+    using Binary Trees and BitMasks.
+    """
     def __init__(self, schema=None, pk_field='pk', db_name='default', ts_length=1024, testing=False):
-        "initializes database with indexed and schema"
+        """Initializes database with index and schema."""
         # TODO DNY: set up bitmask indexes
 
         # COULD DO DNY: create function that eliminates deleted values in the heaps
@@ -120,6 +123,9 @@ class PersistantDB:
                 self.indexes[field] = TreeIndex(field, self.dbname)
 
     def delete_database(self):
+        """
+        Remove the database.
+        """
         shutil.rmtree(self.data_dir)
 
     def close(self):
@@ -128,14 +134,14 @@ class PersistantDB:
         self.pks.close()
 
     def _check_pk(self,pk):
-        "method to check that 'pk' is a string"
+        "Method to check that 'pk' is a string"
         try:
             assert isinstance(pk,str), "Invalid PK"
         except:
             raise ValueError('ts must be a timeseries.Timeseries object')
 
     def insert_ts(self, pk, ts):
-        "given a pk and a timeseries, insert them"
+        "Given a pk and a timeseries, insert them"
         self._check_pk(pk)
         if not isinstance(ts, timeseries.TimeSeries):
             raise ValueError('ts must be a timeseries.Timeseries object')
@@ -174,10 +180,11 @@ class PersistantDB:
         return self.tsheap.read_and_decode_ts(ts_offset)
 
     def __len__(self):
+        "Dunder function to return length of timeseries"
         return len(self.pks)
 
     def upsert_meta(self, pk, new_meta):
-        "implement upserting field values, as long as the fields are in the schema."
+        "Upsert metadata into the timeseries in the database."
         # TODO DNY: Does not support updating primary keys
         # TODO DNY: Does not support deleting metadata once inserted
 
@@ -202,12 +209,22 @@ class PersistantDB:
             self.update_indices(pkid)
 
     def remove_indices(self, pk, old_meta_dict):
+        """
+        Remove the odl stored indices.
+
+        Parameters
+        ----------
+        pk : int
+            primary key
+        old_meta_dict : dict
+            old metadata dictionary
+        """
         for field in self.indexes.keys():
             if field in old_meta_dict.keys():
                 self.indexes[field].remove(old_meta_dict[field], pk)
 
     def update_indices(self, pk, old_meta_dict=None):
-        "updates indices of pk with the most recent metadata"
+        "Update indices after a change has occurred. Eg. Called after insertion"
         if old_meta_dict is not None:
             self.remove_indices(pk, old_meta_dict)
 
@@ -252,6 +269,21 @@ class PersistantDB:
         return pks_out, data_list_out
 
     def select(self, meta, fields_to_ret=[], additional=None):
+        """
+        Select timeseries elements in the database that match the criteria set
+        in meta.
+
+        Parameters
+        ----------
+        metadata_dict: a dictionary object
+            the selection criteria (filters)
+        fields_to_ret: a list object
+            If not `None`, only these fields of the timeseries are returned.
+            Otherwise, the timeseries are returned.
+        additional: a dictionary object
+            additional computation to perform on the query matches before they're
+            returned. You can sort or limit the number of results that you receive.
+        """
         # Find matching keys
         pks_out = set(self.pks.keys())
         for field,criteria in meta.items():

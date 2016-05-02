@@ -15,9 +15,35 @@ OPMAP = {
 }
 
 class DictDB:
-    "Database implementation in a dict"
+    """
+    A database implementation in a dictionary
+
+    Attributes
+    ----------
+    indexes :
+        a default dict of primary keys and offsets in file of the values
+    rows :
+        contains the rows of data. Each entry points to a dictionary
+    schema :
+        the schema that the dictionary follows
+    pkfield :
+        selects the field to be considered as the primary key. Defaults to `pk`.
+    ts_length :
+        lenght of the timeseries. Defaults to 100.
+    """
     def __init__(self, schema, pk_field = 'pk', ts_length = 100):
-        "initializes database with indexed and schema"
+        """
+        A database implementation in a dictionary
+
+        Parameters
+        ----------
+        schema : dict object
+            the schema that the database follows (fields, converts, indexes, etc.)
+        pkfield : string
+            primary key field. Defaults to `pk`.
+        ts_length : int
+            lenght of timeseries. Defaults to 100.
+        """
         self.indexes = {}
         self.rows = {} # contains the row data, each entry points to another dictionary
         self.schema = schema # DNY: see go_server.py for example schema
@@ -32,7 +58,7 @@ class DictDB:
                 self.indexes[s] = defaultdict(set)# create an index for every non-None schema
 
     def insert_ts(self, pk, ts):
-        "given a pk and a timeseries, insert them"
+        "Given a pk and a timeseries, insert them"
         print("in db insert",pk,ts)
         if len(ts) != self.ts_length:
             raise ValueError('TimeSeries is of the wrong length. Should be '+ str(self.ts_length))
@@ -44,7 +70,10 @@ class DictDB:
         self.update_indices(pk)
 
     def upsert_meta(self, pk, meta):
-        "implement upserting field values, as long as the fields are in the schema."
+        """
+        Given a primary key and a dict of meta fields, value pairs, upsert
+        them as long as they're in the schema.
+        """
         #DNY written
         # assume meta is a dict, field->values
         for field, value in meta.items():
@@ -62,6 +91,7 @@ class DictDB:
             self.update_indices(pkid)
 
     def update_indices(self, pk):
+        "Update indices after a change has occurred. Eg. Called after insertion"
         row = self.rows[pk]
         for field in row:#DNY: eg 'pk' or 'ts', or any entry in self.schema
             v = row[field]
@@ -98,8 +128,23 @@ class DictDB:
         return pks_out, data_list_out
 
     def select(self, meta, fields_to_ret, additional):
+        """
+        Select timeseries elements in the database that match the criteria set
+        in metadata_dict.
+
+        Parameters
+        ----------
+        meta: a dictionary object
+            the selection criteria (filters)
+        fields_to_ret: a dictionary object
+            If not `None`, only these fields of the timeseries are returned.
+            Otherwise, the timeseries are returned.
+        additional: a dictionary object
+            additional computation to perform on the query matches before they're
+            returned. You can sort or limit the number of results that you receive.
+        """
         pks_out = set(self.rows.keys())
-        
+
         for field,criteria in meta.items():
             if field in self.schema:
                 fieldConvert = self.schema[field]['convert']
