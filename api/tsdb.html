@@ -47,6 +47,14 @@
 </div>
 <div class="section" id="module-tsdb.baseindex">
 <span id="tsdb-baseindex-module"></span><h2>tsdb.baseindex module<a class="headerlink" href="#module-tsdb.baseindex" title="Permalink to this headline">¶</a></h2>
+<p>All the index classes.</p>
+<dl class="docutils">
+<dt>Currentlly:</dt>
+<dd>BaseIndex (parent for all the index subclasses): lays out what needs to be done
+PKIndex: Primary Key Index
+TreeIndex: Tree based index done using a AVL tree
+BitmapIndex: Bitmap index for low cardinality columns</dd>
+</dl>
 <dl class="class">
 <dt id="tsdb.baseindex.BaseIndex">
 <em class="property">class </em><code class="descclassname">tsdb.baseindex.</code><code class="descname">BaseIndex</code><span class="sig-paren">(</span><em>fieldName='default'</em>, <em>database_name='default'</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.BaseIndex" title="Permalink to this definition">¶</a></dt>
@@ -199,6 +207,7 @@ if close, then file descriptor not return.</p>
 </div>
 <div class="section" id="module-tsdb.dictdb">
 <span id="tsdb-dictdb-module"></span><h2>tsdb.dictdb module<a class="headerlink" href="#module-tsdb.dictdb" title="Permalink to this headline">¶</a></h2>
+<p>A dictionary based in-memory version of the time series database</p>
 <dl class="class">
 <dt id="tsdb.dictdb.DictDB">
 <em class="property">class </em><code class="descclassname">tsdb.dictdb.</code><code class="descname">DictDB</code><span class="sig-paren">(</span><em>schema</em>, <em>pk_field='pk'</em>, <em>ts_length=100</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.dictdb.DictDB" title="Permalink to this definition">¶</a></dt>
@@ -285,6 +294,7 @@ them as long as they&#8217;re in the schema.</p>
 </div>
 <div class="section" id="module-tsdb.heap">
 <span id="tsdb-heap-module"></span><h2>tsdb.heap module<a class="headerlink" href="#module-tsdb.heap" title="Permalink to this headline">¶</a></h2>
+<p>A heap that is used in the persistantdb implementation</p>
 <dl class="class">
 <dt id="tsdb.heap.HeapFile">
 <em class="property">class </em><code class="descclassname">tsdb.heap.</code><code class="descname">HeapFile</code><span class="sig-paren">(</span><em>heap_file_name</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.heap.HeapFile" title="Permalink to this definition">¶</a></dt>
@@ -338,6 +348,7 @@ them as long as they&#8217;re in the schema.</p>
 </div>
 <div class="section" id="module-tsdb.persistantdb">
 <span id="tsdb-persistantdb-module"></span><h2>tsdb.persistantdb module<a class="headerlink" href="#module-tsdb.persistantdb" title="Permalink to this headline">¶</a></h2>
+<p>Persistent time series database.</p>
 <dl class="class">
 <dt id="tsdb.persistantdb.PersistantDB">
 <em class="property">class </em><code class="descclassname">tsdb.persistantdb.</code><code class="descname">PersistantDB</code><span class="sig-paren">(</span><em>schema=None</em>, <em>pk_field='pk'</em>, <em>db_name='default'</em>, <em>ts_length=1024</em>, <em>testing=False</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB" title="Permalink to this definition">¶</a></dt>
@@ -434,6 +445,7 @@ returned. You can sort or limit the number of results that you receive.</li>
 </div>
 <div class="section" id="module-tsdb.tsdb_client">
 <span id="tsdb-tsdb-client-module"></span><h2>tsdb.tsdb_client module<a class="headerlink" href="#module-tsdb.tsdb_client" title="Permalink to this headline">¶</a></h2>
+<p>Time Series Database Client: This could be used in a python program, web server, or REPL!</p>
 <dl class="class">
 <dt id="tsdb.tsdb_client.TSDBClient">
 <em class="property">class </em><code class="descclassname">tsdb.tsdb_client.</code><code class="descname">TSDBClient</code><span class="sig-paren">(</span><em>port=9999</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_client.TSDBClient" title="Permalink to this definition">¶</a></dt>
@@ -539,6 +551,7 @@ the database.</p>
 </div>
 <div class="section" id="module-tsdb.tsdb_error">
 <span id="tsdb-tsdb-error-module"></span><h2>tsdb.tsdb_error module<a class="headerlink" href="#module-tsdb.tsdb_error" title="Permalink to this headline">¶</a></h2>
+<p>Defines the types of errors the database server / client / backend can encounter</p>
 <dl class="class">
 <dt id="tsdb.tsdb_error.TSDBStatus">
 <em class="property">class </em><code class="descclassname">tsdb.tsdb_error.</code><code class="descname">TSDBStatus</code><a class="headerlink" href="#tsdb.tsdb_error.TSDBStatus" title="Permalink to this definition">¶</a></dt>
@@ -589,6 +602,7 @@ a request from the client. There are four possible statuses returned.</p>
 </div>
 <div class="section" id="module-tsdb.tsdb_ops">
 <span id="tsdb-tsdb-ops-module"></span><h2>tsdb.tsdb_ops module<a class="headerlink" href="#module-tsdb.tsdb_ops" title="Permalink to this headline">¶</a></h2>
+<p>Encapluation for all the operations. Communication also passes through here.</p>
 <dl class="class">
 <dt id="tsdb.tsdb_ops.TSDBOp">
 <em class="property">class </em><code class="descclassname">tsdb.tsdb_ops.</code><code class="descname">TSDBOp</code><span class="sig-paren">(</span><em>op</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp" title="Permalink to this definition">¶</a></dt>
@@ -690,6 +704,7 @@ data is sent back to the user.</p>
 </div>
 <div class="section" id="module-tsdb.tsdb_serialization">
 <span id="tsdb-tsdb-serialization-module"></span><h2>tsdb.tsdb_serialization module<a class="headerlink" href="#module-tsdb.tsdb_serialization" title="Permalink to this headline">¶</a></h2>
+<p>Structures to serialize and de-serialize data</p>
 <dl class="class">
 <dt id="tsdb.tsdb_serialization.Deserializer">
 <em class="property">class </em><code class="descclassname">tsdb.tsdb_serialization.</code><code class="descname">Deserializer</code><a class="headerlink" href="#tsdb.tsdb_serialization.Deserializer" title="Permalink to this definition">¶</a></dt>
@@ -730,6 +745,7 @@ end of the wire.</p>
 </div>
 <div class="section" id="module-tsdb.tsdb_server">
 <span id="tsdb-tsdb-server-module"></span><h2>tsdb.tsdb_server module<a class="headerlink" href="#module-tsdb.tsdb_server" title="Permalink to this headline">¶</a></h2>
+<p>Time Series Database Server: Owns any version of a database and communicates with the TSDBClient</p>
 <dl class="class">
 <dt id="tsdb.tsdb_server.TSDBProtocol">
 <em class="property">class </em><code class="descclassname">tsdb.tsdb_server.</code><code class="descname">TSDBProtocol</code><span class="sig-paren">(</span><em>server</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_server.TSDBProtocol" title="Permalink to this definition">¶</a></dt>
