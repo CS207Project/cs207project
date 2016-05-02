@@ -3,6 +3,8 @@
 It is meant to be an example of how to start our system and also servers as a way for us to test
 our code.
 
+IF YOU EDIT THIS FILE TESTS MIGHT BREAK. IT IS MEANT AS A DEMO ONLY.
+
 """
 from webserver import WebServer
 

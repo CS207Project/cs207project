@@ -65,21 +65,21 @@ class TSDBClient(object):
         return TSDBStatus(status), payload
 
     async def select(self, metadata_dict={}, fields=None, additional=None):
-    """
-    Send the server a request for the selection of timeseries elements in
-    the database that match the criteria set in metadata_dict.
+        """
+        Send the server a request for the selection of timeseries elements in
+        the database that match the criteria set in metadata_dict.
 
-    Parameters
-    ----------
-    metadata_dict: a dictionary object
-        the selection criteria (filters)
-    fields: a dictionary object
-        If not `None`, only these fields of the timeseries are returned.
-        Otherwise, the timeseries are returned.
-    additional: a dictionary object
-        additional computation to perform on the query matches before they're
-        returned. You can sort or limit the number of results that you receive.
-    """
+        Parameters
+        ----------
+        metadata_dict: a dictionary object
+            the selection criteria (filters)
+        fields: a dictionary object
+            If not `None`, only these fields of the timeseries are returned.
+            Otherwise, the timeseries are returned.
+        additional: a dictionary object
+            additional computation to perform on the query matches before they're
+            returned. You can sort or limit the number of results that you receive.
+        """
         #DNY: TODO, need to redo
         msg = TSDBOp_Select(metadata_dict,fields,additional)
         # msg = {}
@@ -94,16 +94,16 @@ class TSDBClient(object):
         return TSDBStatus(status), payload
 
     async def add_trigger(self, proc, onwhat, target, arg):
-    """
-    Send the server a request to add a trigger.
+        """
+        Send the server a request to add a trigger.
 
-    Parameters
-    ----------
-    `proc` : which of the modules in procs. Options: 'corr', 'junk', 'stats'
-    `onwhat` : the trigger
-    `target` : metadata to be upserted
-    `arg` : additional argument
-    """
+        Parameters
+        ----------
+        `proc` : which of the modules in procs. Options: 'corr', 'junk', 'stats'
+        `onwhat` : the trigger
+        `target` : metadata to be upserted
+        `arg` : additional argument
+        """
         msg = TSDBOp_AddTrigger(proc,onwhat,target,arg)
 
         status, payload =  await self._send(msg.to_json())
