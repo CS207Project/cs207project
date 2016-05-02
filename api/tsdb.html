@@ -203,7 +203,37 @@ if close, then file descriptor not return.</p>
 <dt id="tsdb.dictdb.DictDB">
 <em class="property">class </em><code class="descclassname">tsdb.dictdb.</code><code class="descname">DictDB</code><span class="sig-paren">(</span><em>schema</em>, <em>pk_field='pk'</em>, <em>ts_length=100</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.dictdb.DictDB" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
-<p>Database implementation in a dict</p>
+<p>A database implementation in a dictionary</p>
+<dl class="attribute">
+<dt id="tsdb.dictdb.DictDB.indexes">
+<code class="descname">indexes</code><a class="headerlink" href="#tsdb.dictdb.DictDB.indexes" title="Permalink to this definition">¶</a></dt>
+<dd><p>a default dict of primary keys and offsets in file of the values</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tsdb.dictdb.DictDB.rows">
+<code class="descname">rows</code><a class="headerlink" href="#tsdb.dictdb.DictDB.rows" title="Permalink to this definition">¶</a></dt>
+<dd><p>contains the rows of data. Each entry points to a dictionary</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tsdb.dictdb.DictDB.schema">
+<code class="descname">schema</code><a class="headerlink" href="#tsdb.dictdb.DictDB.schema" title="Permalink to this definition">¶</a></dt>
+<dd><p>the schema that the dictionary follows</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tsdb.dictdb.DictDB.pkfield">
+<code class="descname">pkfield</code><a class="headerlink" href="#tsdb.dictdb.DictDB.pkfield" title="Permalink to this definition">¶</a></dt>
+<dd><p>selects the field to be considered as the primary key. Defaults to <cite>pk</cite>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tsdb.dictdb.DictDB.ts_length">
+<code class="descname">ts_length</code><a class="headerlink" href="#tsdb.dictdb.DictDB.ts_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>lenght of the timeseries. Defaults to 100.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="tsdb.dictdb.DictDB.index_bulk">
 <code class="descname">index_bulk</code><span class="sig-paren">(</span><em>pks=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.dictdb.DictDB.index_bulk" title="Permalink to this definition">¶</a></dt>
@@ -212,23 +242,42 @@ if close, then file descriptor not return.</p>
 <dl class="method">
 <dt id="tsdb.dictdb.DictDB.insert_ts">
 <code class="descname">insert_ts</code><span class="sig-paren">(</span><em>pk</em>, <em>ts</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.dictdb.DictDB.insert_ts" title="Permalink to this definition">¶</a></dt>
-<dd><p>given a pk and a timeseries, insert them</p>
+<dd><p>Given a pk and a timeseries, insert them</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="tsdb.dictdb.DictDB.select">
 <code class="descname">select</code><span class="sig-paren">(</span><em>meta</em>, <em>fields_to_ret</em>, <em>additional</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.dictdb.DictDB.select" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Select timeseries elements in the database that match the criteria set
+in metadata_dict.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>meta</strong> (<em>a dictionary object</em>) &#8211; the selection criteria (filters)</li>
+<li><strong>fields_to_ret</strong> (<em>a dictionary object</em>) &#8211; If not <cite>None</cite>, only these fields of the timeseries are returned.
+Otherwise, the timeseries are returned.</li>
+<li><strong>additional</strong> (<em>a dictionary object</em>) &#8211; additional computation to perform on the query matches before they&#8217;re
+returned. You can sort or limit the number of results that you receive.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="tsdb.dictdb.DictDB.update_indices">
 <code class="descname">update_indices</code><span class="sig-paren">(</span><em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.dictdb.DictDB.update_indices" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Update indices after a change has occurred. Eg. Called after insertion</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="tsdb.dictdb.DictDB.upsert_meta">
 <code class="descname">upsert_meta</code><span class="sig-paren">(</span><em>pk</em>, <em>meta</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.dictdb.DictDB.upsert_meta" title="Permalink to this definition">¶</a></dt>
-<dd><p>implement upserting field values, as long as the fields are in the schema.</p>
+<dd><p>Given a primary key and a dict of meta fields, value pairs, upsert
+them as long as they&#8217;re in the schema.</p>
 </dd></dl>
 
 </dd></dl>
@@ -293,7 +342,14 @@ if close, then file descriptor not return.</p>
 <dt id="tsdb.persistantdb.PersistantDB">
 <em class="property">class </em><code class="descclassname">tsdb.persistantdb.</code><code class="descname">PersistantDB</code><span class="sig-paren">(</span><em>schema=None</em>, <em>pk_field='pk'</em>, <em>db_name='default'</em>, <em>ts_length=1024</em>, <em>testing=False</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
-<p>Database implementation using Binary Trees and BitMasks</p>
+<p>Database implementation to allow for persistant storage. It&#8217;s implemented
+using Binary Trees and BitMasks.</p>
+<dl class="method">
+<dt id="tsdb.persistantdb.PersistantDB.__len__">
+<code class="descname">__len__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB.__len__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dunder function to return length of timeseries</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="tsdb.persistantdb.PersistantDB.close">
 <code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB.close" title="Permalink to this definition">¶</a></dt>
@@ -302,7 +358,8 @@ if close, then file descriptor not return.</p>
 <dl class="method">
 <dt id="tsdb.persistantdb.PersistantDB.delete_database">
 <code class="descname">delete_database</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB.delete_database" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Remove the database.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="tsdb.persistantdb.PersistantDB.index_bulk">
@@ -312,29 +369,59 @@ if close, then file descriptor not return.</p>
 <dl class="method">
 <dt id="tsdb.persistantdb.PersistantDB.insert_ts">
 <code class="descname">insert_ts</code><span class="sig-paren">(</span><em>pk</em>, <em>ts</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB.insert_ts" title="Permalink to this definition">¶</a></dt>
-<dd><p>given a pk and a timeseries, insert them</p>
+<dd><p>Given a pk and a timeseries, insert them</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="tsdb.persistantdb.PersistantDB.remove_indices">
 <code class="descname">remove_indices</code><span class="sig-paren">(</span><em>pk</em>, <em>old_meta_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB.remove_indices" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Remove the odl stored indices.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pk</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; primary key</li>
+<li><strong>old_meta_dict</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; old metadata dictionary</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="tsdb.persistantdb.PersistantDB.select">
 <code class="descname">select</code><span class="sig-paren">(</span><em>meta</em>, <em>fields_to_ret=[]</em>, <em>additional=None</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB.select" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Select timeseries elements in the database that match the criteria set
+in meta.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>metadata_dict</strong> (<em>a dictionary object</em>) &#8211; the selection criteria (filters)</li>
+<li><strong>fields_to_ret</strong> (<em>a list object</em>) &#8211; If not <cite>None</cite>, only these fields of the timeseries are returned.
+Otherwise, the timeseries are returned.</li>
+<li><strong>additional</strong> (<em>a dictionary object</em>) &#8211; additional computation to perform on the query matches before they&#8217;re
+returned. You can sort or limit the number of results that you receive.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="tsdb.persistantdb.PersistantDB.update_indices">
 <code class="descname">update_indices</code><span class="sig-paren">(</span><em>pk</em>, <em>old_meta_dict=None</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB.update_indices" title="Permalink to this definition">¶</a></dt>
-<dd><p>updates indices of pk with the most recent metadata</p>
+<dd><p>Update indices after a change has occurred. Eg. Called after insertion</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="tsdb.persistantdb.PersistantDB.upsert_meta">
 <code class="descname">upsert_meta</code><span class="sig-paren">(</span><em>pk</em>, <em>new_meta</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB.upsert_meta" title="Permalink to this definition">¶</a></dt>
-<dd><p>implement upserting field values, as long as the fields are in the schema.</p>
+<dd><p>Upsert metadata into the timeseries in the database.</p>
 </dd></dl>
 
 </dd></dl>
@@ -352,10 +439,31 @@ if close, then file descriptor not return.</p>
 <em class="property">class </em><code class="descclassname">tsdb.tsdb_client.</code><code class="descname">TSDBClient</code><span class="sig-paren">(</span><em>port=9999</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_client.TSDBClient" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
 <p>The client. This could be used in a python program, web server, or REPL!</p>
+<dl class="attribute">
+<dt id="tsdb.tsdb_client.TSDBClient.port">
+<code class="descname">port</code><a class="headerlink" href="#tsdb.tsdb_client.TSDBClient.port" title="Permalink to this definition">¶</a></dt>
+<dd><p>the port with which to connect to the server</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="tsdb.tsdb_client.TSDBClient.add_trigger">
 <code class="descname">add_trigger</code><span class="sig-paren">(</span><em>proc</em>, <em>onwhat</em>, <em>target</em>, <em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_client.TSDBClient.add_trigger" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Send the server a request to add a trigger.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>proc</strong> (<em>which of the modules in procs. Options: 'corr', 'junk', 'stats'</em>) &#8211; </li>
+<li><strong>onwhat</strong> (<em>the trigger</em>) &#8211; </li>
+<li><strong>target</strong> (<em>metadata to be upserted</em>) &#8211; </li>
+<li><strong>arg</strong> (<em>additional argument</em>) &#8211; </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="tsdb.tsdb_client.TSDBClient.augmented_select">
@@ -365,7 +473,20 @@ if close, then file descriptor not return.</p>
 <dl class="method">
 <dt id="tsdb.tsdb_client.TSDBClient.insert_ts">
 <code class="descname">insert_ts</code><span class="sig-paren">(</span><em>primary_key</em>, <em>ts</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_client.TSDBClient.insert_ts" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Send the server a request to insert a timeseries into the database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>primary_key</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; a unique identifier for the timeseries</li>
+<li><strong>ts</strong> (<em>a TimeSeries object</em>) &#8211; the timeseries, an instance of the <cite>TimeSeries</cite> class</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="tsdb.tsdb_client.TSDBClient.remove_trigger">
@@ -375,12 +496,43 @@ if close, then file descriptor not return.</p>
 <dl class="method">
 <dt id="tsdb.tsdb_client.TSDBClient.select">
 <code class="descname">select</code><span class="sig-paren">(</span><em>metadata_dict={}</em>, <em>fields=None</em>, <em>additional=None</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_client.TSDBClient.select" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Send the server a request for the selection of timeseries elements in
+the database that match the criteria set in metadata_dict.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>metadata_dict</strong> (<em>a dictionary object</em>) &#8211; the selection criteria (filters)</li>
+<li><strong>fields</strong> (<em>a dictionary object</em>) &#8211; If not <cite>None</cite>, only these fields of the timeseries are returned.
+Otherwise, the timeseries are returned.</li>
+<li><strong>additional</strong> (<em>a dictionary object</em>) &#8211; additional computation to perform on the query matches before they&#8217;re
+returned. You can sort or limit the number of results that you receive.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="tsdb.tsdb_client.TSDBClient.upsert_meta">
 <code class="descname">upsert_meta</code><span class="sig-paren">(</span><em>primary_key</em>, <em>metadata_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_client.TSDBClient.upsert_meta" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Send the server a request to upsert metadata into the timeseries in
+the database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>primary_key</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; a unique identifier for the timeseries</li>
+<li><strong>metadata_dict</strong> (<em>a dictionary object</em>) &#8211; the metadata to upsert into the timeseries</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </dd></dl>
 
@@ -391,7 +543,12 @@ if close, then file descriptor not return.</p>
 <dt id="tsdb.tsdb_error.TSDBStatus">
 <em class="property">class </em><code class="descclassname">tsdb.tsdb_error.</code><code class="descname">TSDBStatus</code><a class="headerlink" href="#tsdb.tsdb_error.TSDBStatus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">enum.IntEnum</span></code></p>
-<p>An enumeration.</p>
+<p>Class to report the status of the timeseries database after processing
+a request from the client. There are four possible statuses returned.</p>
+<p>0: Everything is okay.
+1: An unknown error has occurred.
+2: The client has attempted an invalid operation.
+3: The request was for an invalid key, most likely a duplicate primary key.</p>
 <dl class="attribute">
 <dt id="tsdb.tsdb_error.TSDBStatus.INVALID_KEY">
 <code class="descname">INVALID_KEY</code><em class="property"> = &lt;TSDBStatus.INVALID_KEY: 3&gt;</em><a class="headerlink" href="#tsdb.tsdb_error.TSDBStatus.INVALID_KEY" title="Permalink to this definition">¶</a></dt>
@@ -585,7 +742,8 @@ end of the wire.</p>
 <dl class="method">
 <dt id="tsdb.tsdb_server.TSDBProtocol.connection_made">
 <code class="descname">connection_made</code><span class="sig-paren">(</span><em>conn</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_server.TSDBProtocol.connection_made" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Connection established</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="tsdb.tsdb_server.TSDBProtocol.data_received">
@@ -598,6 +756,26 @@ end of the wire.</p>
 <dt id="tsdb.tsdb_server.TSDBServer">
 <em class="property">class </em><code class="descclassname">tsdb.tsdb_server.</code><code class="descname">TSDBServer</code><span class="sig-paren">(</span><em>db</em>, <em>port=9999</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_server.TSDBServer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>The server. This accepts requests from the client, processes them, and
+dispatches a response.</p>
+<dl class="attribute">
+<dt id="tsdb.tsdb_server.TSDBServer.port">
+<code class="descname">port</code><a class="headerlink" href="#tsdb.tsdb_server.TSDBServer.port" title="Permalink to this definition">¶</a></dt>
+<dd><p>the port with which to connect to the server</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tsdb.tsdb_server.TSDBServer.db">
+<code class="descname">db</code><a class="headerlink" href="#tsdb.tsdb_server.TSDBServer.db" title="Permalink to this definition">¶</a></dt>
+<dd><p>database engine</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tsdb.tsdb_server.TSDBServer.triggers">
+<code class="descname">triggers</code><a class="headerlink" href="#tsdb.tsdb_server.TSDBServer.triggers" title="Permalink to this definition">¶</a></dt>
+<dd><p>a default dict of triggers</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="tsdb.tsdb_server.TSDBServer.exception_handler">
 <code class="descname">exception_handler</code><span class="sig-paren">(</span><em>loop</em>, <em>context</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_server.TSDBServer.exception_handler" title="Permalink to this definition">¶</a></dt>
@@ -606,7 +784,8 @@ end of the wire.</p>
 <dl class="method">
 <dt id="tsdb.tsdb_server.TSDBServer.run">
 <code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_server.TSDBServer.run" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Run the server.</p>
+</dd></dl>
 
 </dd></dl>
 
