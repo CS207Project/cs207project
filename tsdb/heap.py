@@ -1,3 +1,6 @@
+"""A heap that is used in the persistantdb implementation
+"""
+
 # from .persistantdb import TYPES, TYPE_DEFAULT
 import os
 import struct

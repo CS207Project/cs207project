@@ -1,3 +1,5 @@
+"""Time Series Database Client: This could be used in a python program, web server, or REPL!
+"""
 import asyncio
 from .tsdb_serialization import serialize, LENGTH_FIELD_LENGTH, Deserializer
 from .tsdb_ops import *

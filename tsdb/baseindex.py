@@ -1,3 +1,12 @@
+"""All the index classes.
+
+Currentlly:
+    BaseIndex (parent for all the index subclasses): lays out what needs to be done
+    PKIndex: Primary Key Index
+    TreeIndex: Tree based index done using a AVL tree
+    BitmapIndex: Bitmap index for low cardinality columns
+"""
+
 # from .persistantdb import FILES_DIR
 from collections import defaultdict
 import pickle

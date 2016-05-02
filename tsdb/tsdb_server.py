@@ -1,3 +1,6 @@
+"""Time Series Database Server: Owns any version of a database and communicates with the TSDBClient
+"""
+
 import asyncio
 from .dictdb import DictDB
 from importlib import import_module

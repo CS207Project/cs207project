@@ -1,3 +1,5 @@
+"""Structures to serialize and de-serialize data
+"""
 import json
 from collections import OrderedDict
 

@@ -1,3 +1,5 @@
+"""Defines the types of errors the database server / client / backend can encounter
+"""
 import enum
 
 

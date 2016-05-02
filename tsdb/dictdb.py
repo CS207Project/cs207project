@@ -1,3 +1,5 @@
+"""A dictionary based in-memory version of the time series database
+"""
 from collections import defaultdict
 from operator import and_
 from functools import reduce

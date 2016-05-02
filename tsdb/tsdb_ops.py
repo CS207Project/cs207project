@@ -1,3 +1,6 @@
+"""Encapluation for all the operations. Communication also passes through here. 
+"""
+
 import timeseries as ts
 from .tsdb_error import *
 from collections import OrderedDict
