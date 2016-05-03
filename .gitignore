@@ -64,3 +64,9 @@ target/
 #Pype Outputs
 pype/parsetab.py
 pype/parser.out
+
+#Log Files from testing
+.*.log*
+
+#Documents
+docs/
