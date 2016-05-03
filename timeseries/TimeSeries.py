@@ -161,19 +161,9 @@ class TimeSeries:
         # except(AttributeError):
         #     raise NotImplemented
 
-    def __try_wrapper(f):
-        "Wrapper to standardize the error upon wrong inputs"
-        def inner(*args, **kwargs):
-            try:
-                return f(*args, **kwargs)
-            except(AttributeError):
-                raise NotImplementedError
-        return inner
-
-    @__try_wrapper
     def __eq__(self, other):
         if not isinstance(other, TimeSeries):
-            return TypeError("TimeSeries can only be equal with other TimeSeries Instances")
+            raise TypeError("TimeSeries can only be equal with other TimeSeries Instances")
         if self.__timeEqual(other):
             return all(a==b for a,b in zip(self.values, other.values))
         else:
@@ -183,21 +173,18 @@ class TimeSeries:
     @pype.component
     def __add__(self, rhs):
         # DNY: Could Refactor into
-        try:
-            if isinstance(rhs, numbers.Real):
-                return TimeSeries(self.times, [v + rhs for v in self.values])
-            elif isinstance(rhs, TimeSeries):
-                if (self.__timeEqual(rhs)):
-                    pairs = zip(self.values, rhs.values)
-                    return TimeSeries(self.times, [a + b for a, b in pairs])
-                else:
-                    raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
-            elif isinstance(rhs, np.ndarray) or isinstance(rhs, list):
-                raise AttributeError
+        if isinstance(rhs, numbers.Real):
+            return TimeSeries(self.times, [v + rhs for v in self.values])
+        elif isinstance(rhs, TimeSeries):
+            if (self.__timeEqual(rhs)):
+                pairs = zip(self.values, rhs.values)
+                return TimeSeries(self.times, [a + b for a, b in pairs])
             else:
-                raise AttributeError
-        except(AttributeError):
-            raise NotImplementedError
+                raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
+        elif isinstance(rhs, np.ndarray) or isinstance(rhs, list):
+            raise AttributeError
+        else:
+            raise AttributeError
 
     def __radd__(self, lhs):
         "__radd__ delegates to __add__ to handle addition"
@@ -205,21 +192,18 @@ class TimeSeries:
 
     @pype.component
     def __sub__(self, rhs):
-        try:
-            if isinstance(rhs, numbers.Real):
-                return TimeSeries(self.times, [v - rhs for v in self.values])
-            elif isinstance(rhs, TimeSeries):
-                if (self.__timeEqual(rhs)):
-                    pairs = zip(self.values, rhs.values)
-                    return TimeSeries(self.times, [a - b for a, b in pairs])
-                else:
-                    raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
-            elif isinstance(rhs, np.ndarray) or isinstance(rhs, list):
-                raise AttributeError
+        if isinstance(rhs, numbers.Real):
+            return TimeSeries(self.times, [v - rhs for v in self.values])
+        elif isinstance(rhs, TimeSeries):
+            if (self.__timeEqual(rhs)):
+                pairs = zip(self.values, rhs.values)
+                return TimeSeries(self.times, [a - b for a, b in pairs])
             else:
-                raise AttributeError
-        except(AttributeError):
-            raise NotImplementedError("Must submit either a TimeSeries or a numbers.Real instance")
+                raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
+        elif isinstance(rhs, np.ndarray) or isinstance(rhs, list):
+            raise AttributeError
+        else:
+            raise AttributeError
 
     def __rsub__(self, lhs):
         "__rsub__ delegates to __sub__ to handle subtraction"
@@ -227,21 +211,18 @@ class TimeSeries:
 
     @pype.component
     def __mul__(self, rhs):
-        try:
-            if isinstance(rhs, numbers.Real):
-                return TimeSeries(self.times, [v * rhs for v in self.values])
-            elif isinstance(rhs, TimeSeries):
-                if (self.__timeEqual(rhs)):
-                    pairs = zip(self.values, rhs.values)
-                    return TimeSeries(self.times, [a * b for a, b in pairs])
-                else:
-                    raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
-            elif isinstance(rhs, np.ndarray) or isinstance(rhs, list):
-                raise AttributeError
+        if isinstance(rhs, numbers.Real):
+            return TimeSeries(self.times, [v * rhs for v in self.values])
+        elif isinstance(rhs, TimeSeries):
+            if (self.__timeEqual(rhs)):
+                pairs = zip(self.values, rhs.values)
+                return TimeSeries(self.times, [a * b for a, b in pairs])
             else:
-                raise AttributeError
-        except(AttributeError):
-            raise NotImplementedError
+                raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
+        elif isinstance(rhs, np.ndarray) or isinstance(rhs, list):
+            raise AttributeError
+        else:
+            raise AttributeError
 
     def __rmul__(self, lhs):
         "__rmul__ delegates to __mul__ to handle multiplication"
@@ -265,21 +246,18 @@ class TimeSeries:
 
     @pype.component
     def __truediv__(self,rhs):
-        try:
-            if isinstance(rhs, numbers.Real):
-                return TimeSeries(self.times, [v / rhs for v in self.values])
-            elif isinstance(rhs, TimeSeries):
-                if (self.__timeEqual(rhs)):
-                    pairs = zip(self.values, rhs.values)
-                    return TimeSeries(self.times, [a / b for a, b in pairs])
-                else:
-                    raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
-            elif isinstance(rhs, np.ndarray) or isinstance(rhs, list):
-                raise AttributeError
+        if isinstance(rhs, numbers.Real):
+            return TimeSeries(self.times, [v / rhs for v in self.values])
+        elif isinstance(rhs, TimeSeries):
+            if (self.__timeEqual(rhs)):
+                pairs = zip(self.values, rhs.values)
+                return TimeSeries(self.times, [a / b for a, b in pairs])
             else:
-                raise AttributeError
-        except(AttributeError):
-            raise NotImplementedError
+                raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
+        elif isinstance(rhs, np.ndarray) or isinstance(rhs, list):
+            raise AttributeError
+        else:
+            raise AttributeError
 
     def __rtruediv__(self,rhs):
         raise NotImplementedError

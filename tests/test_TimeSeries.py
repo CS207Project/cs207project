@@ -45,6 +45,8 @@ class TSTests(unittest.TestCase):
         a = TimeSeries([0,5,10], [1,2,3])
 
         self.assertEqual(a.interpolate([-100,100]),TimeSeries([-100, 100], [1, 3]))
+        with self.assertRaises(TypeError):
+            a.interpolate({'a':1,'b':2})
 
     def test_interpolate2(self):
         a = TimeSeries([0,5,10], [1,2,3])
@@ -87,10 +89,12 @@ class TSTests(unittest.TestCase):
         self.assertEqual(t1 + t2, TimeSeries(list(range(100)),list(range(0,200,2))))
         self.assertEqual(t1 + 1, TimeSeries(list(range(100)),list(range(1,101))))
         self.assertEqual(1 + t1, TimeSeries(list(range(100)),list(range(1,101))))
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(AttributeError):
             t1 + list(range(100))
         with self.assertRaises(ValueError):
             t2 + t3
+        with self.assertRaises(AttributeError):
+            t2 + 'a'
 
     def test_sub_rsub(self):
         t1 = TimeSeries(list(range(100)),list(range(1,101)))
@@ -99,10 +103,12 @@ class TSTests(unittest.TestCase):
         self.assertEqual(t1 - t2, TimeSeries(list(range(100)),[0 for x in range(100)]))
         self.assertEqual(t1 - 1, TimeSeries(list(range(100)),list(range(100))))
         self.assertEqual(1 - t1, TimeSeries(list(range(100)),[-x for x in list(range(100))]))
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(AttributeError):
             t1 - list(range(100))
         with self.assertRaises(ValueError):
             t2 - t3
+        with self.assertRaises(AttributeError):
+            t2 - 'a'
 
     def test_mul_rmul(self):
         t1 = TimeSeries(list(range(100)),list(range(100)))
@@ -111,22 +117,27 @@ class TSTests(unittest.TestCase):
         self.assertEqual(t1 * t2, TimeSeries(list(range(100)),[x**2 for x in list(range(100))]))
         self.assertEqual(t1 * 2, TimeSeries(list(range(100)),list(range(0,200,2))))
         self.assertEqual(2 * t1, TimeSeries(list(range(100)),list(range(0,200,2))))
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(AttributeError):
             t1 * list(range(100))
         with self.assertRaises(ValueError):
             t2 * t3
+        with self.assertRaises(AttributeError):
+            t2 / 'a'
 
     def test_div(self):
         t1 = TimeSeries(list(range(100)),list(range(1,101)))
         t2 = TimeSeries(list(range(100)),list(range(1,101)))
         t3 = TimeSeries(list(range(1,101)),list(range(100)))
         self.assertEqual(t1 / t2, TimeSeries(list(range(100)),[1 for x in range(100)]))
+        self.assertEqual(t1 / 10, TimeSeries(list(range(100)),[k/10 for k in range(1,101)]))
         with self.assertRaises(NotImplementedError):
             3 / t1
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(AttributeError):
             t1 / list(range(100))
         with self.assertRaises(ValueError):
             t2 / t3
+        with self.assertRaises(AttributeError):
+            t2 / 'a'
 
     def test_add_sub_mul(self):
         t1 = TimeSeries([1, 2, 3, 4], [40, 50, 60, 70])
@@ -144,6 +155,15 @@ class TSTests(unittest.TestCase):
     def test_bool(self):
         t1 = TimeSeries([1, 2], [3, 4])
         self.assertEqual(bool(t1),True)
+
+    def test_in(self):
+        t1 = TimeSeries([1, 2], [3, 4])
+        self.assertIn(1, t1)
+        self.assertNotIn(5,t1)
+
+    def test_iter(self):
+        t1 = TimeSeries([1, 2], [3, 4])
+        self.assertEqual(set(iter(t1)),set([3,4]))
 
     def test_iteritems(self):
         t1 = TimeSeries([1, 2], [3, 4])
@@ -185,10 +205,25 @@ class TSTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             t1.std()
 
+    def test_eq(self):
+        t1 = TimeSeries([1], [10])
+        t2 = TimeSeries([1], [5])
+
+        self.assertNotEqual(t1,t2)
+        with self.assertRaises(TypeError):
+            t1 == 6
+
+        self.assertNotEqual(t1,t2)
+
     def test_std2(self):
         t1 = TimeSeries([1, 2, 3], [10, 100, 1000])
         t2 = TimeSeries([4, 6, 8], [100, 1000, 10])
         self.assertEqual(t1.std(), t2.std())
+
+    def test_fromJSON(self):
+        t1 = TimeSeries.from_json([[1,2,3],[1,4,9]])
+        t2 = TimeSeries([1,2,3],[1,4,9])
+        self.assertEqual(t1,t2)
 
 if __name__ == '__main__':
     unittest.main()
