@@ -80,6 +80,54 @@ class TSTests(unittest.TestCase):
 
         self.assertEqual(t1.median(),55.0)
 
+    def test_add_radd(self):
+        t1 = TimeSeries(list(range(100)),list(range(100)))
+        t2 = TimeSeries(list(range(100)),list(range(100)))
+        t3 = TimeSeries(list(range(1,101)),list(range(100)))
+        self.assertEqual(t1 + t2, TimeSeries(list(range(100)),list(range(0,200,2))))
+        self.assertEqual(t1 + 1, TimeSeries(list(range(100)),list(range(1,101))))
+        self.assertEqual(1 + t1, TimeSeries(list(range(100)),list(range(1,101))))
+        with self.assertRaises(NotImplementedError):
+            t1 + list(range(100))
+        with self.assertRaises(ValueError):
+            t2 + t3
+
+    def test_sub_rsub(self):
+        t1 = TimeSeries(list(range(100)),list(range(1,101)))
+        t2 = TimeSeries(list(range(100)),list(range(1,101)))
+        t3 = TimeSeries(list(range(1,101)),list(range(100)))
+        self.assertEqual(t1 - t2, TimeSeries(list(range(100)),[0 for x in range(100)]))
+        self.assertEqual(t1 - 1, TimeSeries(list(range(100)),list(range(100))))
+        self.assertEqual(1 - t1, TimeSeries(list(range(100)),[-x for x in list(range(100))]))
+        with self.assertRaises(NotImplementedError):
+            t1 - list(range(100))
+        with self.assertRaises(ValueError):
+            t2 - t3
+
+    def test_mul_rmul(self):
+        t1 = TimeSeries(list(range(100)),list(range(100)))
+        t2 = TimeSeries(list(range(100)),list(range(100)))
+        t3 = TimeSeries(list(range(1,101)),list(range(100)))
+        self.assertEqual(t1 * t2, TimeSeries(list(range(100)),[x**2 for x in list(range(100))]))
+        self.assertEqual(t1 * 2, TimeSeries(list(range(100)),list(range(0,200,2))))
+        self.assertEqual(2 * t1, TimeSeries(list(range(100)),list(range(0,200,2))))
+        with self.assertRaises(NotImplementedError):
+            t1 * list(range(100))
+        with self.assertRaises(ValueError):
+            t2 * t3
+
+    def test_div(self):
+        t1 = TimeSeries(list(range(100)),list(range(1,101)))
+        t2 = TimeSeries(list(range(100)),list(range(1,101)))
+        t3 = TimeSeries(list(range(1,101)),list(range(100)))
+        self.assertEqual(t1 / t2, TimeSeries(list(range(100)),[1 for x in range(100)]))
+        with self.assertRaises(NotImplementedError):
+            3 / t1
+        with self.assertRaises(NotImplementedError):
+            t1 / list(range(100))
+        with self.assertRaises(ValueError):
+            t2 / t3
+
     def test_add_sub_mul(self):
         t1 = TimeSeries([1, 2, 3, 4], [40, 50, 60, 70])
         t2 = TimeSeries([1, 2, 3, 4], [40, 50, 60, 70])
