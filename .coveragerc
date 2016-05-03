@@ -1,4 +1,4 @@
 [run]
 omit =
     pype/parsetab.py
-    webserver/web_server.py # the async handlers don't show coverage even though they've been tested.
+    webserver/web_server.py
