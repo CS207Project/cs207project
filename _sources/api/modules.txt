@@ -5,6 +5,7 @@ Modules
    :maxdepth: 4
 
    go_server
+   go_server_persistent
    go_webserver
    procs
    pype

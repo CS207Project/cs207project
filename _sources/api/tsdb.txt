@@ -4,10 +4,10 @@ tsdb package
 Submodules
 ----------
 
-tsdb.baseindex module
----------------------
+tsdb.baseclasses module
+-----------------------
 
-.. automodule:: tsdb.baseindex
+.. automodule:: tsdb.baseclasses
     :members:
     :undoc-members:
     :show-inheritance:
@@ -28,10 +28,18 @@ tsdb.heap module
     :undoc-members:
     :show-inheritance:
 
-tsdb.persistantdb module
+tsdb.indices module
+-------------------
+
+.. automodule:: tsdb.indices
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+tsdb.persistentdb module
 ------------------------
 
-.. automodule:: tsdb.persistantdb
+.. automodule:: tsdb.persistentdb
     :members:
     :undoc-members:
     :show-inheritance:

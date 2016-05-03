@@ -45,164 +45,65 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-tsdb.baseindex">
-<span id="tsdb-baseindex-module"></span><h2>tsdb.baseindex module<a class="headerlink" href="#module-tsdb.baseindex" title="Permalink to this headline">¶</a></h2>
-<p>All the index classes.</p>
-<dl class="docutils">
-<dt>Currentlly:</dt>
-<dd>BaseIndex (parent for all the index subclasses): lays out what needs to be done
-PKIndex: Primary Key Index
-TreeIndex: Tree based index done using a AVL tree
-BitmapIndex: Bitmap index for low cardinality columns</dd>
-</dl>
+<div class="section" id="module-tsdb.baseclasses">
+<span id="tsdb-baseclasses-module"></span><h2>tsdb.baseclasses module<a class="headerlink" href="#module-tsdb.baseclasses" title="Permalink to this headline">¶</a></h2>
+<p>Base Classes that define the interfaces implemented elsewhere</p>
 <dl class="class">
-<dt id="tsdb.baseindex.BaseIndex">
-<em class="property">class </em><code class="descclassname">tsdb.baseindex.</code><code class="descname">BaseIndex</code><span class="sig-paren">(</span><em>fieldName='default'</em>, <em>database_name='default'</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.BaseIndex" title="Permalink to this definition">¶</a></dt>
+<dt id="tsdb.baseclasses.BaseDB">
+<em class="property">class </em><code class="descclassname">tsdb.baseclasses.</code><code class="descname">BaseDB</code><a class="headerlink" href="#tsdb.baseclasses.BaseDB" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>Interface that all Databases should support</p>
 <dl class="method">
-<dt id="tsdb.baseindex.BaseIndex.deleteIndex">
-<code class="descname">deleteIndex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.BaseIndex.deleteIndex" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="tsdb.baseclasses.BaseDB.__getitem__">
+<code class="descname">__getitem__</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseclasses.BaseDB.__getitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dunder method to get the the values at a given primary_key</p>
+</dd></dl>
 
 <dl class="method">
-<dt id="tsdb.baseindex.BaseIndex.getEqual">
-<code class="descname">getEqual</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.BaseIndex.getEqual" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="tsdb.baseclasses.BaseDB.insert_ts">
+<code class="descname">insert_ts</code><span class="sig-paren">(</span><em>pk</em>, <em>ts</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseclasses.BaseDB.insert_ts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a pk and a timeseries, insert them</p>
+</dd></dl>
 
 <dl class="method">
-<dt id="tsdb.baseindex.BaseIndex.insert">
-<code class="descname">insert</code><span class="sig-paren">(</span><em>fieldValue</em>, <em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.BaseIndex.insert" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="tsdb.baseclasses.BaseDB.select">
+<code class="descname">select</code><span class="sig-paren">(</span><em>meta</em>, <em>fields_to_ret</em>, <em>additional</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseclasses.BaseDB.select" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select from the database</p>
+</dd></dl>
 
 <dl class="method">
-<dt id="tsdb.baseindex.BaseIndex.remove">
-<code class="descname">remove</code><span class="sig-paren">(</span><em>fieldValue</em>, <em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.BaseIndex.remove" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="tsdb.baseclasses.BaseDB.upsert_meta">
+<code class="descname">upsert_meta</code><span class="sig-paren">(</span><em>pk</em>, <em>meta</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseclasses.BaseDB.upsert_meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a primary key and a dict of meta fields, value pairs, upsert
+them as long as they&#8217;re in the schema.</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="tsdb.baseindex.BitmapIndex">
-<em class="property">class </em><code class="descclassname">tsdb.baseindex.</code><code class="descname">BitmapIndex</code><span class="sig-paren">(</span><em>values</em>, <em>fieldName='default'</em>, <em>database_name='default'</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.BitmapIndex" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#tsdb.baseindex.BaseIndex" title="tsdb.baseindex.BaseIndex"><code class="xref py py-class docutils literal"><span class="pre">tsdb.baseindex.BaseIndex</span></code></a></p>
-<dl class="method">
-<dt id="tsdb.baseindex.BitmapIndex.getEqual">
-<code class="descname">getEqual</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.BitmapIndex.getEqual" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="tsdb.baseindex.BitmapIndex.insert">
-<code class="descname">insert</code><span class="sig-paren">(</span><em>fieldValue</em>, <em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.BitmapIndex.insert" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="tsdb.baseindex.PKIndex">
-<em class="property">class </em><code class="descclassname">tsdb.baseindex.</code><code class="descname">PKIndex</code><span class="sig-paren">(</span><em>database_name='default'</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.PKIndex" title="Permalink to this definition">¶</a></dt>
+<dt id="tsdb.baseclasses.BaseIndex">
+<em class="property">class </em><code class="descclassname">tsdb.baseclasses.</code><code class="descname">BaseIndex</code><a class="headerlink" href="#tsdb.baseclasses.BaseIndex" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
-<p>PK Index using Pickle serialization and a write ahead log.
-Essentially a (pk: offset) dictionary with writelog and disk storage.</p>
+<p>Interface that all indices should support</p>
 <dl class="method">
-<dt id="tsdb.baseindex.PKIndex.close">
-<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.PKIndex.close" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="tsdb.baseindex.PKIndex.keys">
-<code class="descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.PKIndex.keys" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="tsdb.baseindex.PKIndex.load_and_clear_log">
-<code class="descname">load_and_clear_log</code><span class="sig-paren">(</span><em>loaded=False</em>, <em>close=False</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.PKIndex.load_and_clear_log" title="Permalink to this definition">¶</a></dt>
-<dd><p>if loaded, writelog assumed to be open. otherwise, closed.
-loads values, clears writelog and opens.
-if close, then file descriptor not return.</p>
+<dt id="tsdb.baseclasses.BaseIndex.getEqual">
+<code class="descname">getEqual</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseclasses.BaseIndex.getEqual" title="Permalink to this definition">¶</a></dt>
+<dd><p>return set of primary keys that match this fieldValue</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="tsdb.baseindex.PKIndex.load_pickle">
-<code class="descname">load_pickle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.PKIndex.load_pickle" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="tsdb.baseindex.PKIndex.save_pickle">
-<code class="descname">save_pickle</code><span class="sig-paren">(</span><em>new=False</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.PKIndex.save_pickle" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<dt id="tsdb.baseclasses.BaseIndex.insert">
+<code class="descname">insert</code><span class="sig-paren">(</span><em>fieldValue</em>, <em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseclasses.BaseIndex.insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>insert the value into the appropriate place in the tree</p>
 </dd></dl>
 
-<dl class="class">
-<dt id="tsdb.baseindex.TreeIndex">
-<em class="property">class </em><code class="descclassname">tsdb.baseindex.</code><code class="descname">TreeIndex</code><span class="sig-paren">(</span><em>fieldName='default'</em>, <em>database_name='default'</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.TreeIndex" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#tsdb.baseindex.BaseIndex" title="tsdb.baseindex.BaseIndex"><code class="xref py py-class docutils literal"><span class="pre">tsdb.baseindex.BaseIndex</span></code></a></p>
 <dl class="method">
-<dt id="tsdb.baseindex.TreeIndex.allKeys">
-<code class="descname">allKeys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.TreeIndex.allKeys" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="tsdb.baseindex.TreeIndex.deleteIndex">
-<code class="descname">deleteIndex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.TreeIndex.deleteIndex" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="tsdb.baseindex.TreeIndex.get">
-<code class="descname">get</code><span class="sig-paren">(</span><em>fieldValue</em>, <em>operator_num=2</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.TreeIndex.get" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="tsdb.baseindex.TreeIndex.getEqual">
-<code class="descname">getEqual</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.TreeIndex.getEqual" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="tsdb.baseindex.TreeIndex.getHigherOrEq">
-<code class="descname">getHigherOrEq</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.TreeIndex.getHigherOrEq" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="tsdb.baseindex.TreeIndex.getHigherThan">
-<code class="descname">getHigherThan</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.TreeIndex.getHigherThan" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="tsdb.baseindex.TreeIndex.getLowerOrEq">
-<code class="descname">getLowerOrEq</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.TreeIndex.getLowerOrEq" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="tsdb.baseindex.TreeIndex.getLowerThan">
-<code class="descname">getLowerThan</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.TreeIndex.getLowerThan" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="tsdb.baseindex.TreeIndex.getNotEq">
-<code class="descname">getNotEq</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.TreeIndex.getNotEq" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="tsdb.baseindex.TreeIndex.insert">
-<code class="descname">insert</code><span class="sig-paren">(</span><em>fieldValue</em>, <em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.TreeIndex.insert" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="tsdb.baseindex.TreeIndex.remove">
-<code class="descname">remove</code><span class="sig-paren">(</span><em>fieldValue</em>, <em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.TreeIndex.remove" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<dt id="tsdb.baseclasses.BaseIndex.remove">
+<code class="descname">remove</code><span class="sig-paren">(</span><em>fieldValue</em>, <em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseclasses.BaseIndex.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>remove a primary key from the index</p>
 </dd></dl>
 
-<dl class="function">
-<dt id="tsdb.baseindex.bool_to_str">
-<code class="descclassname">tsdb.baseindex.</code><code class="descname">bool_to_str</code><span class="sig-paren">(</span><em>bool_array</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.bool_to_str" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="tsdb.baseindex.str_to_bool">
-<code class="descclassname">tsdb.baseindex.</code><code class="descname">str_to_bool</code><span class="sig-paren">(</span><em>string_line</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseindex.str_to_bool" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+</dd></dl>
 
 </div>
 <div class="section" id="module-tsdb.dictdb">
@@ -211,7 +112,7 @@ if close, then file descriptor not return.</p>
 <dl class="class">
 <dt id="tsdb.dictdb.DictDB">
 <em class="property">class </em><code class="descclassname">tsdb.dictdb.</code><code class="descname">DictDB</code><span class="sig-paren">(</span><em>schema</em>, <em>pk_field='pk'</em>, <em>ts_length=100</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.dictdb.DictDB" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#tsdb.baseclasses.BaseDB" title="tsdb.baseclasses.BaseDB"><code class="xref py py-class docutils literal"><span class="pre">tsdb.baseclasses.BaseDB</span></code></a></p>
 <p>A database implementation in a dictionary</p>
 <dl class="attribute">
 <dt id="tsdb.dictdb.DictDB.indexes">
@@ -241,6 +142,12 @@ if close, then file descriptor not return.</p>
 <dt id="tsdb.dictdb.DictDB.ts_length">
 <code class="descname">ts_length</code><a class="headerlink" href="#tsdb.dictdb.DictDB.ts_length" title="Permalink to this definition">¶</a></dt>
 <dd><p>lenght of the timeseries. Defaults to 100.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tsdb.dictdb.DictDB.__getitem__">
+<code class="descname">__getitem__</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.dictdb.DictDB.__getitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dunder method to get the the values at a given row</p>
 </dd></dl>
 
 <dl class="method">
@@ -294,7 +201,7 @@ them as long as they&#8217;re in the schema.</p>
 </div>
 <div class="section" id="module-tsdb.heap">
 <span id="tsdb-heap-module"></span><h2>tsdb.heap module<a class="headerlink" href="#module-tsdb.heap" title="Permalink to this headline">¶</a></h2>
-<p>A heap that is used in the persistantdb implementation</p>
+<p>A heap that is used in the persistentdb implementation</p>
 <dl class="class">
 <dt id="tsdb.heap.HeapFile">
 <em class="property">class </em><code class="descclassname">tsdb.heap.</code><code class="descname">HeapFile</code><span class="sig-paren">(</span><em>heap_file_name</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.heap.HeapFile" title="Permalink to this definition">¶</a></dt>
@@ -346,46 +253,222 @@ them as long as they&#8217;re in the schema.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-tsdb.persistantdb">
-<span id="tsdb-persistantdb-module"></span><h2>tsdb.persistantdb module<a class="headerlink" href="#module-tsdb.persistantdb" title="Permalink to this headline">¶</a></h2>
-<p>Persistent time series database.</p>
+<div class="section" id="module-tsdb.indices">
+<span id="tsdb-indices-module"></span><h2>tsdb.indices module<a class="headerlink" href="#module-tsdb.indices" title="Permalink to this headline">¶</a></h2>
+<p>All the index classes.</p>
+<dl class="docutils">
+<dt>Currentlly:</dt>
+<dd>PKIndex: Primary Key Index
+TreeIndex: Tree based index done using a AVL tree
+BitmapIndex: Bitmap index for low cardinality columns</dd>
+</dl>
 <dl class="class">
-<dt id="tsdb.persistantdb.PersistantDB">
-<em class="property">class </em><code class="descclassname">tsdb.persistantdb.</code><code class="descname">PersistantDB</code><span class="sig-paren">(</span><em>schema=None</em>, <em>pk_field='pk'</em>, <em>db_name='default'</em>, <em>ts_length=1024</em>, <em>testing=False</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
-<p>Database implementation to allow for persistant storage. It&#8217;s implemented
-using Binary Trees and BitMasks.</p>
+<dt id="tsdb.indices.BitmapIndex">
+<em class="property">class </em><code class="descclassname">tsdb.indices.</code><code class="descname">BitmapIndex</code><span class="sig-paren">(</span><em>values</em>, <em>fieldName='default'</em>, <em>database_name='default'</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.BitmapIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tsdb.baseclasses.BaseIndex" title="tsdb.baseclasses.BaseIndex"><code class="xref py py-class docutils literal"><span class="pre">tsdb.baseclasses.BaseIndex</span></code></a></p>
 <dl class="method">
-<dt id="tsdb.persistantdb.PersistantDB.__len__">
-<code class="descname">__len__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB.__len__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dunder function to return length of timeseries</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="tsdb.persistantdb.PersistantDB.close">
-<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB.close" title="Permalink to this definition">¶</a></dt>
+<dt id="tsdb.indices.BitmapIndex.getEqual">
+<code class="descname">getEqual</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.BitmapIndex.getEqual" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="tsdb.persistantdb.PersistantDB.delete_database">
-<code class="descname">delete_database</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB.delete_database" title="Permalink to this definition">¶</a></dt>
+<dt id="tsdb.indices.BitmapIndex.insert">
+<code class="descname">insert</code><span class="sig-paren">(</span><em>fieldValue</em>, <em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.BitmapIndex.insert" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tsdb.indices.PKIndex">
+<em class="property">class </em><code class="descclassname">tsdb.indices.</code><code class="descname">PKIndex</code><span class="sig-paren">(</span><em>database_name='default'</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.PKIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tsdb.baseclasses.BaseIndex" title="tsdb.baseclasses.BaseIndex"><code class="xref py py-class docutils literal"><span class="pre">tsdb.baseclasses.BaseIndex</span></code></a></p>
+<p>PK Index using Pickle serialization and a write ahead log.
+Essentially a (pk: offset) dictionary with writelog and disk storage.</p>
+<dl class="method">
+<dt id="tsdb.indices.PKIndex.close">
+<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.PKIndex.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.indices.PKIndex.getEqual">
+<code class="descname">getEqual</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.PKIndex.getEqual" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.indices.PKIndex.insert">
+<code class="descname">insert</code><span class="sig-paren">(</span><em>key</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.PKIndex.insert" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.indices.PKIndex.keys">
+<code class="descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.PKIndex.keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.indices.PKIndex.load_and_clear_log">
+<code class="descname">load_and_clear_log</code><span class="sig-paren">(</span><em>loaded=False</em>, <em>close=False</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.PKIndex.load_and_clear_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>if loaded, writelog assumed to be open. otherwise, closed.
+loads values, clears writelog and opens.
+if close, then file descriptor not return.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tsdb.indices.PKIndex.load_pickle">
+<code class="descname">load_pickle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.PKIndex.load_pickle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.indices.PKIndex.remove">
+<code class="descname">remove</code><span class="sig-paren">(</span><em>key</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.PKIndex.remove" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.indices.PKIndex.save_pickle">
+<code class="descname">save_pickle</code><span class="sig-paren">(</span><em>new=False</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.PKIndex.save_pickle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tsdb.indices.SimpleIndex">
+<em class="property">class </em><code class="descclassname">tsdb.indices.</code><code class="descname">SimpleIndex</code><span class="sig-paren">(</span><em>fieldName='default'</em>, <em>database_name='default'</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.SimpleIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tsdb.baseclasses.BaseIndex" title="tsdb.baseclasses.BaseIndex"><code class="xref py py-class docutils literal"><span class="pre">tsdb.baseclasses.BaseIndex</span></code></a></p>
+<p>Very simple index that implements a default dict</p>
+<dl class="method">
+<dt id="tsdb.indices.SimpleIndex.getEqual">
+<code class="descname">getEqual</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.SimpleIndex.getEqual" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.indices.SimpleIndex.insert">
+<code class="descname">insert</code><span class="sig-paren">(</span><em>fieldValue</em>, <em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.SimpleIndex.insert" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.indices.SimpleIndex.remove">
+<code class="descname">remove</code><span class="sig-paren">(</span><em>fieldValue</em>, <em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.SimpleIndex.remove" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tsdb.indices.TreeIndex">
+<em class="property">class </em><code class="descclassname">tsdb.indices.</code><code class="descname">TreeIndex</code><span class="sig-paren">(</span><em>fieldName='default'</em>, <em>database_name='default'</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.TreeIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tsdb.indices.SimpleIndex" title="tsdb.indices.SimpleIndex"><code class="xref py py-class docutils literal"><span class="pre">tsdb.indices.SimpleIndex</span></code></a></p>
+<dl class="method">
+<dt id="tsdb.indices.TreeIndex.allKeys">
+<code class="descname">allKeys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.TreeIndex.allKeys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.indices.TreeIndex.deleteIndex">
+<code class="descname">deleteIndex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.TreeIndex.deleteIndex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.indices.TreeIndex.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>fieldValue</em>, <em>operator_num=2</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.TreeIndex.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.indices.TreeIndex.getEqual">
+<code class="descname">getEqual</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.TreeIndex.getEqual" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.indices.TreeIndex.getHigherOrEq">
+<code class="descname">getHigherOrEq</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.TreeIndex.getHigherOrEq" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.indices.TreeIndex.getHigherThan">
+<code class="descname">getHigherThan</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.TreeIndex.getHigherThan" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.indices.TreeIndex.getLowerOrEq">
+<code class="descname">getLowerOrEq</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.TreeIndex.getLowerOrEq" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.indices.TreeIndex.getLowerThan">
+<code class="descname">getLowerThan</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.TreeIndex.getLowerThan" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.indices.TreeIndex.getNotEq">
+<code class="descname">getNotEq</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.TreeIndex.getNotEq" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.indices.TreeIndex.insert">
+<code class="descname">insert</code><span class="sig-paren">(</span><em>fieldValue</em>, <em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.TreeIndex.insert" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.indices.TreeIndex.remove">
+<code class="descname">remove</code><span class="sig-paren">(</span><em>fieldValue</em>, <em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.TreeIndex.remove" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="tsdb.indices.bool_to_str">
+<code class="descclassname">tsdb.indices.</code><code class="descname">bool_to_str</code><span class="sig-paren">(</span><em>bool_array</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.bool_to_str" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="tsdb.indices.str_to_bool">
+<code class="descclassname">tsdb.indices.</code><code class="descname">str_to_bool</code><span class="sig-paren">(</span><em>string_line</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.str_to_bool" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-tsdb.persistentdb">
+<span id="tsdb-persistentdb-module"></span><h2>tsdb.persistentdb module<a class="headerlink" href="#module-tsdb.persistentdb" title="Permalink to this headline">¶</a></h2>
+<p>Persistent time series database.</p>
+<dl class="class">
+<dt id="tsdb.persistentdb.PersistentDB">
+<em class="property">class </em><code class="descclassname">tsdb.persistentdb.</code><code class="descname">PersistentDB</code><span class="sig-paren">(</span><em>schema=None</em>, <em>pk_field='pk'</em>, <em>db_name='default'</em>, <em>ts_length=1024</em>, <em>testing=False</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistentdb.PersistentDB" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tsdb.baseclasses.BaseDB" title="tsdb.baseclasses.BaseDB"><code class="xref py py-class docutils literal"><span class="pre">tsdb.baseclasses.BaseDB</span></code></a></p>
+<p>Database implementation to allow for persistent storage. It&#8217;s implemented
+using Binary Trees and BitMasks.</p>
+<dl class="method">
+<dt id="tsdb.persistentdb.PersistentDB.__getitem__">
+<code class="descname">__getitem__</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistentdb.PersistentDB.__getitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dunder function that returns all columns for this primary key</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tsdb.persistentdb.PersistentDB.__len__">
+<code class="descname">__len__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistentdb.PersistentDB.__len__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dunder function to return length of timeseries db</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tsdb.persistentdb.PersistentDB.close">
+<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistentdb.PersistentDB.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.persistentdb.PersistentDB.delete_database">
+<code class="descname">delete_database</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistentdb.PersistentDB.delete_database" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove the database.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="tsdb.persistantdb.PersistantDB.index_bulk">
-<code class="descname">index_bulk</code><span class="sig-paren">(</span><em>pks=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB.index_bulk" title="Permalink to this definition">¶</a></dt>
+<dt id="tsdb.persistentdb.PersistentDB.index_bulk">
+<code class="descname">index_bulk</code><span class="sig-paren">(</span><em>pks=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistentdb.PersistentDB.index_bulk" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="tsdb.persistantdb.PersistantDB.insert_ts">
-<code class="descname">insert_ts</code><span class="sig-paren">(</span><em>pk</em>, <em>ts</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB.insert_ts" title="Permalink to this definition">¶</a></dt>
+<dt id="tsdb.persistentdb.PersistentDB.insert_ts">
+<code class="descname">insert_ts</code><span class="sig-paren">(</span><em>pk</em>, <em>ts</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistentdb.PersistentDB.insert_ts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a pk and a timeseries, insert them</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="tsdb.persistantdb.PersistantDB.remove_indices">
-<code class="descname">remove_indices</code><span class="sig-paren">(</span><em>pk</em>, <em>old_meta_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB.remove_indices" title="Permalink to this definition">¶</a></dt>
+<dt id="tsdb.persistentdb.PersistentDB.remove_indices">
+<code class="descname">remove_indices</code><span class="sig-paren">(</span><em>pk</em>, <em>old_meta_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistentdb.PersistentDB.remove_indices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove the odl stored indices.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -402,8 +485,8 @@ using Binary Trees and BitMasks.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="tsdb.persistantdb.PersistantDB.select">
-<code class="descname">select</code><span class="sig-paren">(</span><em>meta</em>, <em>fields_to_ret=[]</em>, <em>additional=None</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB.select" title="Permalink to this definition">¶</a></dt>
+<dt id="tsdb.persistentdb.PersistentDB.select">
+<code class="descname">select</code><span class="sig-paren">(</span><em>meta</em>, <em>fields_to_ret=[]</em>, <em>additional=None</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistentdb.PersistentDB.select" title="Permalink to this definition">¶</a></dt>
 <dd><p>Select timeseries elements in the database that match the criteria set
 in meta.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -424,22 +507,22 @@ returned. You can sort or limit the number of results that you receive.</li>
 </dd></dl>
 
 <dl class="method">
-<dt id="tsdb.persistantdb.PersistantDB.update_indices">
-<code class="descname">update_indices</code><span class="sig-paren">(</span><em>pk</em>, <em>old_meta_dict=None</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB.update_indices" title="Permalink to this definition">¶</a></dt>
+<dt id="tsdb.persistentdb.PersistentDB.update_indices">
+<code class="descname">update_indices</code><span class="sig-paren">(</span><em>pk</em>, <em>old_meta_dict=None</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistentdb.PersistentDB.update_indices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update indices after a change has occurred. Eg. Called after insertion</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="tsdb.persistantdb.PersistantDB.upsert_meta">
-<code class="descname">upsert_meta</code><span class="sig-paren">(</span><em>pk</em>, <em>new_meta</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.PersistantDB.upsert_meta" title="Permalink to this definition">¶</a></dt>
+<dt id="tsdb.persistentdb.PersistentDB.upsert_meta">
+<code class="descname">upsert_meta</code><span class="sig-paren">(</span><em>pk</em>, <em>new_meta</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistentdb.PersistentDB.upsert_meta" title="Permalink to this definition">¶</a></dt>
 <dd><p>Upsert metadata into the timeseries in the database.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="function">
-<dt id="tsdb.persistantdb.dict_eq">
-<code class="descclassname">tsdb.persistantdb.</code><code class="descname">dict_eq</code><span class="sig-paren">(</span><em>dict1</em>, <em>dict2</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistantdb.dict_eq" title="Permalink to this definition">¶</a></dt>
+<dt id="tsdb.persistentdb.dict_eq">
+<code class="descclassname">tsdb.persistentdb.</code><code class="descname">dict_eq</code><span class="sig-paren">(</span><em>dict1</em>, <em>dict2</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistentdb.dict_eq" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -826,10 +909,11 @@ dispatches a response.</p>
   <ul>
 <li><a class="reference internal" href="#">tsdb package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-tsdb.baseindex">tsdb.baseindex module</a></li>
+<li><a class="reference internal" href="#module-tsdb.baseclasses">tsdb.baseclasses module</a></li>
 <li><a class="reference internal" href="#module-tsdb.dictdb">tsdb.dictdb module</a></li>
 <li><a class="reference internal" href="#module-tsdb.heap">tsdb.heap module</a></li>
-<li><a class="reference internal" href="#module-tsdb.persistantdb">tsdb.persistantdb module</a></li>
+<li><a class="reference internal" href="#module-tsdb.indices">tsdb.indices module</a></li>
+<li><a class="reference internal" href="#module-tsdb.persistentdb">tsdb.persistentdb module</a></li>
 <li><a class="reference internal" href="#module-tsdb.tsdb_client">tsdb.tsdb_client module</a></li>
 <li><a class="reference internal" href="#module-tsdb.tsdb_error">tsdb.tsdb_error module</a></li>
 <li><a class="reference internal" href="#module-tsdb.tsdb_ops">tsdb.tsdb_ops module</a></li>
