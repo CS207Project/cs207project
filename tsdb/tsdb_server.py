@@ -101,7 +101,7 @@ class TSDBProtocol(asyncio.Protocol):
         storedproc = getattr(mod,'proc_main')
         results=[]
         for pk in loids:
-            row = self.server.db.rows[pk]
+            row = self.server.db[pk]
             result = storedproc(pk, row, arg)
             results.append(dict(zip(target, result)))
         return TSDBOp_Return(TSDBStatus.OK, op['op'], dict(zip(loids, results)))
@@ -142,7 +142,7 @@ class TSDBProtocol(asyncio.Protocol):
         print("S> list of triggers to run", lot)
         for tname, t, arg, target in lot:
             for pk in rowmatch:
-                row = self.server.db.rows[pk]
+                row = self.server.db[pk]
                 task = asyncio.ensure_future(t(pk, row, arg))
                 task.add_done_callback(trigger_callback_maker(pk, target, self.server.db.upsert_meta))
 

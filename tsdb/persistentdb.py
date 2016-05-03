@@ -10,8 +10,9 @@ import numbers
 # import struct
 import json
 import timeseries
-from .baseindex import BaseIndex, PKIndex, TreeIndex
+from .indices import BaseIndex, PKIndex, TreeIndex
 from .heap import MetaHeapFile, TSHeapFile
+from .baseclasses import BaseDB
 import pickle
 import shutil
 
@@ -54,7 +55,7 @@ def dict_eq(dict1, dict2):
     return eq
 
 
-class PersistentDB:
+class PersistentDB(BaseDB):
     """
     Database implementation to allow for persistent storage. It's implemented
     using Binary Trees and BitMasks.
@@ -125,10 +126,21 @@ class PersistentDB:
             else:
                 self.indexes[field] = TreeIndex(field, self.dbname)
 
+    def __len__(self):
+        "Dunder function to return length of timeseries db"
+        return len(self.pks)
+
+    def __getitem__(self,key):
+        """Dunder function that returns all columns for this primary key
+        """
+        return self._get_meta_dict(key)
+
     def delete_database(self):
         """
         Remove the database.
         """
+        #ASK: added close to fix files being open issue
+        self.close()
         shutil.rmtree(self.data_dir)
 
     def close(self):
@@ -175,16 +187,14 @@ class PersistentDB:
             if field in self.schema.keys():
                 if self.schema[field]['type'] == "bool" or metaList[n+1]:
                     meta[field] = metaList[n]
+        # ASK: this needs to contain the ts as well
+        meta['ts'] = self._return_ts(pk)
         return meta
 
     def _return_ts(self,pk):
         # DNY: temporary testing function
         ts_offset = self._get_meta_list(pk)[self.metaheap.fields.index('ts_offset')]
         return self.tsheap.read_and_decode_ts(ts_offset)
-
-    def __len__(self):
-        "Dunder function to return length of timeseries"
-        return len(self.pks)
 
     def upsert_meta(self, pk, new_meta):
         "Upsert metadata into the timeseries in the database."

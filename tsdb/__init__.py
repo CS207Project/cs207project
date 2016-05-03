@@ -6,4 +6,4 @@ from .tsdb_server import TSDBProtocol
 from .tsdb_ops import *
 from .tsdb_serialization import *
 from .tsdb_error import TSDBStatus
-from .baseindex import TreeIndex, PKIndex, BitmapIndex
+from .indices import TreeIndex, PKIndex, BitmapIndex

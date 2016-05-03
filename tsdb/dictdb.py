@@ -1,5 +1,6 @@
 """A dictionary based in-memory version of the time series database
 """
+from .baseclasses import BaseDB
 from collections import defaultdict
 from operator import and_
 from functools import reduce
@@ -16,7 +17,7 @@ OPMAP = {
     '>=': operator.ge
 }
 
-class DictDB:
+class DictDB(BaseDB):
     """
     A database implementation in a dictionary
 
@@ -58,6 +59,16 @@ class DictDB:
             # bitmaps for lowcard/str_or_factor
             if indexinfo is not None:
                 self.indexes[s] = defaultdict(set)# create an index for every non-None schema
+
+    def __getitem__(self,key):
+        """Dunder method to get the the values at a given row"""
+        if key in self.rows:
+            return self.rows[key]
+        else:
+            raise ValueError("primary_key not in the database: "+ str(key))
+
+    def __setitem__(self):
+        raise NotImplementedError
 
     def insert_ts(self, pk, ts):
         "Given a pk and a timeseries, insert them"

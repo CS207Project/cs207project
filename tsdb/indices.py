@@ -1,13 +1,13 @@
 """All the index classes.
 
 Currentlly:
-    BaseIndex (parent for all the index subclasses): lays out what needs to be done
     PKIndex: Primary Key Index
     TreeIndex: Tree based index done using a AVL tree
     BitmapIndex: Bitmap index for low cardinality columns
 """
 
 # from .persistentdb import FILES_DIR
+from .baseclasses import BaseIndex
 from collections import defaultdict
 import pickle
 import os
@@ -16,7 +16,9 @@ import numpy as np
 
 REFRESH_RATE = 50 # rate at which write_ahead log is flushed to disk
 
-class BaseIndex:
+class SimpleIndex(BaseIndex):
+    """Very simple index that implements a default dict
+    """
     def __init__(self, fieldName='default', database_name='default'):
         self.database_name = database_name
         self.name = fieldName
@@ -30,31 +32,19 @@ class BaseIndex:
         # variable that checks the staus of the in memory
         self._stale = False
 
-    def _loadFromFile(self):
-        # load the index file from disk
-        pass
-
-    def _saveToFile(self):
-        # write the index back out to disk
-        pass
-
-    def deleteIndex(self):
-        # delete the index file
-        pass
-
     def insert(self, fieldValue, pk):
         # insert the value into the appropriate place in the tree
         self.dict[fieldValue].add(pk)
 
     def remove(self, fieldValue, pk):
-        # remove a primary key from the index
-        pass
+        if fieldValue in self.dict[fieldValue]:
+            self.dict[fieldValue].remove(pk)
 
     def getEqual(self, fieldValue):
         # return set of primary keys that match this fieldValue
         return self.dict[fieldValue]
 
-class PKIndex:
+class PKIndex(BaseIndex):
     """
     PK Index using Pickle serialization and a write ahead log.
     Essentially a (pk: offset) dictionary with writelog and disk storage.
@@ -133,10 +123,20 @@ class PKIndex:
     def __len__(self):
         return self.pk_count
 
+    def insert(self, key, value):
+        # insert the value into the appropriate place in the tree
+        self[key] = value
+
+    def remove(self, key, value):
+        del self.dict[key]
+
+    def getEqual(self, key):
+        return self[key]
+
     def close(self):
         self.load_and_clear_log(loaded=True, close=True)
 
-class TreeIndex(BaseIndex):
+class TreeIndex(SimpleIndex):
 
     def _loadFromFile(self):
         if os.path.isfile(self.filename):
