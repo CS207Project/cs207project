@@ -1,5 +1,5 @@
 from .dictdb import *
-from .persistantdb import *
+from .persistentdb import *
 from .tsdb_client import TSDBClient
 from .tsdb_server import TSDBServer
 from .tsdb_server import TSDBProtocol

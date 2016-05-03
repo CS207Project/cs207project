@@ -151,3 +151,6 @@ class TSDBTests(asynctest.TestCase):
         nearestwanted = min(results.keys(),key=lambda p: results[p]['d'])
 
         self.assertEqual(nearestwanted,'ts-35')
+
+if __name__ == '__main__':
+    asynctest.main()

@@ -28,7 +28,6 @@ async def main(pk, row, arg):
         [mean,sd] of the TimeSeries in this row of the database
 
     """
-    await asyncio.sleep(1)
     return proc_main(pk,row,arg)
 
 def proc_main(pk, row, arg):

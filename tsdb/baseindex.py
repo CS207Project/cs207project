@@ -7,7 +7,7 @@ Currentlly:
     BitmapIndex: Bitmap index for low cardinality columns
 """
 
-# from .persistantdb import FILES_DIR
+# from .persistentdb import FILES_DIR
 from collections import defaultdict
 import pickle
 import os

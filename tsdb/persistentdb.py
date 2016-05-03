@@ -54,9 +54,9 @@ def dict_eq(dict1, dict2):
     return eq
 
 
-class PersistantDB:
+class PersistentDB:
     """
-    Database implementation to allow for persistant storage. It's implemented
+    Database implementation to allow for persistent storage. It's implemented
     using Binary Trees and BitMasks.
     """
     def __init__(self, schema=None, pk_field='pk', db_name='default', ts_length=1024, testing=False):

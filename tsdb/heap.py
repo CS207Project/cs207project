@@ -1,7 +1,7 @@
-"""A heap that is used in the persistantdb implementation
+"""A heap that is used in the persistentdb implementation
 """
 
-# from .persistantdb import TYPES, TYPE_DEFAULT
+# from .persistentdb import TYPES, TYPE_DEFAULT
 import os
 import struct
 import timeseries
