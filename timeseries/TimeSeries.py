@@ -142,36 +142,27 @@ class TimeSeries:
                 return slope * time + intercept
 
     def interpolate(self,timesList):
-        """create a new timeseries based on interpolated values of this TimeSeries
-
-        Parameters
-        ----------
-        timesList : list like object
-            the times for the new interpolated TimeSeries
-
-        Returns
-        -------
-        TimeSeries
-            new TimeSeries object who's times are `timesList`
-        """
-        valuesList = [self.__interpolate_point(time) for time in timesList]
+        "Interpolates time points within times series based on submitted data"
+        if not isinstance(timesList, list):
+            raise TypeError("times list must be a list of floats")
+        valuesList = [self.__interpolate_point(float(time)) for time in timesList]
         return TimeSeries(timesList,valuesList)
 
     def median(self):
-        "compute the median of the values of a TimeSeries"
+        "calculates the median value of the times series"
         if len(self) == 0:
-            raise ValueError("Cannot calculate median of empty TimeSeries.")
+            raise ValueError("Cannot calculate median of empty timeseries.")
         return np.median(self.values)
 
     def __timeEqual(self, other):
-        "helper that checks if two TimeSeries have the same times"
-        # try:
+        "helper function to determin equality of times array of timeseries"
         return (len(self.times) == len(other.times) and
         all(a==b for a,b in zip(self.times, other.times)))
         # except(AttributeError):
         #     raise NotImplemented
 
     def __try_wrapper(f):
+        "Wrapper to standardize the error upon wrong inputs"
         def inner(*args, **kwargs):
             try:
                 return f(*args, **kwargs)
@@ -181,273 +172,139 @@ class TimeSeries:
 
     @__try_wrapper
     def __eq__(self, other):
-        """Dunder function to check if two TimeSeries are equal
-
-        Parameters
-        ----------
-        other : TimeSeries object
-            another TimeSeries
-        Returns
-        -------
-        bool
-            truth value of this and the other TimeSeries being equal
-        """
+        if not isinstance(other, TimeSeries):
+            return TypeError("TimeSeries can only be equal with other TimeSeries Instances")
         if self.__timeEqual(other):
             return all(a==b for a,b in zip(self.values, other.values))
         else:
-            raise ValueError(str(self)+' and '+str(other)+' must have the same time points')
+            return False
+            #raise ValueError(str(self)+' and '+str(other)+' must have the same time points')
 
     @pype.component
     def __add__(self, rhs):
-        """Dunder function to add two TimeSeries
-
-        Parameters
-        ----------
-        rhs : TimeSeries object
-            another TimeSeries
-
-        Returns
-        -------
-        TimeSeries
-            sum of two TimeSeries
-
-        Raises
-        ------
-        ValueError
-            if the times of the two TimeSeries are not the same
-        """
+        # DNY: Could Refactor into
         try:
-            if (self.__timeEqual(rhs)):
-                pairs = zip(self.values, rhs.values)
-                return TimeSeries(self.times, [a + b for a, b in pairs])
+            if isinstance(rhs, numbers.Real):
+                return TimeSeries(self.times, [v + rhs for v in self.values])
+            elif isinstance(rhs, TimeSeries):
+                if (self.__timeEqual(rhs)):
+                    pairs = zip(self.values, rhs.values)
+                    return TimeSeries(self.times, [a + b for a, b in pairs])
+                else:
+                    raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
+            elif isinstance(rhs, np.ndarray) or isinstance(rhs, list):
+                raise AttributeError
             else:
-                raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
+                raise AttributeError
         except(AttributeError):
             raise NotImplementedError
 
+    def __radd__(self, lhs):
+        "__radd__ delegates to __add__ to handle addition"
+        return self + lhs
+
     @pype.component
     def __sub__(self, rhs):
-        """Dunder function to subtract two TimeSeries
-
-        Parameters
-        ----------
-        rhs : TimeSeries object
-            another TimeSeries
-
-        Returns
-        -------
-        TimeSeries
-            this TimeSeries minus the other
-
-        Raises
-        ------
-        ValueError
-            if the times of the two TimeSeries are not the same
-        """
-        if isinstance(rhs,TimeSeries):
-            try:
+        try:
+            if isinstance(rhs, numbers.Real):
+                return TimeSeries(self.times, [v - rhs for v in self.values])
+            elif isinstance(rhs, TimeSeries):
                 if (self.__timeEqual(rhs)):
                     pairs = zip(self.values, rhs.values)
                     return TimeSeries(self.times, [a - b for a, b in pairs])
                 else:
                     raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
-            except(AttributeError):
-                raise NotImplementedError
-        else:
-            return TimeSeries(self.times, self.values - rhs)
+            elif isinstance(rhs, np.ndarray) or isinstance(rhs, list):
+                raise AttributeError
+            else:
+                raise AttributeError
+        except(AttributeError):
+            raise NotImplementedError("Must submit either a TimeSeries or a numbers.Real instance")
+
+    def __rsub__(self, lhs):
+        "__rsub__ delegates to __sub__ to handle subtraction"
+        return -(self - lhs)
 
     @pype.component
     def __mul__(self, rhs):
-        """Dunder function to multiply a TimeSeries with a number or another TimeSeries
-
-        Parameters
-        ----------
-        rhs : TimeSeries object or a number
-            the TimeSeries or number that you want to use
-
-        Returns
-        -------
-        TimeSeries
-            this TimeSeries times the rhs
-
-        Raises
-        ------
-        ValueError
-            if the times of the two TimeSeries are not the same
-
-        Notes
-        -----
-            if `rhs` is a number then values are values * rhs. if `rhs` is a TimeSeries then we perform an elementwise product
-        """
-        if isinstance(rhs,numbers.Integral):
-            return TimeSeries(self.times,[a*rhs for a in self.values])
         try:
-            if (self.__timeEqual(rhs)):
-                pairs = zip(self.values, rhs.values)
-                return TimeSeries(self.times, (a * b for a, b in pairs))
+            if isinstance(rhs, numbers.Real):
+                return TimeSeries(self.times, [v * rhs for v in self.values])
+            elif isinstance(rhs, TimeSeries):
+                if (self.__timeEqual(rhs)):
+                    pairs = zip(self.values, rhs.values)
+                    return TimeSeries(self.times, [a * b for a, b in pairs])
+                else:
+                    raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
+            elif isinstance(rhs, np.ndarray) or isinstance(rhs, list):
+                raise AttributeError
             else:
-                raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
+                raise AttributeError
         except(AttributeError):
             raise NotImplementedError
 
+    def __rmul__(self, lhs):
+        "__rmul__ delegates to __mul__ to handle multiplication"
+        return self * lhs
+
     @pype.component
     def __abs__(self):
-        """Dunder function to get the L2 norm of the values
-
-        Returns
-        -------
-        double
-            L2 norm
-
-        """
         return np.sqrt(sum(x * x for x in self.values))
 
     @pype.component
     def __bool__(self):
-        """Dunder function to check if abs value of the TimeSeries is > 0
-
-        Returns
-        -------
-        bool
-            truth value of abs of TimeSeries > 0
-
-        """
         return bool(abs(self))
 
     @pype.component
     def __neg__(self):
-        """Dunder function that negates the values of a TimeSeries
-
-        Returns
-        -------
-        TimeSeries
-            same times, - the values
-
-        """
         return TimeSeries(self.times, [-x for x in self.values])
 
     @pype.component
     def __pos__(self):
-        """Dunder function that returns the same TimeSeries
-
-        Returns
-        -------
-        TimeSeries
-            identity
-
-        """
         return TimeSeries(self.times, self.values)
 
     @pype.component
     def __truediv__(self,rhs):
-        """Dunder function to divide this TimeSeries by a number or another TimeSeries
-
-        Parameters
-        ----------
-        rhs : TimeSeries object or a number
-            the TimeSeries or number that you want to use
-
-        Returns
-        -------
-        TimeSeries
-            this TimeSeries / the rhs
-
-        Raises
-        ------
-        ValueError
-            if the times of the two TimeSeries are not the same
-
-        Notes
-        -----
-            if `rhs` is a number then values are values / rhs. if `rhs` is a v then we perform an elementwise division
-        """
-        if isinstance(rhs,TimeSeries):
-            try:
+        try:
+            if isinstance(rhs, numbers.Real):
+                return TimeSeries(self.times, [v / rhs for v in self.values])
+            elif isinstance(rhs, TimeSeries):
                 if (self.__timeEqual(rhs)):
                     pairs = zip(self.values, rhs.values)
-                    return TimeSeries(self.times, (a / b for a, b in pairs))
+                    return TimeSeries(self.times, [a / b for a, b in pairs])
                 else:
                     raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
-            except(AttributeError):
-                raise NotImplementedError
-        else:
-            return TimeSeries(self.times,[a/rhs for a in self.values])
+            elif isinstance(rhs, np.ndarray) or isinstance(rhs, list):
+                raise AttributeError
+            else:
+                raise AttributeError
+        except(AttributeError):
+            raise NotImplementedError
+
+    def __rtruediv__(self,rhs):
+        raise NotImplementedError
 
     # need to add tests!!
     @pype.component
     def std(self):
-        """Standard Deviation of a TimeSeries
-
-        Returns
-        -------
-        double
-            standard dev of values
-
-        Raises
-        ------
-        ValueError
-            if the length is < 2
-
-        """
         if len(self) < 2:
-            raise ValueError("Cannot calculate std of a TimeSeries of length %d"
+            raise ValueError("Cannot calculate std of a timeseries of length %d"
                 ,len(self.values))
         return np.std(self.values)
 
     # need to add tests!!
     @pype.component
     def mean(self):
-        """Mean of a TimeSeries
-
-        Returns
-        -------
-        double
-            mean of values
-
-        Raises
-        ------
-        ValueError
-            if the TimeSeries is empty
-
-        """
         if len(self) == 0:
-            raise ValueError("Cannot calculate mean of empty TimeSeries.")
+            raise ValueError("Cannot calculate mean of empty timeseries.")
         return np.average(self.values)
 
     def to_json(self):#DNY: to interface with TSDB objects
         #ASK: fixing DNY's implementation (times need to be first)
-        """Converts this TimeSeries to a list of lists so that it can be converted to json
-
-        Returns
-        -------
-        list
-            [[times],[values]] of this TimeSeries
-
-        Notes
-        -----
-        DNY
-            to interface with TSDB objects
-        ASK
-            fixing DNY's implementation (times need to be first)
-
-        """
         return [[float(i) for i in self.times],[float(i) for i in self.values]]
 
     @classmethod
     def from_json(cls,dataList):
-        """Converts a list of lists to a TimeSeries object
-
-        Parameters
-        ----------
-        dataList : list
-            [[times],[values]] that will form this TimeSeries
-
-        Returns
-        -------
-        TimeSeries
-            the resulting TimeSeries
-
-        """
         return cls(dataList[0],dataList[1])
 
 ##### To run doctest:
