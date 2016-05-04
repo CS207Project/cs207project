@@ -1,4 +1,4 @@
-from tsdb import *
+from vptrees import *
 from graphviz import Digraph
 import unittest
 import numpy as np

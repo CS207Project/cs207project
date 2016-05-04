@@ -61,14 +61,14 @@ class WebServerTests(unittest.TestCase):
         self.server_log_file = open('.tsdb_server.log.testweb','w')
         self.server_proc = subprocess.Popen(['python', 'go_server.py']
                 ,stdout=self.server_log_file,stderr=subprocess.STDOUT)
-        time.sleep(1)
+        time.sleep(3)
 
         # start webserver
         self.server_url = 'http://localhost:8080/tsdb'
         self.webserver_log_file = open('.web_server.log.testweb','w')
         self.webserver_proc = subprocess.Popen(['python', 'go_webserver.py']
                 ,stdout=self.webserver_log_file,stderr=subprocess.STDOUT)
-        time.sleep(1)
+        time.sleep(3)
 
     def tearDown(self):
         self.server_proc.terminate()

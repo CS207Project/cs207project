@@ -45,6 +45,24 @@ class TSDBClient(object):
         status, payload =  await self._send(msg.to_json())
         return TSDBStatus(status), payload
 
+    async def delete_ts(self, primary_key):
+        """
+        Send the server a request to delete a timeseries from the database.
+
+        Parameters
+        ----------
+        `primary_key`: int
+            a unique identifier for the timeseries
+        """
+        # your code here, construct from the code in tsdb_ops.py
+        msg = TSDBOp_DeleteTS(primary_key)
+        # msg = {}
+        # msg['op'] = 'insert_ts'
+        # msg['pk'] = primary_key
+        # msg['ts'] = [ts.values, ts.times]
+        status, payload =  await self._send(msg.to_json())
+        return TSDBStatus(status), payload
+
     async def upsert_meta(self, primary_key, metadata_dict):
         """
         Send the server a request to upsert metadata into the timeseries in
@@ -91,7 +109,31 @@ class TSDBClient(object):
         return TSDBStatus(status), payload
 
     async def augmented_select(self, proc, target, arg=None, metadata_dict={}, additional=None):
+        """
+        Send the server a request for the selection of timeseries elements in
+        the database that match the criteria set in metadata_dict and then run a
+        stored procedure on that result
+
+        Parameters
+        ----------
+        proc : string
+            name of the stored procedure that will be run on the results
+        metadata_dict: a dictionary object
+            the selection criteria (filters)
+        additional: a dictionary object
+            additional computation to perform on the query matches before they're
+            returned. You can sort or limit the number of results that you receive.
+        target : list
+            what the results of the stored procedure will be stored in
+        """
         msg = TSDBOp_AugmentedSelect(proc,target,arg,metadata_dict,additional)
+        status, payload =  await self._send(msg.to_json())
+        return TSDBStatus(status), payload
+
+    async def find_similar(self, arg):
+        """Send the server a request to find the closest ts to this one
+        """
+        msg = TSDBOp_FindSimilar(arg)
         status, payload =  await self._send(msg.to_json())
         return TSDBStatus(status), payload
 
