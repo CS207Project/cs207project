@@ -1,4 +1,10 @@
-"""Vantage Point Trees
+"""Vantage Point Trees and related code.
+
+The structure of these trees is that each non-leaf node is a vantage point and each
+leaf node is contains a group of pks that are possibly the closest ones to our query.
+
+Due to the tree structure we perform log n distance calculations
+(assuming the tree is balanced)
 """
 
 import bintrees
