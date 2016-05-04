@@ -137,6 +137,41 @@ class Handlers:
         finally:
             return web.Response(body=json.dumps(payload).encode('utf-8'))
 
+    async def find_similar_handler(self,request):
+        """Handler for Find Similar
+
+        Parameters
+        ----------
+        request : aiotttp.request
+            request object with details of the request that was sent to the server
+
+            request.GET['query'] should exist or an error is returned **REQUIRED**
+
+            request.GET['query']['arg'] -> json encoded timeseries that is the reference to
+            which we're trying to find the closest match **REQUIRED**
+
+        Returns
+        -------
+        web.Response
+            JSON encoded results of the augmented select
+        """
+        try:
+            if 'query' not in request.GET:
+                raise ValueError("'query' must be sent with a augmented select",request.GET)
+
+            json_query = json.loads(request.GET['query'])
+            arg = json_query['arg']
+
+            status,payload = await self.client.find_similar(arg)
+        except Exception as error:
+            payload = {"msg": "Could not parse request. Please see documentation."}
+            payload["type"] = str(type(error))
+            payload["args"] = str(error.args)
+
+        finally:
+            return web.Response(body=json.dumps(payload).encode('utf-8'))
+
+
     async def add_ts_handler(self,request):
         """Handler for add time series
 
@@ -163,6 +198,43 @@ class Handlers:
             pk = req_dict['primary_key']
             t = ts.TimeSeries(*req_dict['ts'])
             status, payload = await self.client.insert_ts(pk,t)
+
+            if status ==TSDBStatus.OK:
+                textResp = "WriteSuccessful"
+            else:
+                raise Exception("Write Failed")
+
+        except Exception as error:
+            textResp = {"msg": "Could not parse request. Please see documentation."}
+            textResp["type"] = str(type(error))
+            textResp["args"] = str(error.args)
+
+        finally:
+            return web.Response(body=json.dumps(textResp).encode('utf-8'))
+
+    async def delete_ts_handler(self,request):
+        """Handler for delete time series
+
+        Parameters
+        ----------
+        request : aiotttp.request
+            request object with details of the request that was sent to the server
+
+            request must be JSON encoded
+
+            request.json()['primary_key'] --> primary key for this timeseries in the database. **REQUIRED**
+
+
+        Returns
+        -------
+        web.Response
+            JSON encoded text indicating success or failure of write
+        """
+        try:
+            req_dict = await request.json()
+
+            pk = req_dict['primary_key']
+            status, payload = await self.client.delete_ts(pk)
 
             if status ==TSDBStatus.OK:
                 textResp = "WriteSuccessful"
@@ -312,6 +384,8 @@ class WebServer:
         self.app.router.add_route('POST', '/tsdb/add/trigger', self.handler.add_trigger_handler)
         self.app.router.add_route('POST', '/tsdb/remove/trigger', self.handler.remove_trigger_handler)
         self.app.router.add_route('POST', '/tsdb/add/metadata', self.handler.add_metadata_handler)
+        self.app.router.add_route('POST', '/tsdb/delete/ts', self.handler.delete_ts_handler)
+        self.app.router.add_route('POST', '/tsdb/find_similar', self.handler.find_similar_handler)
 
     def run(self):
         "run the webserver"

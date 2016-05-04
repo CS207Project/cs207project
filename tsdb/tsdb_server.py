@@ -41,6 +41,22 @@ class TSDBProtocol(asyncio.Protocol):
         self._run_trigger('insert_ts', [op['pk']])
         return TSDBOp_Return(TSDBStatus.OK, op['op'])
 
+    def _delete_ts(self, op):
+        """
+        Delete a timeseies from the database.
+
+        Parameters
+        ----------
+        op : a TSDBOp object
+            contains the primary key to delete
+        """
+        try:
+            self.server.db.delete_ts(op['pk'])
+        except ValueError as e:
+            return TSDBOp_Return(TSDBStatus.INVALID_KEY, op['op'])
+        self._run_trigger('delete_ts', [op['pk']])
+        return TSDBOp_Return(TSDBStatus.OK, op['op'])
+
     def _upsert_meta(self, op):
         """
         Upsert metadata into a timeseries on the database.
@@ -105,6 +121,17 @@ class TSDBProtocol(asyncio.Protocol):
             result = storedproc(pk, row, arg)
             results.append(dict(zip(target, result)))
         return TSDBOp_Return(TSDBStatus.OK, op['op'], dict(zip(loids, results)))
+
+    def _find_similar(self, op):
+        """
+        Find the most similar timeseies to the given timeseies from the database
+
+        Parameters
+        ----------
+        op : a TSDBOp object
+            contains a query timeseries (`op[arg]`)
+        """
+        raise NotImplementedError
 
     def _add_trigger(self, op):#DNY: Trigger is "if something happens, run this particular process", similar to a stored procedure.
         """
@@ -176,6 +203,10 @@ class TSDBProtocol(asyncio.Protocol):
                     response = self._add_trigger(op)
                 elif isinstance(op, TSDBOp_RemoveTrigger):
                     response = self._remove_trigger(op)
+                elif isinstance(op, TSDBOp_DeleteTS):
+                    response = self._delete_ts(op)
+                elif isinstance(op, TSDBOp_FindSimilar):
+                    response = self._find_similar(op)
                 else:
                     response = TSDBOp_Return(TSDBStatus.UNKNOWN_ERROR, op['op'])
             except Exception as e:
