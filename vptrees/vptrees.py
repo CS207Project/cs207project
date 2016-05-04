@@ -5,7 +5,6 @@ import bintrees
 import numpy as np
 import uuid
 from graphviz import Digraph
-import matplotlib.pyplot as plt
 
 MAX_NODES = 10000
 
@@ -176,6 +175,8 @@ if __name__ == "__main__":
     #######################
 
     # plot : the red point should be the one on the far left
+    import matplotlib.pyplot as plt
+    
     colors = []
     for l in pks:
         c = 'b'

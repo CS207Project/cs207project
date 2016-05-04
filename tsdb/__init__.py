@@ -7,4 +7,3 @@ from .tsdb_ops import *
 from .tsdb_serialization import *
 from .tsdb_error import TSDBStatus
 from .indices import TreeIndex, PKIndex, BitmapIndex
-from .vptrees import VPTree

@@ -29,12 +29,12 @@ class TSDBTests(asynctest.TestCase):
         self.server_log_file = open('.tsdb_server.log.test','w')
         self.server_proc = subprocess.Popen(['python', 'go_server.py']
                 ,stdout=self.server_log_file,stderr=subprocess.STDOUT)
-        time.sleep(1)
+        time.sleep(3)
 
     def tearDown(self):
         self.server_proc.terminate()
         self.server_log_file.close()
-        time.sleep(1)
+        time.sleep(3)
 
     async def test_run(self):
         np.random.seed(12345)
