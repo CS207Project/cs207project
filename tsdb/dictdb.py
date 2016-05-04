@@ -82,10 +82,6 @@ class DictDB(BaseDB):
         self.rows[pk]['ts'] = ts
         self.update_indices(pk)
 
-    def delete_ts(self,pk):
-        "Given a pk, remove that timeseries from the database"
-        raise NotImplementedError
-
     def upsert_meta(self, pk, meta):
         """
         Given a primary key and a dict of meta fields, value pairs, upsert

@@ -176,10 +176,6 @@ class PersistentDB(BaseDB):
         self.pks[pk] = pk_offset
         self.update_indices(pk)
 
-    def delete_ts(self,pk):
-        "Given a pk, remove that timeseries from the database"
-        raise NotImplementedError
-
     def _get_meta_list(self,pk):
         pk_offset = self.pks[pk]# DNY: temporary
         return self.metaheap.read_and_return_meta(pk_offset)

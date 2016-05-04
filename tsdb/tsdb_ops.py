@@ -1,4 +1,4 @@
-"""Encapluation for all the operations. Communication also passes through here.
+"""Encapluation for all the operations. Communication also passes through here. 
 """
 
 import timeseries as ts
@@ -63,15 +63,6 @@ class TSDBOp_InsertTS(TSDBOp):
         # print(json_dict)
         return cls(json_dict['pk'], ts.TimeSeries(*(json_dict['ts'])))
         #DNY: timeseries encoded as list [[t1,t2,...], [v1,v2,...]]
-
-class TSDBOp_DeleteTS(TSDBOp):
-    def __init__(self, pk):
-        super().__init__('delete_ts')
-        self['pk'] = pk
-
-    @classmethod
-    def from_json(cls, json_dict):
-        return cls(json_dict['pk'])
 
 class TSDBOp_Return(TSDBOp):
 
@@ -151,18 +142,6 @@ class TSDBOp_AugmentedSelect(TSDBOp):
     def from_json(cls, json_dict):
         return cls(json_dict['proc'], json_dict['target'], json_dict['arg'], json_dict['md'], json_dict['additional'])
 
-class TSDBOp_FindSimilar(TSDBOp):
-    """Find the timeseries in the DB closest to this one based on the predefined
-    distance metric
-    """
-    def __init__(self, arg):
-        super().__init__('find_similar')
-        self['arg'] = arg
-
-    @classmethod
-    def from_json(cls, json_dict):
-        return cls(json_dict['arg'])
-
 # This simplifies reconstructing TSDBOp instances from network data.
 typemap = {
   'insert_ts': TSDBOp_InsertTS,
@@ -171,6 +150,4 @@ typemap = {
   'augmented_select': TSDBOp_AugmentedSelect,
   'add_trigger': TSDBOp_AddTrigger,
   'remove_trigger': TSDBOp_RemoveTrigger,
-  'delete_ts': TSDBOp_DeleteTS,
-  'find_similar': TSDBOp_FindSimilar
 }

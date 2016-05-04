@@ -37,11 +37,6 @@ class BaseDB(metaclass = abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def delete_ts(self, pk):
-        "Given a pk, remove that timeseries from the database"
-        pass
-
-    @abc.abstractmethod
     def upsert_meta(self, pk, meta):
         """Given a primary key and a dict of meta fields, value pairs, upsert
         them as long as they're in the schema.
