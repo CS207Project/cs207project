@@ -39,8 +39,8 @@ class PersistentDBTests(unittest.TestCase):
             meta['order'] = schema['order']['values'][i % n_order]
             n_blarg = 2
             meta['blarg'] = schema['blarg']['values'][i % n_blarg]
-            meta['mean'] = series.mean()
-            meta['std'] = series.std()
+            meta['mean'] = float(series.mean())# make sure they are python floats, not numpy floats
+            meta['std'] = float(series.std())
             meta['vp'] = False
             self.db.insert_ts(pk, series)
             self.db.upsert_meta(pk, meta)
@@ -119,6 +119,7 @@ class PersistentDBTests(unittest.TestCase):
         self.db.select({'order':{'>=':2}},None,{'sort_by':'-blarg'})
         with self.assertRaises(TypeError):
             self.db.select({'order':{'>=':2}},('pk','blarg'),{'sort_by':'-order', 'limit':10})
+
     def test_indices(self):
         "test indices via the select function, which calls on them"
         n_test = 10
@@ -157,6 +158,10 @@ class PersistentDBTests(unittest.TestCase):
             tsmeta['order'] = orderval
             self.db.upsert_meta(pk, tsmeta)
 
+        with self.assertRaises(TypeError):
+            tsmeta['order'] = "wrong type"
+            self.db.upsert_meta(pk, tsmeta)
+
     def test_delete(self):
         n_delete = 10
         # delete and check to make sure they're gone
@@ -183,8 +188,8 @@ class PersistentDBTests(unittest.TestCase):
             meta['order'] = self.schema['order']['values'][i % n_order]
             n_blarg = 2
             meta['blarg'] = self.schema['blarg']['values'][i % n_blarg]
-            meta['mean'] = series.mean()
-            meta['std'] = series.std()
+            meta['mean'] = float(series.mean())
+            meta['std'] = float(series.std())
             meta['vp'] = False
             self.db.insert_ts(pk, series)
             self.db.upsert_meta(pk, meta)
