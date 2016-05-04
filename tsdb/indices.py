@@ -125,10 +125,14 @@ class PKIndex(BaseIndex):
 
     def insert(self, key, value):
         # insert the value into the appropriate place in the tree
+        # delegates to __setitem__
         self[key] = value
 
-    def remove(self, key, value):
+    def remove(self, key, value=None):
+        # added to match interface. Value unnecessary here.
+        self.fd = self.load_and_clear_log(loaded=True)
         del self.dict[key]
+        self.save_pickle()
 
     def getEqual(self, key):
         return self[key]
@@ -186,6 +190,10 @@ class TreeIndex(SimpleIndex):
         self._stale = True
 
     def get(self, fieldValue, operator_num=2):
+        """
+        'get' wrapper function to delegate to other functions
+        based on submitted operator
+        """
         if operator_num == 0:
             return self.getLowerThan(fieldValue)
         elif operator_num == 1:

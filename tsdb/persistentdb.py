@@ -39,8 +39,8 @@ FILES_DIR = 'files'
 MAX_CARD = 8
 
 def dict_eq(dict1, dict2):
+    "helper function to test equality of dictionaries of dictionaries"
     if not sorted(list(dict1.keys()))==sorted(list(dict2.keys())):
-        # import pdb; pdb.set_trace()
         return False
     eq = True
     for key in dict1.keys():
@@ -49,8 +49,6 @@ def dict_eq(dict1, dict2):
         else:
             eq = (eq and (dict1[key]==dict2[key]))
         if not eq:
-            # import pdb; pdb.set_trace()
-            # print("not equal on ",key)
             break
     return eq
 
@@ -61,11 +59,22 @@ class PersistentDB(BaseDB):
     using Binary Trees and BitMasks.
     """
     def __init__(self, schema=None, pk_field='pk', db_name='default', ts_length=1024, testing=False):
-        """Initializes database with index and schema."""
+        """
+        Initializes database with index and schema.
+
+        Parameters
+        ----------
+        schema : dict
+            informs data columns to store in database
+        pk_field : dict
+            new metadata dictionary to be inserted
+        """
         # TODO DNY: set up bitmask indexes
 
         # COULD DO DNY: create function that eliminates deleted values in the heaps
         # COULD DO DNY: support non-string primary keys
+        # COULD DO: add in a field_to_index method to the MetaHeap class,
+        # eliminating the need to use the .index() function in the database
 
         # DNY: ensure file hierarchy is set up
         # all files to be found in './files/db_name/' directory
@@ -133,30 +142,39 @@ class PersistentDB(BaseDB):
     def __getitem__(self,key):
         """Dunder function that returns all columns for this primary key
         """
+        self._check_pk(key)
         return self._get_meta_dict(key)
 
     def delete_database(self):
-        """
-        Remove the database.
-        """
+        "Remove the database and all associated files"
         #ASK: added close to fix files being open issue
         self.close()
         shutil.rmtree(self.data_dir)
 
     def close(self):
+        "helper function to close the database"
         self.metaheap.close()
         self.tsheap.close()
         self.pks.close()
 
     def _check_pk(self,pk):
-        "Method to check that 'pk' is a string"
+        "helper function to check that 'pk' is a string"
         try:
             assert isinstance(pk,str), "Invalid PK"
         except:
-            raise ValueError('ts must be a timeseries.Timeseries object')
+            raise ValueError('pk must be a string object')
 
     def insert_ts(self, pk, ts):
-        "Given a pk and a timeseries, insert them"
+        """
+        Given a pk and a timeseries, insert them"
+
+        Parameters
+        ----------
+        pk : string
+            primary key
+        new_meta : dict
+            new metadata dictionary to be inserted
+        """
         self._check_pk(pk)
         if not isinstance(ts, timeseries.TimeSeries):
             raise ValueError('ts must be a timeseries.Timeseries object')
@@ -177,35 +195,82 @@ class PersistentDB(BaseDB):
         self.update_indices(pk)
 
     def delete_ts(self,pk):
-        "Given a pk, remove that timeseries from the database"
-        raise NotImplementedError
+        """
+        Given a pk, remove that timeseries from the database.
+        Follows logic of 'upsert_meta' for deletion and removal from indices
+
+        Parameters
+        ----------
+        pk : string
+            primary key
+        """
+        self._check_pk(pk)
+        old_meta_dict = self._get_meta_dict(pk,deleting=True)
+
+        # write tombstone marker to the metaheap
+        delete_meta = list(self.metaheap.fieldsDefaultValues)
+
+        # COULD DO DNY: add list of timeseries to be deleted, for later maintenance
+        # currently, left as a ts_offset and deleted=True within the metaheap file
+        delete_meta[self.metaheap.fields.index('ts_offset')] = old_meta_dict['ts_offset']
+        delete_meta[self.metaheap.fields.index('ts_offset_set')] = True
+        delete_meta[self.metaheap.fields.index('deleted')] = True
+
+        # write deleted values to metaheap
+        pk_offset = self.pks[pk]
+        self.metaheap.encode_and_write_meta(delete_meta, pk_offset)
+
+        # remove from auxilary indices
+        self.remove_indices(pk, old_meta_dict)
+
+        # remove from primary index
+        self.pks.remove(pk)
 
     def _get_meta_list(self,pk):
-        pk_offset = self.pks[pk]# DNY: temporary
-        return self.metaheap.read_and_return_meta(pk_offset)
+        "helper function to return associated metadata in a list"
+        self._check_pk(pk)
+        pk_offset = self.pks[pk]
+        meta_list = self.metaheap.read_and_return_meta(pk_offset)
+        if not meta_list[self.metaheap.fields.index('deleted')]:
+            return meta_list
+        else:# ought not to be called very often, if at all
+            raise KeyError("Primary key '{}' was deleted and has not been reassigned".format(pk))
 
-    def _get_meta_dict(self,pk):
+    def _get_meta_dict(self,pk,deleting=False):
+        "helper function to return associated metadata in a dictionary"
         metaList = self._get_meta_list(pk)
         meta = {}
         for n, field in enumerate(self.metaheap.fields):
             if field in self.schema.keys():
                 if self.schema[field]['type'] == "bool" or metaList[n+1]:
                     meta[field] = metaList[n]
+            elif deleting and field == 'ts_offset':
+                meta[field] = metaList[n]
         # ASK: this needs to contain the ts as well
         meta['ts'] = self._return_ts(pk)
         return meta
 
     def _return_ts(self,pk):
-        # DNY: temporary testing function
+        "helper function to return an associated timeseries"
         ts_offset = self._get_meta_list(pk)[self.metaheap.fields.index('ts_offset')]
         return self.tsheap.read_and_decode_ts(ts_offset)
 
     def upsert_meta(self, pk, new_meta):
-        "Upsert metadata into the timeseries in the database."
-        # TODO DNY: Does not support updating primary keys
-        # TODO DNY: Does not support deleting metadata once inserted
+        """
+        Upsert metadata into the timeseries in the database.
 
-        pk_offset = self.pks[pk]# DNY: temporary
+        Parameters
+        ----------
+        pk : string
+            primary key
+        new_meta : dict
+            new metadata dictionary to be inserted
+        """
+        # COULD DO DNY: support changing primary keys
+        # COULD DO DNY: support deleting metadata columns once inserted, rather
+        # than only being able to update them
+
+        pk_offset = self.pks[pk]
         meta = self.metaheap.read_and_return_meta(pk_offset)
         old_meta_dict = self._get_meta_dict(pk)
 
@@ -217,9 +282,17 @@ class PersistentDB(BaseDB):
                 if self.schema[field]['type'] != "bool":
                     meta[n+1] = True
         self.metaheap.encode_and_write_meta(meta, pk_offset)
-        self.update_indices(pk, old_meta_dict)
+        self.update_indices(pk, old_meta_dict) # pass in old meta for deletion
 
     def index_bulk(self, pks=[]):
+        """
+        Assures index data is up to date for pk in pks
+
+        Parameters
+        ----------
+        pks : list
+            list of primary keys to be updated
+        """
         if len(pks) == 0:
             pks = self.pks
         for pkid in pks:
@@ -227,11 +300,11 @@ class PersistentDB(BaseDB):
 
     def remove_indices(self, pk, old_meta_dict):
         """
-        Remove the odl stored indices.
+        Remove the old stored indices.
 
         Parameters
         ----------
-        pk : int
+        pk : string
             primary key
         old_meta_dict : dict
             old metadata dictionary
@@ -267,7 +340,7 @@ class PersistentDB(BaseDB):
             for p in pks_out:
                 values_dict = self._get_meta_dict(p)
                 d = {field:value for field, value in values_dict.items() if field != 'ts'}
-                d['pk'] = p
+                d[self.pkfield] = p
                 data_list_out.append(d)
 
         # return all fields that the user has specified
@@ -275,13 +348,13 @@ class PersistentDB(BaseDB):
             for p in pks_out:
                 values_dict = self._get_meta_dict(p)
                 d = {field:value for field, value in values_dict.items() if field in fields_to_ret}
-                if 'pk' in fields_to_ret:
-                    d['pk'] = p
+                if self.pkfield in fields_to_ret:
+                    d[self.pkfield] = p
                 data_list_out.append(d)
 
         # something went wrong
         else:
-            raise Exception("Fields requested must be a list or None")
+            raise TypeError("Fields requested must be a list or None")
 
         return pks_out, data_list_out
 
@@ -304,11 +377,11 @@ class PersistentDB(BaseDB):
         # Find matching keys
         pks_out = set(self.pks.keys())
         for field,criteria in meta.items():
-            if field == 'pk':
+            if field == self.pkfield:
                 if criteria in self.pks:
                     pks_out = set([criteria])
                 else:
-                    return set()
+                    return ([],[])
             elif field in self.schema:
                 # Range Query
                 #DNY: TODO change BitmapIndex to contain 'get'
@@ -337,17 +410,17 @@ class PersistentDB(BaseDB):
             sortdir = additional['sort_by'][0]
 
             if sortfield not in self.schema:
-                raise Exception("Sort Column not in schema")
+                raise ValueError("Sort Column not in schema")
 
             if sortdir == '+':
                 pks_out = sorted(pks_out,key=lambda p: self._get_meta_dict(p)[sortfield])
             elif sortdir == '-':
                 pks_out = sorted(pks_out,key=lambda p: self._get_meta_dict(p)[sortfield],reverse=True)
             else:
-                raise Exception("Ill-defined sort order. Must be '+' or '-'")
+                raise ValueError("Ill-defined sort order. Must be '+' or '-'")
         if additional and 'limit' in additional:
             amt = int(additional['limit'])
-            if amt > len(pks_out):
+            if amt < len(pks_out):
                 pks_out = pks_out[:amt]
 
         return self._getDataForRows(pks_out,fields_to_ret)
