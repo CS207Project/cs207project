@@ -9,4 +9,6 @@ Group project for CS207 Spring 2016. Team Name: **cs207project**
 [Documentation](http://cs207project.github.io/cs207project/)
 
 [Demo](https://github.com/CS207Project/cs207project/blob/master/tests/web_server_testing.ipynb)
+
+[Live Server](http://www.adjch.me:8080/tsdb)
 -------------

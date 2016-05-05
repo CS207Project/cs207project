@@ -29,15 +29,9 @@ class Handlers:
             Text showing the various endpoints that are available
         """
         body_txt = """
-        RESTful API Implementation:
+        Time Series Database
 
-        /tsdb --> homepage
-        /tsdb/select --> select
-        /tsdb/augselect --> augmented select
-        /tsdb/add/ts --> insert timeseries
-        /tsdb/add/trigger --> add trigger
-        /tsdb/remove/trigger --> remove trigger
-        /tsdb/add/metadata --> insert metadata
+        https://github.com/CS207Project/cs207project
 
         """
         return web.Response(body=body_txt.encode('utf-8'))
