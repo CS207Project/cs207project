@@ -93,20 +93,18 @@ class Handlers:
         request : aiotttp.request
             request object with details of the request that was sent to the server
 
-            request.GET['query'] should exist or an error is returned **REQUIRED**
+            request.json()['proc'] -> the stored proc that will be called. **REQUIRED**
 
-            request.GET['query']['proc'] -> the stored proc that will be called. **REQUIRED**
-
-            request.GET['query']['target'] -> json encoded list of what the output of the stored proc
+            request.json()['target'] -> json encoded list of what the output of the stored proc
             will be called. **REQUIRED**
 
-            request.GET['query']['where'] -> json encoded metadata_dict describing the select criteria.
+            request.json()['where'] -> json encoded metadata_dict describing the select criteria.
             Default will return all rows in the database
 
-            request.GET['query']['additional'] -> json encoded additional information for the select.
+            request.json()['additional'] -> json encoded additional information for the select.
             Default ignores the additional info.
 
-            request.GET['query']['arg'] -> json encoded additional argument sent to the stored proc.
+            request.json()['arg'] -> json encoded additional argument sent to the stored proc.
             Default ignores the arg
 
         Returns
@@ -115,10 +113,7 @@ class Handlers:
             JSON encoded results of the augmented select
         """
         try:
-            if 'query' not in request.GET:
-                raise ValueError("'query' must be sent with a augmented select",request.GET)
-
-            json_query = json.loads(request.GET['query'])
+            json_query = await request.json()
             target = json_query['target']
             proc = json_query['proc']
 
@@ -145,12 +140,10 @@ class Handlers:
         request : aiotttp.request
             request object with details of the request that was sent to the server
 
-            request.GET['query'] should exist or an error is returned **REQUIRED**
-
-            request.GET['query']['arg'] -> json encoded timeseries that is the reference to
+            request.json()['arg'] -> json encoded timeseries that is the reference to
             which we're trying to find the closest match **REQUIRED**
 
-            request.GET['query']['vpkeys'] -> list of vantage point trees that correspond
+            request.json()['vpkeys'] -> list of vantage point trees that correspond
             to [d_vp-1, d_vp-2, ...] in the correct order **REQUIRED**
 
         Returns
@@ -159,14 +152,11 @@ class Handlers:
             JSON encoded results of the augmented select
         """
         try:
-            if 'query' not in request.GET:
-                raise ValueError("'query' must be sent with a find similar",request.GET)
-
-            json_query = json.loads(request.GET['query'])
+            json_query = await request.json()
             arg = json_query['arg']
             vpkeys = json_query['vpkeys']
 
-            status,payload = await self.client.find_similar(arg)
+            status,payload = await self.client.find_similar(arg,vpkeys)
         except Exception as error:
             payload = {"msg": "Could not parse request. Please see documentation."}
             payload["type"] = str(type(error))
@@ -383,11 +373,11 @@ class WebServer:
         self.app = web.Application()
         self.app.router.add_route('GET', '/tsdb', self.handler.homepage_handler)
         self.app.router.add_route('GET', '/tsdb/select',self.handler.select_handler)
-        self.app.router.add_route('GET', '/tsdb/augselect',self.handler.augselect_handler)
-        self.app.router.add_route('GET', '/tsdb/find_similar', self.handler.find_similar_handler)
+        self.app.router.add_route('POST', '/tsdb/augselect',self.handler.augselect_handler)
+        self.app.router.add_route('POST', '/tsdb/find_similar', self.handler.find_similar_handler)
         self.app.router.add_route('POST', '/tsdb/add/ts', self.handler.add_ts_handler)
         self.app.router.add_route('POST', '/tsdb/add/trigger', self.handler.add_trigger_handler)
-        self.app.router.add_route('POST', '/tsdb/remove/trigger', self.handler.remove_trigger_handler)
+        self.app.router.add_route('POST', '/tsdb/delete/trigger', self.handler.remove_trigger_handler)
         self.app.router.add_route('POST', '/tsdb/add/metadata', self.handler.add_metadata_handler)
         self.app.router.add_route('POST', '/tsdb/delete/ts', self.handler.delete_ts_handler)
 
