@@ -105,11 +105,44 @@ class DictDBTests(unittest.TestCase):
     def test_select10(self):
         self.db.upsert_meta('four', {'order': 3, 'blarg': 2})
 
-        pks, payload = self.db.select({'order': {'>': 1}}, [], {'sort_by':'+order',
+        pks, payload = self.db.select({'order': {'>': 1}}, [], {'sort_by':'-order',
+                                        'limit': 1,'blah':'nonsense'})
+        self.assertEqual(pks, ['four'])
+
+        self.db.upsert_meta('four', {'order': 2, 'blarg': 2})
+
+    def test_del1(self):
+        self.db.upsert_meta('four', {'order': 3, 'blarg': 2})
+        self.db.delete_ts('four')
+
+        pks, payload = self.db.select({'order': {'>': 1}}, [], {'sort_by':'-order',
                                         'limit': 1,'blah':'nonsense'})
         self.assertEqual(pks, ['two'])
 
+        self.db.insert_ts('four',ts.TimeSeries([0,0,4],[1,0,4]))
         self.db.upsert_meta('four', {'order': 2, 'blarg': 2})
+
+    def test_del2(self):
+        self.db.delete_ts('one')
+        self.db.delete_ts('two')
+        self.db.delete_ts('three')
+        self.db.delete_ts('four')
+
+        pks, payload = self.db.select({},None,None)
+        self.assertEqual(set(pks), set([]))
+
+        self.db.insert_ts('one',ts.TimeSeries([1, 2, 3],[1, 4, 9]))
+        self.db.insert_ts('two',ts.TimeSeries([2, 3, 4],[4, 9, 16]))
+        self.db.insert_ts('three',ts.TimeSeries([9,3,4],[4,0,16]))
+        self.db.insert_ts('four',ts.TimeSeries([0,0,4],[1,0,4]))
+        self.db.upsert_meta('one', {'order': 1, 'blarg': 1})
+        self.db.upsert_meta('two', {'order': 2})
+        self.db.upsert_meta('three', {'order': 1, 'blarg': 2})
+        self.db.upsert_meta('four', {'order': 2, 'blarg': 2})
+
+    def test_del3(self):
+        with self.assertRaises(ValueError):
+            self.db.delete_ts('five')
 
     def test_select11(self):
         with self.assertRaises(Exception):

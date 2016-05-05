@@ -22,23 +22,28 @@ class TSDBServerTest(unittest.TestCase):
           'useless': {'convert': identity, 'index': None},
           'mean': {'convert': to_float, 'index': 1},
           'std': {'convert': to_float, 'index': 1},
-          'vp': {'convert': to_bool, 'index': 1}
+          'vp': {'convert': to_bool, 'index': 1},
+          'd_vp-1': {'convert': float, 'index': 1}
         }
         self.db = DictDB(schema,'pk',3)
         self.server = TSDBServer(self.db)
         self.prot = TSDBProtocol(self.server)
         self.des = Deserializer()
+        self.vpkeys = ['one']
 
-        msg = TSDBOp_InsertTS('one', ts.TimeSeries([1,2,3],[1,4,9]))
+        msg = TSDBOp_AddTrigger('corr','insert_ts',['d_vp-1'],ts.TimeSeries([1,2,3],[1,4,9]))
+        status, payload =  self._mockSendingMessage(msg)
+
+        msg = TSDBOp_InsertTS('one', ts.TimeSeries([1, 2, 3],[1,4,9]))
         status, payload = self._mockSendingMessage(msg)
 
-        msg = TSDBOp_InsertTS('two',ts.TimeSeries([2, 3, 4],[4, 9, 16]))
+        msg = TSDBOp_InsertTS('two',ts.TimeSeries([1, 2, 3],[4, 9, 16]))
         status, payload = self._mockSendingMessage(msg)
 
-        msg = TSDBOp_InsertTS('three',ts.TimeSeries([9,3,4],[4,0,16]))
+        msg = TSDBOp_InsertTS('three',ts.TimeSeries([1, 2, 3],[4,0,16]))
         status, payload = self._mockSendingMessage(msg)
 
-        msg = TSDBOp_InsertTS('four',ts.TimeSeries([0,0,4],[1,0,4]))
+        msg = TSDBOp_InsertTS('four',ts.TimeSeries([1, 2, 3],[1,0,4]))
         status, payload = self._mockSendingMessage(msg)
 
     def tearDown(self):
@@ -115,6 +120,23 @@ class TSDBServerTest(unittest.TestCase):
         msg = TSDBOp_UpsertMeta('four', {'order': 2, 'blarg': 2})
         status, payload =  self._mockSendingMessage(msg)
 
+    def test_del1(self):
+        msg = TSDBOp_DeleteTS('two')
+        status, payload = self._mockSendingMessage(msg)
+
+        msg = TSDBOp_UpsertMeta('four', {'order': 3, 'blarg': 2})
+        status, payload =  self._mockSendingMessage(msg)
+
+        msg = TSDBOp_Select({'order': {'>': 1}}, [], {'sort_by':'+order'})
+        status, payload = self._mockSendingMessage(msg)
+        self.assertEqual(list(payload.keys()), ['four'])
+
+        msg = TSDBOp_InsertTS('two',ts.TimeSeries([2, 3, 4],[4, 9, 16]))
+        status, payload = self._mockSendingMessage(msg)
+
+        msg = TSDBOp_UpsertMeta('four', {'order': 2, 'blarg': 2})
+        status, payload =  self._mockSendingMessage(msg)
+
     def test_augmented_select(self):
 
         msg = TSDBOp_UpsertMeta('two', {'order': 2})
@@ -131,6 +153,15 @@ class TSDBServerTest(unittest.TestCase):
 
         self.assertEqual(payload['two']['m'], np.mean([4, 9, 16]))
         self.assertEqual(payload['two']['sd'], np.std([4, 9, 16]))
+
+    def test_find_similar(self):
+
+        query = ts.TimeSeries([1, 2, 3],[4, 0, 3])
+        msg = TSDBOp_FindSimilar(query,self.vpkeys)
+        status, payload =  self._mockSendingMessage(msg)
+
+        near = list(payload.keys())[0]
+        self.assertTrue(near in ['one','two','three','four'])
 
 
 if __name__ == '__main__':
