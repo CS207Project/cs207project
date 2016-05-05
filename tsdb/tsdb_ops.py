@@ -31,13 +31,19 @@ class TSDBOp(dict):
             return [self.to_json(o) for o in obj]
         if isinstance(obj, tuple):
             return (self.to_json(o) for o in obj)
+        if isinstance(obj, Exception):
+            return self.to_json(obj.args)
         for k, v in obj.items():
             if isinstance(v, str) or isinstance(obj,numbers.Number) or not hasattr(v, '__len__') or v is None:
                 json_dict[k] = v
             elif isinstance(v, TSDBStatus):
                 json_dict[k] = v.name
-            elif isinstance(v, list):
+            elif isinstance(v, Exception):
+                json_dict[k] = self.to_json(v.args)
+            elif isinstance(v, list) :
                 json_dict[k] = [self.to_json(i) for i in v]
+            elif isinstance(v, tuple):
+                json_dict[k] = (self.to_json(i) for i in v)
             elif isinstance(v, dict):
                 json_dict[k] = self.to_json(v)
             elif hasattr(v, 'to_json'):
