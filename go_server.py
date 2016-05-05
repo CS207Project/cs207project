@@ -8,6 +8,8 @@ IF YOU EDIT THIS FILE TESTS MIGHT BREAK. IT IS MEANT AS A DEMO ONLY.
 
 from tsdb import TSDBServer, DictDB
 import timeseries as ts
+import argparse
+import sys
 
 identity = lambda x: x
 to_int = lambda x:int(x)
@@ -37,4 +39,16 @@ def main():
     server.run()
 
 if __name__=='__main__':
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('-len', help="length of timeseies",
+                        type=int,default=TS_LENGTH,required=False)
+    parser.add_argument('-vps', help="number of vantage points",
+                        type=int,default=NUMVPS,required=False)
+    args = parser.parse_args(sys.argv[1:])
+
+    TS_LENGTH = args.len
+    NUMVPS = args.vps
+
     main()

@@ -9,6 +9,8 @@ IF YOU EDIT THIS FILE TESTS MIGHT BREAK. IT IS MEANT AS A DEMO ONLY.
 from tsdb import TSDBServer, PersistentDB
 import os
 import timeseries as ts
+import argparse
+import sys
 
 dirPath = "files/testing"
 if not os.path.isdir(dirPath):
@@ -24,21 +26,32 @@ schema = {
   'blarg': {'type': 'int',    'index': 2,    'values': [1, 2]},
   'mean':  {'type': 'float',  'index': 1},
   'std':   {'type': 'float',  'index': 1},
-  'vp':    {'type': 'bool',   'index': 2,    'values': [0,1]},
-  'd-vp1': {'type': 'float',  'index': 1},
-  'd-vp2': {'type': 'float',  'index': 1},
-  'd-vp3': {'type': 'float',  'index': 1},
-  'd-vp4': {'type': 'float',  'index': 1},
-  'd-vp5': {'type': 'float',  'index': 1}
+  'vp':    {'type': 'bool',   'index': 2,    'values': [0,1]}
 }
 
 TS_LENGTH = 100
+NUMVPS = 5
 
 def main():
+    for i in range(NUMVPS):
+        schema["d_vp-{}".format(i)] = {'type': 'float',  'index': 1}
+
     db = PersistentDB(schema, pk_field='pk', db_name='testing', ts_length=TS_LENGTH, testing=True)
     server = TSDBServer(db)
     server.run()
     db.delete_database()
 
 if __name__=='__main__':
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('-len', help="length of timeseies",
+                        type=int,default=TS_LENGTH,required=False)
+    parser.add_argument('-vps', help="number of vantage points",
+                        type=int,default=NUMVPS,required=False)
+    args = parser.parse_args(sys.argv[1:])
+
+    TS_LENGTH = args.len
+    NUMVPS = args.vps
+
     main()
