@@ -53,7 +53,7 @@ def proc_main(pk, row, arg):
     #since we are normalized the autocorrs are 1
     kerndist = np.sqrt(2*(1-kerncorr))
     print("[[[[[[[[[[[CORR]]]]]]]]]]]]",kerndist)
-    return [kerndist]
+    return [float(kerndist)]
 
 #the function is wrapped in a coroutine for triggers
 async def main(pk, row, arg):
