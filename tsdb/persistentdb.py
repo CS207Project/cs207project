@@ -7,7 +7,6 @@ from functools import reduce
 import operator
 import os
 import numbers
-# import struct
 import json
 import timeseries
 from .indices import BaseIndex, PKIndex, TreeIndex
@@ -15,10 +14,6 @@ from .heap import MetaHeapFile, TSHeapFile
 from .baseclasses import BaseDB
 import pickle
 import shutil
-
-#// need to install these!
-# import bintrees as bt #https://pypi.python.org/pypi/bintrees/2.0.2
-# >>>>>>> c9bfe460ee5dee9813b69f35234642ec3947a8d4
 
 # this dictionary will help you in writing a generic select operation
 OPMAP = {
@@ -30,6 +25,7 @@ OPMAP = {
     '>=': 5
 }
 
+# DNY: Potentially useful for different types of indices
 INDEXES = {
     1: None,#Binary Tree type here,
     2: None#bitmask type here
@@ -37,6 +33,19 @@ INDEXES = {
 
 FILES_DIR = 'files'
 MAX_CARD = 8
+
+# if changed, need to modify in heap.py as well
+TYPES = {
+    'float': 'd',
+    'bool': '?',
+    'int': 'i'
+}
+# if changed, need to modify in heap.py as well
+TYPE_DEFAULT = {
+    'float': 0.0,
+    'bool': False,
+    'int': 0
+}
 
 def dict_eq(dict1, dict2):
     "helper function to test equality of dictionaries of dictionaries"
@@ -207,18 +216,17 @@ class PersistentDB(BaseDB):
         self._check_pk(pk)
         old_meta_dict = self._get_meta_dict(pk,deleting=True)
 
-        # write tombstone marker to the metaheap
-        delete_meta = list(self.metaheap.fieldsDefaultValues)
-
+        # write tombstone marker to the metaheap [[[
         # COULD DO DNY: add list of timeseries to be deleted, for later maintenance
         # currently, left as a ts_offset and deleted=True within the metaheap file
+        delete_meta = list(self.metaheap.fieldsDefaultValues)
         delete_meta[self.metaheap.fields.index('ts_offset')] = old_meta_dict['ts_offset']
         delete_meta[self.metaheap.fields.index('ts_offset_set')] = True
         delete_meta[self.metaheap.fields.index('deleted')] = True
-
-        # write deleted values to metaheap
         pk_offset = self.pks[pk]
+        # write deleted values to metaheap
         self.metaheap.encode_and_write_meta(delete_meta, pk_offset)
+        # ]]]
 
         # remove from auxilary indices
         self.remove_indices(pk, old_meta_dict)
@@ -258,6 +266,8 @@ class PersistentDB(BaseDB):
     def upsert_meta(self, pk, new_meta):
         """
         Upsert metadata into the timeseries in the database.
+        Ignores inserted metadata if it is not in the schema, or if either
+        updates to the primary key or timeseries are attempted
 
         Parameters
         ----------
@@ -276,11 +286,24 @@ class PersistentDB(BaseDB):
 
         for n, field in enumerate(self.metaheap.fields):
             # will skip all the *_set entries
-            if field in new_meta.keys():
-                #TODO DNY: implement type/ error checking of the inserted values
+            if (field in new_meta.keys()) and (field in self.schema.keys()) \
+            and (field != self.pkfield) and (field != 'ts'):
+            # if (field in new_meta.keys()) and (field in self.schema.keys()) and \
+            # (field != self.pkfield) and (field != 'ts'):
+                typestr = self.schema[field]['type']
+
+                if type(TYPE_DEFAULT[typestr]) != type(new_meta[field]):
+                    # DNY: If this error is called too often, check to make sure
+                    # that values are not floats/ numpy floats or other similar
+                    # types like that.
+                    # import pdb; pdb.set_trace()
+                    raise TypeError("Entries of '{}' must be of type '{}'. You submitted type {}.".format(field, str(type(TYPE_DEFAULT[typestr])),type(new_meta[field])))
                 meta[n] = new_meta[field]
                 if self.schema[field]['type'] != "bool":
                     meta[n+1] = True
+            # do not raise an exception if a bad field was passed in, an
+            # intentional design choice
+
         self.metaheap.encode_and_write_meta(meta, pk_offset)
         self.update_indices(pk, old_meta_dict) # pass in old meta for deletion
 

@@ -13,13 +13,13 @@ TYPES = {
     'float': 'd',
     'bool': '?',
     'int': 'i'
-}
+}# if changed, need to modify in persistentdb.py as well
 
 TYPE_DEFAULT = {
     'float': 0.0,
     'bool': False,
     'int': 0
-}
+}# if changed, need to modify in persistentdb.py as well
 
 TS_FIELD_LENGTH = 4
 BYTES_PER_NUM = 8
@@ -126,11 +126,8 @@ class TSHeapFile(HeapFile):
         times = [float(i[0]) for i in ts_items]
         values = [float(i[1]) for i in ts_items]
         byteArray = struct.pack('%sd' % (2*self.ts_length), *times, *values)
-        try:
-            assert(len(byteArray) == self.byteArrayLength)
-        except:
-            print(len(byteArray))
-            print(self.byteArrayLength)
+        assert(len(byteArray) == self.byteArrayLength)
+
         # dataBytes = json.dumps(ts.to_json()).encode()
         # lengthFieldBytes = (len(dataBytes)+TS_FIELD_LENGTH).to_bytes(TS_FIELD_LENGTH, byteorder='little')
         # byteArray = lengthFieldBytes + dataBytes
