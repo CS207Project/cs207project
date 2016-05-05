@@ -17,6 +17,31 @@ def tsmaker(m, s, j):
     v = norm.pdf(t, m, s) + j*np.random.randn(100)
     return meta, ts.TimeSeries(t, v)
 
+async def findNearest(client, query, vpkeys):
+
+    # Step 1: in the vpdist key, get  distances from query to vantage points
+    # this is an augmented select
+    vpdist = {}
+    for v in vpkeys:
+        _, results = await client.augmented_select('corr','d',query, {'pk':v})
+        vpdist[v] = results[v]['d']
+
+    #1b: choose the lowest distance vantage point
+    # you can do this in local code
+    closest_vpk = min(vpkeys,key=lambda v:vpdist[v])
+    closest_vpk_dist_col = 'd_vp-' + str(vpkeys.index(closest_vpk))
+    print("CLOSEST VPK: vp-"+str(closest_vpk))
+
+    # Step 2: find all time series within 2*d(query, nearest_vp_to_query)
+    #this is an augmented select to the same proc in correlation
+    _, results = await client.augmented_select('corr','d',query,
+                                    {closest_vpk_dist_col: {'<=': 2*vpdist[closest_vpk]}})
+
+    #2b: find the smallest distance amongst this ( or k smallest)
+    #you can do this in local code
+    nearestwanted = min(results.keys(),key=lambda p: results[p]['d'])
+
+    return nearestwanted
 
 async def run():
     np.random.seed(12345)
@@ -108,29 +133,12 @@ async def run():
 
     #we first create a query time series.
     _, query = tsmaker(0.5, 0.2, 0.1)
+    nearestwanted = await findNearest(client,query,vpkeys)
+    print("Nearest :", nearestwanted)
 
-    # Step 1: in the vpdist key, get  distances from query to vantage points
-    # this is an augmented select
-    vpdist = {}
-    for v in vpkeys:
-        _, results = await client.augmented_select('corr','d',query, {'pk':v})
-        vpdist[v] = results[v]['d']
-
-    #1b: choose the lowest distance vantage point
-    # you can do this in local code
-    print("VP DIST")
-    print(vpdist)
-    closest_vpk = min(vpkeys,key=lambda v:vpdist[v])
-
-    # Step 2: find all time series within 2*d(query, nearest_vp_to_query)
-    #this is an augmented select to the same proc in correlation
-
-    _, results = await client.augmented_select('corr','d',query,
-                                    {'d_'+closest_vpk: {'<=': 2*vpdist[closest_vpk]}})
-
-    #2b: find the smallest distance amongst this ( or k smallest)
-    #you can do this in local code
-    nearestwanted = min(results.keys(),key=lambda p: results[p]['d'])
+    await client.delete_ts(nearestwanted)
+    nearestwanted = await findNearest(client,query, vpkeys)
+    print("Nearest :", nearestwanted)
 
     # # plot the timeseries to see visually how we did.
     import matplotlib.pyplot as plt
