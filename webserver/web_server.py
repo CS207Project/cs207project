@@ -150,6 +150,9 @@ class Handlers:
             request.GET['query']['arg'] -> json encoded timeseries that is the reference to
             which we're trying to find the closest match **REQUIRED**
 
+            request.GET['query']['vpkeys'] -> list of vantage point trees that correspond
+            to [d_vp-1, d_vp-2, ...] in the correct order **REQUIRED**
+
         Returns
         -------
         web.Response
@@ -157,10 +160,11 @@ class Handlers:
         """
         try:
             if 'query' not in request.GET:
-                raise ValueError("'query' must be sent with a augmented select",request.GET)
+                raise ValueError("'query' must be sent with a find similar",request.GET)
 
             json_query = json.loads(request.GET['query'])
             arg = json_query['arg']
+            vpkeys = json_query['vpkeys']
 
             status,payload = await self.client.find_similar(arg)
         except Exception as error:
@@ -380,12 +384,12 @@ class WebServer:
         self.app.router.add_route('GET', '/tsdb', self.handler.homepage_handler)
         self.app.router.add_route('GET', '/tsdb/select',self.handler.select_handler)
         self.app.router.add_route('GET', '/tsdb/augselect',self.handler.augselect_handler)
+        self.app.router.add_route('GET', '/tsdb/find_similar', self.handler.find_similar_handler)
         self.app.router.add_route('POST', '/tsdb/add/ts', self.handler.add_ts_handler)
         self.app.router.add_route('POST', '/tsdb/add/trigger', self.handler.add_trigger_handler)
         self.app.router.add_route('POST', '/tsdb/remove/trigger', self.handler.remove_trigger_handler)
         self.app.router.add_route('POST', '/tsdb/add/metadata', self.handler.add_metadata_handler)
         self.app.router.add_route('POST', '/tsdb/delete/ts', self.handler.delete_ts_handler)
-        self.app.router.add_route('POST', '/tsdb/find_similar', self.handler.find_similar_handler)
 
     def run(self):
         "run the webserver"

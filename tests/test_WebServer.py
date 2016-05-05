@@ -70,6 +70,13 @@ class WebServerTests(unittest.TestCase):
                 ,stdout=self.webserver_log_file,stderr=subprocess.STDOUT)
         time.sleep(3)
 
+        np.random.seed(12345)
+        self.N_ts = 50
+        self.N_vp = NUMVPS
+
+        # choose 5 distinct vantage point time series
+        self.vpkeys = ["ts-{}".format(i) for i in np.random.choice(range(self.N_ts), size=self.N_vp, replace=False)]
+
     def tearDown(self):
         self.server_proc.terminate()
         self.server_log_file.close()
@@ -87,19 +94,16 @@ class WebServerTests(unittest.TestCase):
         self.assertEqual(r.status_code, 200)
 
     def test_main(self):
-        np.random.seed(12345)
-        N_ts = 50
-        N_vp = NUMVPS
 
         #Set up 50 time series
-        mus = np.random.uniform(low=0.0, high=1.0, size=N_ts)
-        sigs = np.random.uniform(low=0.05, high=0.4, size=N_ts)
-        jits = np.random.uniform(low=0.05, high=0.2, size=N_ts)
+        mus = np.random.uniform(low=0.0, high=1.0, size=self.N_ts)
+        sigs = np.random.uniform(low=0.05, high=0.4, size=self.N_ts)
+        jits = np.random.uniform(low=0.05, high=0.2, size=self.N_ts)
 
         # dictionaries for time series and their metadata
         tsdict={}
         metadict={}
-        for i, m, s, j in zip(range(N_ts), mus, sigs, jits):
+        for i, m, s, j in zip(range(self.N_ts), mus, sigs, jits):
             meta, tsrs = tsmaker(m, s, j)
             # the primary key format is ts-1, ts-2, etc
             pk = "ts-{}".format(i)
@@ -107,14 +111,12 @@ class WebServerTests(unittest.TestCase):
             meta['vp'] = False # augment metadata with a boolean asking if this is a  VP.
             metadict[pk] = meta
 
-        # choose 5 distinct vantage point time series
-        vpkeys = ["ts-{}".format(i) for i in np.random.choice(range(N_ts), size=N_vp, replace=False)]
-        for i in range(N_vp):
+        for i in range(self.N_vp):
             # add 5 triggers to upsert distances to these vantage points
             requests.post(self.server_url+'/add/trigger',
-                          make_add_trigger('corr', 'insert_ts', ["d_vp-{}".format(i)], tsdict[vpkeys[i]]))
+                          make_add_trigger('corr', 'insert_ts', ["d_vp-{}".format(i)], tsdict[self.vpkeys[i]]))
             # change the metadata for the vantage points to have meta['vp']=True
-            metadict[vpkeys[i]]['vp']=True
+            metadict[self.vpkeys[i]]['vp']=True
         # Having set up the triggers, now inser the time series, and upsert the metadata
         for k in tsdict:
             requests.post(self.server_url+'/add/ts',
@@ -129,13 +131,13 @@ class WebServerTests(unittest.TestCase):
         # this is an augmented select
         vpdist = {}
         payload = {'proc':'corr','target':'d','arg':query.to_json()}
-        for v in vpkeys:
+        for v in self.vpkeys:
             payload['where'] = {'pk': v}
             r = requests.get(self.server_url+'/augselect',params={'query':json.dumps(payload)})
             results = json.loads(r.content.decode('utf-8'))
             vpdist[v] = results[v]['d']
 
-        closest_vpk = min(vpkeys,key=lambda v:vpdist[v])
+        closest_vpk = min(self.vpkeys,key=lambda v:vpdist[v])
 
         # Step 2: find all time series within 2*d(query, nearest_vp_to_query)
         #this is an augmented select to the same proc in correlation
@@ -147,8 +149,8 @@ class WebServerTests(unittest.TestCase):
         #2b: find the smallest distance amongst this ( or k smallest)
         #you can do this in local code
         nearestwanted = min(results.keys(),key=lambda p: results[p]['d'])
+        self.assertEqual(nearestwanted,'ts-0')
 
-        self.assertEqual(nearestwanted,'ts-35')
 
 if __name__ == '__main__':
     unittest.main()

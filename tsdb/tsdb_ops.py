@@ -27,8 +27,10 @@ class TSDBOp(dict):
         json_dict = OrderedDict()
         if isinstance(obj, str) or isinstance(obj,numbers.Number) or not hasattr(obj, '__len__') or obj is None:
             return obj
-        if isinstance(obj,list):
+        if isinstance(obj, list):
             return [self.to_json(o) for o in obj]
+        if isinstance(obj, tuple):
+            return (self.to_json(o) for o in obj)
         for k, v in obj.items():
             if isinstance(v, str) or isinstance(obj,numbers.Number) or not hasattr(v, '__len__') or v is None:
                 json_dict[k] = v
