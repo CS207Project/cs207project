@@ -1,5 +1,6 @@
 """A dictionary based in-memory version of the time series database
 """
+from .tsdb_error import TSDBStatus
 from .baseclasses import BaseDB
 from collections import defaultdict
 from operator import and_
@@ -74,18 +75,18 @@ class DictDB(BaseDB):
         "Given a pk and a timeseries, insert them"
 
         if len(ts) != self.ts_length:
-            raise ValueError('TimeSeries is of the wrong length. Should be '+ str(self.ts_length))
+            raise ValueError(TSDBStatus.INVALID_OPERATION,'TimeSeries is of the wrong length. Should be '+ str(self.ts_length))
         if pk not in self.rows:
             self.rows[pk] = {'pk': pk}
         else:
-            raise ValueError('Duplicate primary key found during insert')
+            raise ValueError(TSDBStatus.INVALID_KEY,'Duplicate primary key found during insert')
         self.rows[pk]['ts'] = ts
         self.update_indices(pk)
 
     def delete_ts(self,pk):
         "Given a pk, remove that timeseries from the database"
         if pk not in self.rows:
-            raise ValueError('primary_key does not exist')
+            raise ValueError(TSDBStatus.INVALID_KEY,'primary key does not exist')
 
         row = self.rows[pk]
         del self.rows[pk]
@@ -101,7 +102,7 @@ class DictDB(BaseDB):
         for field, value in meta.items():
             if field in self.schema:# ignore all fields not in schema
                 if pk not in self.rows:# assert that timeseries already exists
-                    raise ValueError('Primary key not found in database')
+                    raise ValueError(TSDBStatus.INVALID_KEY,'Primary key not found in database')
                 fieldConvert = self.schema[field]['convert']
                 self.rows[pk][field] = fieldConvert(value)
         self.update_indices(pk)
@@ -154,7 +155,7 @@ class DictDB(BaseDB):
 
         # something went wrong
         else:
-            raise Exception("Fields requested must be a list or None")
+            raise ValueError(TSDBStatus.INVALID_OPERATION,"Fields requested must be a list or None")
 
         return pks_out, data_list_out
 
@@ -210,14 +211,14 @@ class DictDB(BaseDB):
             sortdir = additional['sort_by'][0]
 
             if sortfield not in self.schema:
-                raise Exception("Sort Column not in schema")
+                raise ValueError(TSDBStatus.INVALID_OPERATION,"Sort Column not in schema")
 
             if sortdir == '+':
                 pks_out = sorted(pks_out,key=lambda p: self.rows[p][sortfield])
             elif sortdir == '-':
                 pks_out = sorted(pks_out,key=lambda p: self.rows[p][sortfield],reverse=True)
             else:
-                raise Exception("Illdefined sort order. Must be '+' or '-'")
+                raise ValueError(TSDBStatus.INVALID_OPERATION,"Illdefined sort order. Must be '+' or '-'")
 
         if additional and 'limit' in additional:
             pks_out = pks_out[:int(additional['limit'])]

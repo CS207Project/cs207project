@@ -35,10 +35,7 @@ class TSDBProtocol(asyncio.Protocol):
         op : a TSDBOp object
             contains the primary key and timeseries to insert
         """
-        try:
-            self.server.db.insert_ts(op['pk'], op['ts'])
-        except ValueError as e:
-            return TSDBOp_Return(TSDBStatus.INVALID_KEY, op['op'])
+        self.server.db.insert_ts(op['pk'], op['ts'])
         self._run_trigger('insert_ts', [op['pk']])
         return TSDBOp_Return(TSDBStatus.OK, op['op'])
 
@@ -51,10 +48,7 @@ class TSDBProtocol(asyncio.Protocol):
         op : a TSDBOp object
             contains the primary key to delete
         """
-        try:
-            self.server.db.delete_ts(op['pk'])
-        except ValueError as e:
-            return TSDBOp_Return(TSDBStatus.INVALID_KEY, op['op'])
+        self.server.db.delete_ts(op['pk'])
         self._run_trigger('delete_ts', [op['pk']])
         return TSDBOp_Return(TSDBStatus.OK, op['op'])
 
@@ -255,8 +249,15 @@ class TSDBProtocol(asyncio.Protocol):
                 else:
                     response = TSDBOp_Return(TSDBStatus.UNKNOWN_ERROR, op['op'])
             except Exception as e:
-                status = TSDBStatus.INVALID_OPERATION
-                response = TSDBOp_Return(status, e.args)
+                print("Exception Occured")
+                print(str(e.args))
+
+                if len(e.args) > 0 and isinstance(e.args[0],TSDBStatus):
+                    status = e.args[0]
+                    response = TSDBOp_Return(status, list(e.args[1:]))
+                else:
+                    status = TSDBStatus.INVALID_OPERATION
+                    response = TSDBOp_Return(status, list(e.args))
             finally:
                 self.conn.write(serialize(response.to_json()))
                 self.conn.close()
