@@ -175,6 +175,12 @@
   <dt><a href="api/tsdb.html#tsdb.tsdb_client.TSDBClient.add_trigger">add_trigger() (tsdb.tsdb_client.TSDBClient method)</a>
   </dt>
 
+      <dd><dl>
+        
+  <dt><a href="api/webutils.html#webutils.webclient.WebClient.add_trigger">(webutils.webclient.WebClient method)</a>
+  </dt>
+
+      </dl></dd>
       
   <dt><a href="api/webserver.html#webserver.web_server.Handlers.add_trigger_handler">add_trigger_handler() (webserver.web_server.Handlers method)</a>
   </dt>
@@ -263,6 +269,10 @@
 
       
   <dt><a href="api/tsdb.html#tsdb.tsdb_client.TSDBClient.augmented_select">augmented_select() (tsdb.tsdb_client.TSDBClient method)</a>
+  </dt>
+
+      
+  <dt><a href="api/webutils.html#webutils.webclient.WebClient.augselect">augselect() (webutils.webclient.WebClient method)</a>
   </dt>
 
       
@@ -388,15 +398,41 @@
   </dt>
 
       
-  <dt><a href="api/tsdb.html#tsdb.indices.TreeIndex.deleteIndex">deleteIndex() (tsdb.indices.TreeIndex method)</a>
+  <dt><a href="api/tsdb.html#tsdb.baseclasses.BaseDB.delete_ts">delete_ts() (tsdb.baseclasses.BaseDB method)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="api/tsdb.html#tsdb.dictdb.DictDB.delete_ts">(tsdb.dictdb.DictDB method)</a>
+  </dt>
+
+        
+  <dt><a href="api/tsdb.html#tsdb.persistentdb.PersistentDB.delete_ts">(tsdb.persistentdb.PersistentDB method)</a>
+  </dt>
+
+        
+  <dt><a href="api/tsdb.html#tsdb.tsdb_client.TSDBClient.delete_ts">(tsdb.tsdb_client.TSDBClient method)</a>
+  </dt>
+
+        
+  <dt><a href="api/webutils.html#webutils.webclient.WebClient.delete_ts">(webutils.webclient.WebClient method)</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt><a href="api/webserver.html#webserver.web_server.Handlers.delete_ts_handler">delete_ts_handler() (webserver.web_server.Handlers method)</a>
   </dt>
 
       
-  <dt><a href="api/tsdb.html#tsdb.tsdb_serialization.Deserializer.deserialize">deserialize() (tsdb.tsdb_serialization.Deserializer method)</a>
+  <dt><a href="api/tsdb.html#tsdb.indices.TreeIndex.deleteIndex">deleteIndex() (tsdb.indices.TreeIndex method)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="api/tsdb.html#tsdb.tsdb_serialization.Deserializer.deserialize">deserialize() (tsdb.tsdb_serialization.Deserializer method)</a>
+  </dt>
+
       
   <dt><a href="api/tsdb.html#tsdb.tsdb_serialization.Deserializer">Deserializer (class in tsdb.tsdb_serialization)</a>
   </dt>
@@ -407,6 +443,10 @@
 
       
   <dt><a href="api/tsdb.html#tsdb.dictdb.DictDB">DictDB (class in tsdb.dictdb)</a>
+  </dt>
+
+      
+  <dt><a href="api/vptrees.html#vptrees.vptrees.VPTree.dot">dot() (vptrees.vptrees.VPTree method)</a>
   </dt>
 
       
@@ -472,15 +512,29 @@
   </dt>
 
       
-  <dt><a href="api/pype.html#pype.fgir.Flowgraph">Flowgraph (class in pype.fgir)</a>
+  <dt><a href="api/tsdb.html#tsdb.tsdb_client.TSDBClient.find_similar">find_similar() (tsdb.tsdb_client.TSDBClient method)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="api/webutils.html#webutils.webclient.WebClient.find_similar">(webutils.webclient.WebClient method)</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt><a href="api/webserver.html#webserver.web_server.Handlers.find_similar_handler">find_similar_handler() (webserver.web_server.Handlers method)</a>
   </dt>
 
       
-  <dt><a href="api/pype.html#pype.fgir.FGIR.flowgraph_pass">flowgraph_pass() (pype.fgir.FGIR method)</a>
+  <dt><a href="api/pype.html#pype.fgir.Flowgraph">Flowgraph (class in pype.fgir)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="api/pype.html#pype.fgir.FGIR.flowgraph_pass">flowgraph_pass() (pype.fgir.FGIR method)</a>
+  </dt>
+
       
   <dt><a href="api/pype.html#pype.optimize.FlowgraphOptimization">FlowgraphOptimization (class in pype.optimize)</a>
   </dt>
@@ -512,6 +566,14 @@
 
         
   <dt><a href="api/tsdb.html#tsdb.tsdb_ops.TSDBOp_AugmentedSelect.from_json">(tsdb.tsdb_ops.TSDBOp_AugmentedSelect class method)</a>
+  </dt>
+
+        
+  <dt><a href="api/tsdb.html#tsdb.tsdb_ops.TSDBOp_DeleteTS.from_json">(tsdb.tsdb_ops.TSDBOp_DeleteTS class method)</a>
+  </dt>
+
+        
+  <dt><a href="api/tsdb.html#tsdb.tsdb_ops.TSDBOp_FindSimilar.from_json">(tsdb.tsdb_ops.TSDBOp_FindSimilar class method)</a>
   </dt>
 
         
@@ -550,6 +612,10 @@
   </dt>
 
       
+  <dt><a href="api/vptrees.html#vptrees.vptrees.VPTree.getCloseSubset">getCloseSubset() (vptrees.vptrees.VPTree method)</a>
+  </dt>
+
+      
   <dt><a href="api/tsdb.html#tsdb.baseclasses.BaseIndex.getEqual">getEqual() (tsdb.baseclasses.BaseIndex method)</a>
   </dt>
 
@@ -579,12 +645,12 @@
   <dt><a href="api/tsdb.html#tsdb.indices.TreeIndex.getHigherThan">getHigherThan() (tsdb.indices.TreeIndex method)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="api/tsdb.html#tsdb.indices.TreeIndex.getLowerOrEq">getLowerOrEq() (tsdb.indices.TreeIndex method)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="api/tsdb.html#tsdb.indices.TreeIndex.getLowerThan">getLowerThan() (tsdb.indices.TreeIndex method)</a>
   </dt>
@@ -619,10 +685,14 @@
   <dt><a href="api/webserver.html#webserver.web_server.Handlers">Handlers (class in webserver.web_server)</a>
   </dt>
 
+      
+  <dt><a href="api/tsdb.html#tsdb.heap.HeapFile">HeapFile (class in tsdb.heap)</a>
+  </dt>
+
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="api/tsdb.html#tsdb.heap.HeapFile">HeapFile (class in tsdb.heap)</a>
+  <dt><a href="api/webutils.html#webutils.webclient.WebClient.homepage">homepage() (webutils.webclient.WebClient method)</a>
   </dt>
 
       
@@ -718,6 +788,10 @@
 
         
   <dt><a href="api/tsdb.html#tsdb.tsdb_client.TSDBClient.insert_ts">(tsdb.tsdb_client.TSDBClient method)</a>
+  </dt>
+
+        
+  <dt><a href="api/webutils.html#webutils.webclient.WebClient.insert_ts">(webutils.webclient.WebClient method)</a>
   </dt>
 
       </dl></dd>
@@ -864,15 +938,19 @@
 
       </dl></dd>
       
-  <dt><a href="api/timeseries.html#timeseries.TimeSeries.TimeSeries.mean">mean() (timeseries.TimeSeries.TimeSeries method)</a>
+  <dt><a href="api/vptrees.html#vptrees.vptrees.VPTree.makeVPTree">makeVPTree() (vptrees.vptrees.VPTree method)</a>
   </dt>
 
       
-  <dt><a href="api/timeseries.html#timeseries.TimeSeries.TimeSeries.median">median() (timeseries.TimeSeries.TimeSeries method)</a>
+  <dt><a href="api/timeseries.html#timeseries.TimeSeries.TimeSeries.mean">mean() (timeseries.TimeSeries.TimeSeries method)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="api/timeseries.html#timeseries.TimeSeries.TimeSeries.median">median() (timeseries.TimeSeries.TimeSeries method)</a>
+  </dt>
+
       
   <dt><a href="api/tsdb.html#tsdb.heap.MetaHeapFile">MetaHeapFile (class in tsdb.heap)</a>
   </dt>
@@ -1081,12 +1159,12 @@
   </dt>
 
       </dl></dd>
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="api/pype.html#pype.fgir.Flowgraph.post">post() (pype.fgir.Flowgraph method)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="api/pype.html#pype.ast.ASTModVisitor.post_visit">post_visit() (pype.ast.ASTModVisitor method)</a>
   </dt>
@@ -1109,6 +1187,10 @@
       </dl></dd>
       
   <dt><a href="api/pype.html#pype.fgir.Flowgraph.pre">pre() (pype.fgir.Flowgraph method)</a>
+  </dt>
+
+      
+  <dt><a href="api/vptrees.html#vptrees.vptrees.VPNode.preorder">preorder() (vptrees.vptrees.VPNode method)</a>
   </dt>
 
       
@@ -1254,15 +1336,25 @@
 
       </dl></dd>
       
-  <dt><a href="api/tsdb.html#tsdb.persistentdb.PersistentDB.remove_indices">remove_indices() (tsdb.persistentdb.PersistentDB method)</a>
+  <dt><a href="api/tsdb.html#tsdb.dictdb.DictDB.remove_from_indices">remove_from_indices() (tsdb.dictdb.DictDB method)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
+  <dt><a href="api/tsdb.html#tsdb.persistentdb.PersistentDB.remove_indices">remove_indices() (tsdb.persistentdb.PersistentDB method)</a>
+  </dt>
+
+      
   <dt><a href="api/tsdb.html#tsdb.tsdb_client.TSDBClient.remove_trigger">remove_trigger() (tsdb.tsdb_client.TSDBClient method)</a>
   </dt>
 
+      <dd><dl>
+        
+  <dt><a href="api/webutils.html#webutils.webclient.WebClient.remove_trigger">(webutils.webclient.WebClient method)</a>
+  </dt>
+
+      </dl></dd>
       
   <dt><a href="api/webserver.html#webserver.web_server.Handlers.remove_trigger_handler">remove_trigger_handler() (webserver.web_server.Handlers method)</a>
   </dt>
@@ -1328,6 +1420,10 @@
 
         
   <dt><a href="api/tsdb.html#tsdb.tsdb_client.TSDBClient.select">(tsdb.tsdb_client.TSDBClient method)</a>
+  </dt>
+
+        
+  <dt><a href="api/webutils.html#webutils.webclient.WebClient.select">(webutils.webclient.WebClient method)</a>
   </dt>
 
       </dl></dd>
@@ -1481,12 +1577,12 @@
   <dt><a href="api/tsdb.html#module-tsdb.baseclasses">tsdb.baseclasses (module)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="api/tsdb.html#module-tsdb.dictdb">tsdb.dictdb (module)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="api/tsdb.html#module-tsdb.heap">tsdb.heap (module)</a>
   </dt>
@@ -1533,6 +1629,14 @@
 
       
   <dt><a href="api/tsdb.html#tsdb.tsdb_ops.TSDBOp_AugmentedSelect">TSDBOp_AugmentedSelect (class in tsdb.tsdb_ops)</a>
+  </dt>
+
+      
+  <dt><a href="api/tsdb.html#tsdb.tsdb_ops.TSDBOp_DeleteTS">TSDBOp_DeleteTS (class in tsdb.tsdb_ops)</a>
+  </dt>
+
+      
+  <dt><a href="api/tsdb.html#tsdb.tsdb_ops.TSDBOp_FindSimilar">TSDBOp_FindSimilar (class in tsdb.tsdb_ops)</a>
   </dt>
 
       
@@ -1618,6 +1722,10 @@
   <dt><a href="api/tsdb.html#tsdb.tsdb_client.TSDBClient.upsert_meta">(tsdb.tsdb_client.TSDBClient method)</a>
   </dt>
 
+        
+  <dt><a href="api/webutils.html#webutils.webclient.WebClient.upsert_meta">(webutils.webclient.WebClient method)</a>
+  </dt>
+
       </dl></dd>
   </dl></td>
 </tr></table>
@@ -1633,8 +1741,6 @@
   <dt><a href="api/timeseries.html#timeseries.TimeSeries.TimeSeries.values">values (timeseries.TimeSeries.TimeSeries attribute)</a>, <a href="api/timeseries.html#timeseries.TimeSeries.TimeSeries.values">[1]</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="api/pype.html#pype.symtab.SymbolType.var">var (pype.symtab.SymbolType attribute)</a>
   </dt>
@@ -1697,6 +1803,32 @@
   </dt>
 
       </dl></dd>
+      
+  <dt><a href="api/vptrees.html#vptrees.vptrees.VPNode">VPNode (class in vptrees.vptrees)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="api/vptrees.html#vptrees.vptrees.VPTree">VPTree (class in vptrees.vptrees)</a>
+  </dt>
+
+      
+  <dt><a href="api/vptrees.html#vptrees.vptrees.VPTreeLeaf">VPTreeLeaf (class in vptrees.vptrees)</a>
+  </dt>
+
+      
+  <dt><a href="api/vptrees.html#vptrees.vptrees.VPTreeNonLeaf">VPTreeNonLeaf (class in vptrees.vptrees)</a>
+  </dt>
+
+      
+  <dt><a href="api/vptrees.html#module-vptrees">vptrees (module)</a>
+  </dt>
+
+      
+  <dt><a href="api/vptrees.html#module-vptrees.vptrees">vptrees.vptrees (module)</a>
+  </dt>
+
   </dl></td>
 </tr></table>
 
@@ -1712,6 +1844,10 @@
   </dt>
 
       
+  <dt><a href="api/webutils.html#webutils.webclient.WebClient">WebClient (class in webutils.webclient)</a>
+  </dt>
+
+      
   <dt><a href="api/webserver.html#webserver.web_server.WebServer">WebServer (class in webserver.web_server)</a>
   </dt>
 
@@ -1723,6 +1859,14 @@
 
       
   <dt><a href="api/webserver.html#module-webserver.web_server">webserver.web_server (module)</a>
+  </dt>
+
+      
+  <dt><a href="api/webutils.html#module-webutils">webutils (module)</a>
+  </dt>
+
+      
+  <dt><a href="api/webutils.html#module-webutils.webclient">webutils.webclient (module)</a>
   </dt>
 
   </dl></td>

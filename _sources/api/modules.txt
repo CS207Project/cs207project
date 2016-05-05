@@ -11,4 +11,6 @@ Modules
    pype
    timeseries
    tsdb
+   vptrees
    webserver
+   webutils

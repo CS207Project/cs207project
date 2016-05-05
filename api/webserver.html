@@ -26,7 +26,8 @@
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="cs207project 0.1 documentation" href="../index.html" />
     <link rel="up" title="Modules" href="modules.html" />
-    <link rel="prev" title="tsdb package" href="tsdb.html" />
+    <link rel="next" title="webutils package" href="webutils.html" />
+    <link rel="prev" title="vptrees package" href="vptrees.html" />
    
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
@@ -129,16 +130,59 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>request</strong> (<em>aiotttp.request</em>) &#8211; <p>request object with details of the request that was sent to the server</p>
-<p>request.GET[&#8216;query&#8217;] should exist or an error is returned <strong>REQUIRED</strong></p>
-<p>request.GET[&#8216;query&#8217;][&#8216;proc&#8217;] -&gt; the stored proc that will be called. <strong>REQUIRED</strong></p>
-<p>request.GET[&#8216;query&#8217;][&#8216;target&#8217;] -&gt; json encoded list of what the output of the stored proc
+<p>request.json()[&#8216;proc&#8217;] -&gt; the stored proc that will be called. <strong>REQUIRED</strong></p>
+<p>request.json()[&#8216;target&#8217;] -&gt; json encoded list of what the output of the stored proc
 will be called. <strong>REQUIRED</strong></p>
-<p>request.GET[&#8216;query&#8217;][&#8216;where&#8217;] -&gt; json encoded metadata_dict describing the select criteria.
+<p>request.json()[&#8216;where&#8217;] -&gt; json encoded metadata_dict describing the select criteria.
 Default will return all rows in the database</p>
-<p>request.GET[&#8216;query&#8217;][&#8216;additional&#8217;] -&gt; json encoded additional information for the select.
+<p>request.json()[&#8216;additional&#8217;] -&gt; json encoded additional information for the select.
 Default ignores the additional info.</p>
-<p>request.GET[&#8216;query&#8217;][&#8216;arg&#8217;] -&gt; json encoded additional argument sent to the stored proc.
+<p>request.json()[&#8216;arg&#8217;] -&gt; json encoded additional argument sent to the stored proc.
 Default ignores the arg</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">JSON encoded results of the augmented select</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">web.Response</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webserver.web_server.Handlers.delete_ts_handler">
+<code class="descname">delete_ts_handler</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="headerlink" href="#webserver.web_server.Handlers.delete_ts_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handler for delete time series</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>request</strong> (<em>aiotttp.request</em>) &#8211; <p>request object with details of the request that was sent to the server</p>
+<p>request must be JSON encoded</p>
+<p>request.json()[&#8216;primary_key&#8217;] &#8211;&gt; primary key for this timeseries in the database. <strong>REQUIRED</strong></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">JSON encoded text indicating success or failure of write</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">web.Response</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webserver.web_server.Handlers.find_similar_handler">
+<code class="descname">find_similar_handler</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="headerlink" href="#webserver.web_server.Handlers.find_similar_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handler for Find Similar</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>request</strong> (<em>aiotttp.request</em>) &#8211; <p>request object with details of the request that was sent to the server</p>
+<p>request.json()[&#8216;arg&#8217;] -&gt; json encoded timeseries that is the reference to
+which we&#8217;re trying to find the closest match <strong>REQUIRED</strong></p>
+<p>request.json()[&#8216;vpkeys&#8217;] -&gt; list of vantage point trees that correspond
+to [d_vp-1, d_vp-2, ...] in the correct order <strong>REQUIRED</strong></p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">JSON encoded results of the augmented select</td>
@@ -270,7 +314,8 @@ Default ignore the additional info.</p>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="modules.html">Modules</a><ul>
-      <li>Previous: <a href="tsdb.html" title="previous chapter">tsdb package</a></li>
+      <li>Previous: <a href="vptrees.html" title="previous chapter">vptrees package</a></li>
+      <li>Next: <a href="webutils.html" title="next chapter">webutils package</a></li>
   </ul></li>
   </ul></li>
 </ul>

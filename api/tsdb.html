@@ -26,7 +26,7 @@
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="cs207project 0.1 documentation" href="../index.html" />
     <link rel="up" title="Modules" href="modules.html" />
-    <link rel="next" title="webserver package" href="webserver.html" />
+    <link rel="next" title="vptrees package" href="vptrees.html" />
     <link rel="prev" title="timeseries package" href="timeseries.html" />
    
   
@@ -57,6 +57,12 @@
 <dt id="tsdb.baseclasses.BaseDB.__getitem__">
 <code class="descname">__getitem__</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseclasses.BaseDB.__getitem__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dunder method to get the the values at a given primary_key</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tsdb.baseclasses.BaseDB.delete_ts">
+<code class="descname">delete_ts</code><span class="sig-paren">(</span><em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.baseclasses.BaseDB.delete_ts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a pk, remove that timeseries from the database</p>
 </dd></dl>
 
 <dl class="method">
@@ -151,6 +157,12 @@ them as long as they&#8217;re in the schema.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="tsdb.dictdb.DictDB.delete_ts">
+<code class="descname">delete_ts</code><span class="sig-paren">(</span><em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.dictdb.DictDB.delete_ts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a pk, remove that timeseries from the database</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="tsdb.dictdb.DictDB.index_bulk">
 <code class="descname">index_bulk</code><span class="sig-paren">(</span><em>pks=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.dictdb.DictDB.index_bulk" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -159,6 +171,12 @@ them as long as they&#8217;re in the schema.</p>
 <dt id="tsdb.dictdb.DictDB.insert_ts">
 <code class="descname">insert_ts</code><span class="sig-paren">(</span><em>pk</em>, <em>ts</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.dictdb.DictDB.insert_ts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a pk and a timeseries, insert them</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tsdb.dictdb.DictDB.remove_from_indices">
+<code class="descname">remove_from_indices</code><span class="sig-paren">(</span><em>pk</em>, <em>row</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.dictdb.DictDB.remove_from_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove pk from indices after deletion</p>
 </dd></dl>
 
 <dl class="method">
@@ -319,7 +337,7 @@ if close, then file descriptor not return.</p>
 
 <dl class="method">
 <dt id="tsdb.indices.PKIndex.remove">
-<code class="descname">remove</code><span class="sig-paren">(</span><em>key</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.PKIndex.remove" title="Permalink to this definition">¶</a></dt>
+<code class="descname">remove</code><span class="sig-paren">(</span><em>key</em>, <em>value=None</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.PKIndex.remove" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -368,7 +386,9 @@ if close, then file descriptor not return.</p>
 <dl class="method">
 <dt id="tsdb.indices.TreeIndex.get">
 <code class="descname">get</code><span class="sig-paren">(</span><em>fieldValue</em>, <em>operator_num=2</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.TreeIndex.get" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>&#8216;get&#8217; wrapper function to delegate to other functions
+based on submitted operator</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="tsdb.indices.TreeIndex.getEqual">
@@ -447,35 +467,72 @@ using Binary Trees and BitMasks.</p>
 <dl class="method">
 <dt id="tsdb.persistentdb.PersistentDB.close">
 <code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistentdb.PersistentDB.close" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>helper function to close the database</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="tsdb.persistentdb.PersistentDB.delete_database">
 <code class="descname">delete_database</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistentdb.PersistentDB.delete_database" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove the database.</p>
+<dd><p>Remove the database and all associated files</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tsdb.persistentdb.PersistentDB.delete_ts">
+<code class="descname">delete_ts</code><span class="sig-paren">(</span><em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistentdb.PersistentDB.delete_ts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a pk, remove that timeseries from the database.
+Follows logic of &#8216;upsert_meta&#8217; for deletion and removal from indices</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pk</strong> (<a class="reference external" href="https://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; primary key</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="tsdb.persistentdb.PersistentDB.index_bulk">
 <code class="descname">index_bulk</code><span class="sig-paren">(</span><em>pks=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistentdb.PersistentDB.index_bulk" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Assures index data is up to date for pk in pks</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pks</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; list of primary keys to be updated</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="tsdb.persistentdb.PersistentDB.insert_ts">
 <code class="descname">insert_ts</code><span class="sig-paren">(</span><em>pk</em>, <em>ts</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistentdb.PersistentDB.insert_ts" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a pk and a timeseries, insert them</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="tsdb.persistentdb.PersistentDB.remove_indices">
-<code class="descname">remove_indices</code><span class="sig-paren">(</span><em>pk</em>, <em>old_meta_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistentdb.PersistentDB.remove_indices" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove the odl stored indices.</p>
+<dd><p>Given a pk and a timeseries, insert them&#8221;</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>pk</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; primary key</li>
+<li><strong>pk</strong> (<a class="reference external" href="https://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; primary key</li>
+<li><strong>new_meta</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; new metadata dictionary to be inserted</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tsdb.persistentdb.PersistentDB.remove_indices">
+<code class="descname">remove_indices</code><span class="sig-paren">(</span><em>pk</em>, <em>old_meta_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistentdb.PersistentDB.remove_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the old stored indices.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pk</strong> (<a class="reference external" href="https://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; primary key</li>
 <li><strong>old_meta_dict</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; old metadata dictionary</li>
 </ul>
 </td>
@@ -515,7 +572,21 @@ returned. You can sort or limit the number of results that you receive.</li>
 <dl class="method">
 <dt id="tsdb.persistentdb.PersistentDB.upsert_meta">
 <code class="descname">upsert_meta</code><span class="sig-paren">(</span><em>pk</em>, <em>new_meta</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistentdb.PersistentDB.upsert_meta" title="Permalink to this definition">¶</a></dt>
-<dd><p>Upsert metadata into the timeseries in the database.</p>
+<dd><p>Upsert metadata into the timeseries in the database.
+Ignores inserted metadata if it is not in the schema, or if either
+updates to the primary key or timeseries are attempted</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pk</strong> (<a class="reference external" href="https://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; primary key</li>
+<li><strong>new_meta</strong> (<a class="reference external" href="https://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; new metadata dictionary to be inserted</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -523,7 +594,8 @@ returned. You can sort or limit the number of results that you receive.</li>
 <dl class="function">
 <dt id="tsdb.persistentdb.dict_eq">
 <code class="descclassname">tsdb.persistentdb.</code><code class="descname">dict_eq</code><span class="sig-paren">(</span><em>dict1</em>, <em>dict2</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistentdb.dict_eq" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>helper function to test equality of dictionaries of dictionaries</p>
+</dd></dl>
 
 </div>
 <div class="section" id="module-tsdb.tsdb_client">
@@ -563,7 +635,57 @@ returned. You can sort or limit the number of results that you receive.</li>
 <dl class="method">
 <dt id="tsdb.tsdb_client.TSDBClient.augmented_select">
 <code class="descname">augmented_select</code><span class="sig-paren">(</span><em>proc</em>, <em>target</em>, <em>arg=None</em>, <em>metadata_dict={}</em>, <em>additional=None</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_client.TSDBClient.augmented_select" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Send the server a request for the selection of timeseries elements in
+the database that match the criteria set in metadata_dict and then run a
+stored procedure on that result</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>proc</strong> (<a class="reference external" href="https://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; name of the stored procedure that will be run on the results</li>
+<li><strong>metadata_dict</strong> (<em>a dictionary object</em>) &#8211; the selection criteria (filters)</li>
+<li><strong>additional</strong> (<em>a dictionary object</em>) &#8211; additional computation to perform on the query matches before they&#8217;re
+returned. You can sort or limit the number of results that you receive.</li>
+<li><strong>target</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; what the results of the stored procedure will be stored in</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tsdb.tsdb_client.TSDBClient.delete_ts">
+<code class="descname">delete_ts</code><span class="sig-paren">(</span><em>primary_key</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_client.TSDBClient.delete_ts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send the server a request to delete a timeseries from the database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>primary_key</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; a unique identifier for the timeseries</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tsdb.tsdb_client.TSDBClient.find_similar">
+<code class="descname">find_similar</code><span class="sig-paren">(</span><em>arg</em>, <em>vpkeys</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_client.TSDBClient.find_similar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send the server a request to find the closest ts to this one</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>arg</strong> (<a class="reference internal" href="timeseries.html#module-timeseries.TimeSeries" title="timeseries.TimeSeries"><em>TimeSeries</em></a>) &#8211; reference time series</li>
+<li><strong>vpkeys</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; Vantage Points keys</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="tsdb.tsdb_client.TSDBClient.insert_ts">
@@ -725,6 +847,30 @@ data is sent back to the user.</p>
 <dl class="classmethod">
 <dt id="tsdb.tsdb_ops.TSDBOp_AugmentedSelect.from_json">
 <em class="property">classmethod </em><code class="descname">from_json</code><span class="sig-paren">(</span><em>json_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp_AugmentedSelect.from_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tsdb.tsdb_ops.TSDBOp_DeleteTS">
+<em class="property">class </em><code class="descclassname">tsdb.tsdb_ops.</code><code class="descname">TSDBOp_DeleteTS</code><span class="sig-paren">(</span><em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp_DeleteTS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tsdb.tsdb_ops.TSDBOp" title="tsdb.tsdb_ops.TSDBOp"><code class="xref py py-class docutils literal"><span class="pre">tsdb.tsdb_ops.TSDBOp</span></code></a></p>
+<dl class="classmethod">
+<dt id="tsdb.tsdb_ops.TSDBOp_DeleteTS.from_json">
+<em class="property">classmethod </em><code class="descname">from_json</code><span class="sig-paren">(</span><em>json_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp_DeleteTS.from_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tsdb.tsdb_ops.TSDBOp_FindSimilar">
+<em class="property">class </em><code class="descclassname">tsdb.tsdb_ops.</code><code class="descname">TSDBOp_FindSimilar</code><span class="sig-paren">(</span><em>arg</em>, <em>vpkeys</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp_FindSimilar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tsdb.tsdb_ops.TSDBOp" title="tsdb.tsdb_ops.TSDBOp"><code class="xref py py-class docutils literal"><span class="pre">tsdb.tsdb_ops.TSDBOp</span></code></a></p>
+<p>Find the timeseries in the DB closest to this one based on the predefined
+distance metric</p>
+<dl class="classmethod">
+<dt id="tsdb.tsdb_ops.TSDBOp_FindSimilar.from_json">
+<em class="property">classmethod </em><code class="descname">from_json</code><span class="sig-paren">(</span><em>json_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp_FindSimilar.from_json" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -929,7 +1075,7 @@ dispatches a response.</p>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="modules.html">Modules</a><ul>
       <li>Previous: <a href="timeseries.html" title="previous chapter">timeseries package</a></li>
-      <li>Next: <a href="webserver.html" title="next chapter">webserver package</a></li>
+      <li>Next: <a href="vptrees.html" title="next chapter">vptrees package</a></li>
   </ul></li>
   </ul></li>
 </ul>
