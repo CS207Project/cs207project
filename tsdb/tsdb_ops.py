@@ -155,13 +155,18 @@ class TSDBOp_FindSimilar(TSDBOp):
     """Find the timeseries in the DB closest to this one based on the predefined
     distance metric
     """
-    def __init__(self, arg):
+    def __init__(self, arg, vpkeys):
         super().__init__('find_similar')
         self['arg'] = arg
+        self['vpkeys'] = vpkeys
 
     @classmethod
     def from_json(cls, json_dict):
-        return cls(json_dict['arg'])
+        # print("in TSDBOp_FindSimilar: ", type(json_dict))
+        arg = json_dict['arg']
+        vpkeys = json_dict['vpkeys']
+        # print("extracted")
+        return cls(json_dict['arg'], json_dict['vpkeys'])
 
 # This simplifies reconstructing TSDBOp instances from network data.
 typemap = {

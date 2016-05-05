@@ -9,6 +9,7 @@ from .tsdb_serialization import Deserializer, serialize
 from .tsdb_error import *
 from .tsdb_ops import *
 import procs
+import time
 
 def trigger_callback_maker(pk, target, calltomake):
     def callback_(future):
@@ -108,17 +109,17 @@ class TSDBProtocol(asyncio.Protocol):
                 `op[target]` : will return targets mapped to return values of `op[proc]`
         """
         loids, fields = self.server.db.select(op['md'], None, op['additional'])
+        print("Aug Select :: Select retured {} rows".format(len(loids)))
+
         proc = op['proc']  # the module in procs
         arg = op['arg']  # an additional argument, could be a constant
         target = op['target'] #not used to upsert any more, but rather to
         # return results in a dictionary with the targets mapped to the return
         # values from proc_main
-        mod = import_module('procs.'+proc)
-        storedproc = getattr(mod,'proc_main')
         results=[]
         for pk in loids:
             row = self.server.db[pk]
-            result = storedproc(pk, row, arg)
+            result = self._run_proc(proc, pk, row, arg)
             results.append(dict(zip(target, result)))
         return TSDBOp_Return(TSDBStatus.OK, op['op'], dict(zip(loids, results)))
 
@@ -126,12 +127,50 @@ class TSDBProtocol(asyncio.Protocol):
         """
         Find the most similar timeseies to the given timeseies from the database
 
+        If Vantage Point trees are implemented this will change.
         Parameters
         ----------
         op : a TSDBOp object
             contains a query timeseries (`op[arg]`)
+
+            contains the vpkeys (`op[vpkeys]`)
         """
-        raise NotImplementedError
+        arg = op['arg']
+        vpkeys = op['vpkeys']
+        print("in find simialar ---->", vpkeys)
+        # compute distance to all vps
+        vpdist = {}
+        for v in vpkeys:
+            row = self.server.db[v]
+            vpdist[v] = self._run_proc('corr', v, row, arg)[0]
+            # time.sleep(1)
+
+        #choose the lowest distance vantage point
+        closest_vpk = min(vpkeys,key=lambda v:vpdist[v])
+        closest_vpk_dist_col = 'd_vp-' + str(vpkeys.index(closest_vpk))
+        print(closest_vpk,closest_vpk_dist_col)
+
+
+        # find all time series within 2*d(query, nearest_vp_to_query)
+        # this is an augmented select to the same proc in correlation
+        md = {closest_vpk_dist_col: {'<=': 2*vpdist[closest_vpk]}}
+        loids, fields = self.server.db.select(md, None, None)
+
+        print("Find Similar :: Select retured {} rows".format(len(loids)))
+
+        # find distances to all timeseries within this circle around the Vantage
+        # Point
+        results={}
+        for pk in loids:
+            row = self.server.db[pk]
+            results[pk] = self._run_proc('corr', pk, row, arg)[0]
+
+        # find the smallest distance amongst this ( or k smallest)
+        n = min(results.keys(),key=lambda p: results[p])
+
+        return TSDBOp_Return(TSDBStatus.OK, op['op'], {n:results[n]})
+        # return TSDBOp_Return(TSDBStatus.OK, op['op'], None)
+
 
     def _add_trigger(self, op):#DNY: Trigger is "if something happens, run this particular process", similar to a stored procedure.
         """
@@ -154,6 +193,11 @@ class TSDBProtocol(asyncio.Protocol):
         storedproc = getattr(mod,'main')
         self.server.triggers[trigger_onwhat].append((trigger_proc, storedproc, trigger_arg, trigger_target))
         return TSDBOp_Return(TSDBStatus.OK, op['op'])
+
+    def _run_proc(self, proc, pk, row, arg):
+        mod = import_module('procs.'+proc)
+        storedproc = getattr(mod,'proc_main')
+        return storedproc(pk, row, arg)
 
     def _remove_trigger(self, op):
         trigger_proc = op['proc']
@@ -182,6 +226,7 @@ class TSDBProtocol(asyncio.Protocol):
         #DNY: handles communication channels
 
     def data_received(self, data):
+        print("------------------------------------------------")
         print('S> data received ['+str(len(data))+']: '+str(data))
         self.deserializer.append(data)#DNY: presumably deserializer handles readying data
         if self.deserializer.ready():

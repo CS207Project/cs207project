@@ -72,7 +72,7 @@ class DictDB(BaseDB):
 
     def insert_ts(self, pk, ts):
         "Given a pk and a timeseries, insert them"
-        print("in db insert",pk,ts)
+
         if len(ts) != self.ts_length:
             raise ValueError('TimeSeries is of the wrong length. Should be '+ str(self.ts_length))
         if pk not in self.rows:
@@ -84,7 +84,12 @@ class DictDB(BaseDB):
 
     def delete_ts(self,pk):
         "Given a pk, remove that timeseries from the database"
-        raise NotImplementedError
+        if pk not in self.rows:
+            raise ValueError('primary_key does not exist')
+
+        row = self.rows[pk]
+        del self.rows[pk]
+        self.remove_from_indices(pk,row)
 
     def upsert_meta(self, pk, meta):
         """
@@ -115,6 +120,15 @@ class DictDB(BaseDB):
             if self.schema[field]['index'] is not None:
                 idx = self.indexes[field]# idx is a defaultdict(set)
                 idx[v].add(pk)#DNY: 'v' must be hashable
+
+    def remove_from_indices(self, pk, row):
+        "Remove pk from indices after deletion"
+
+        for field in row:
+            v = row[field]
+            if self.schema[field]['index'] is not None:
+                idx = self.indexes[field]# idx is a defaultdict(set)
+                idx[v].remove(pk)#DNY: 'v' must be hashable
 
     #ASK: Helper func
     def _getDataForRows(self,pks_out,fields_to_ret):

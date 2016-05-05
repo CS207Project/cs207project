@@ -130,10 +130,18 @@ class TSDBClient(object):
         status, payload =  await self._send(msg.to_json())
         return TSDBStatus(status), payload
 
-    async def find_similar(self, arg):
+    async def find_similar(self, arg, vpkeys):
         """Send the server a request to find the closest ts to this one
+
+        Parameters
+        ----------
+
+        arg : TimeSeries
+            reference time series
+        vpkeys : list
+            Vantage Points keys
         """
-        msg = TSDBOp_FindSimilar(arg)
+        msg = TSDBOp_FindSimilar(arg, vpkeys)
         status, payload =  await self._send(msg.to_json())
         return TSDBStatus(status), payload
 
