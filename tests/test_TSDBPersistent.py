@@ -51,15 +51,12 @@ class TSDBPersistentTests(asynctest.TestCase):
           'blarg': {'type': 'int',    'index': 2,    'values': [1, 2]},
           'mean':  {'type': 'float',  'index': 1},
           'std':   {'type': 'float',  'index': 1},
-          'vp':    {'type': 'bool',   'index': 2,    'values': [0,1]},
-          'd-vp1': {'type': 'float',  'index': 1},
-          'd-vp2': {'type': 'float',  'index': 1},
-          'd-vp3': {'type': 'float',  'index': 1},
-          'd-vp4': {'type': 'float',  'index': 1},
-          'd-vp5': {'type': 'float',  'index': 1}
+          'vp':    {'type': 'bool',   'index': 2,    'values': [0,1]}
         }
 
-        TS_LENGTH = 100
+        for i in range(NUMVPS):
+            schema["d_vp-{}".format(i)] = {'type': 'float',  'index': 1}
+
         db = PersistentDB(schema, pk_field='pk', db_name='testing', ts_length=TS_LENGTH, testing=True)
         db.delete_database()
 
@@ -181,7 +178,7 @@ class TSDBPersistentTests(asynctest.TestCase):
         nearestwanted = list(results)[0]
         print("Nearest :", nearestwanted)
         self.assertEqual(nearestwanted,'ts-0')
-        
+
         # find the nearest
         nearestwanted = await self._findNearest(client,query)
         print("Nearest :", nearestwanted)

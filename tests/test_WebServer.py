@@ -133,7 +133,7 @@ class WebServerTests(unittest.TestCase):
         payload = {'proc':'corr','target':'d','arg':query.to_json()}
         for v in self.vpkeys:
             payload['where'] = {'pk': v}
-            r = requests.get(self.server_url+'/augselect',params={'query':json.dumps(payload)})
+            r = requests.post(self.server_url+'/augselect',json.dumps(payload))
             results = json.loads(r.content.decode('utf-8'))
             vpdist[v] = results[v]['d']
 
@@ -143,7 +143,7 @@ class WebServerTests(unittest.TestCase):
         #this is an augmented select to the same proc in correlation
         payload = {'proc':'corr','target':'d','arg':query.to_json()}
         payload['where'] = {'d_'+closest_vpk: {'<=': 2*vpdist[closest_vpk]}}
-        r = requests.get(self.server_url+'/augselect',params={'query':json.dumps(payload)})
+        r = requests.post(self.server_url+'/augselect',json.dumps(payload))
         results = json.loads(r.content.decode('utf-8'))
 
         #2b: find the smallest distance amongst this ( or k smallest)
