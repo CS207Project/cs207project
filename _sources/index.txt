@@ -31,15 +31,29 @@ Usage
 - Start the Database Server:
 ::
 
-    python go_server.py
+    python go_server.py -len 1024 -vps 10 &
 
 - Start the Web Server:
 ::
 
-    python go_webserver.py
+    python go_webserver.py &
 
 2. API Quick Guide
 ==================
+
+We recommned using our WebClient to talk to the database. It
+implements the REST calls that are supported and returns a
+`requests.response` object. See the demo_ for a full example.
+
+.. _demo: https://github.com/CS207Project/cs207project/blob/master/tests/web_server_testing.ipynb
+
+
+::
+
+    w = WebClient('http://localhost:8080')
+    # or
+    w = WebClient('http://www.adjch.me:8080')
+
 i. SELECT
 ---------
 Select from the timeseries database.
@@ -51,28 +65,24 @@ Select from the timeseries database.
 
 ::
 
-    payload = {'where':{'order': {'>=' : 1}},
-        'fields':['order','vp'],
-        'additional':{'sort_by':'-order',
-        'limit':10}}
-
-    requests.get(server_url+'/select',
-        params={'query':json.dumps(payload)}).content
+    r = w.select()
+    assert r.status_code == 200
+    # or
+    r = w.select(additional={'sort_by':'+pk','limit':100})
+    assert r.status_code == 200
 
 ii. AUGMENTED SELECT
 --------------------
 Select a set of rows and then run a predefined stored procedure on it
 
 - Endpoint: **/augselect**
-- Verb: **GET**
-- Format: json text as a parameter with the key 'query'- i.e url ends with `?query=json_text`
+- Verb: **POST**
 - Example:
 
 ::
 
-    m, queryts = tsmaker(0.5, 0.2, 0.1)
-    payload = {'proc':'corr', 'target':'d', 'arg':queryts.to_json(), 'where': {'pk': v}}
-    requests.get(server_url+'/augselect', params={'query':json.dumps(payload)}).content
+    r = w.augselect('corr','d',where_dict,arg=query)
+
 
 iii. INSERT TIMESERIES
 ----------------------
@@ -84,11 +94,8 @@ Insert a new timeseries into the database
 
 ::
 
-    def make_insert_ts(primary_key,t):
-        return json.dumps({'primary_key':primary_key,'ts':t.to_json()})
-
-    meta1,ts1 = tsmaker(0.1,0.2,0.3)
-    requests.post(server_url+'/add/ts', make_insert_ts('ts-1', ts1))
+    r = w.insert_ts(primary_key, timeseries)
+    assert r.status_code == 200
 
 
 iv. UPSERT METADATA
@@ -101,11 +108,7 @@ Update or Insert metadata for a particular timeseries into the database
 
 ::
 
-    def make_upsert_meta(primary_key, metadata_dict):
-        return json.dumps({'primary_key':primary_key, 'metadata_dict': metadata_dict})
-
-    meta1,ts1 = tsmaker(0.1,0.2,0.3)
-    requests.post(server_url+'/add/metadata', make_upsert_meta('ts-1', meta1))
+    r = w.upsert_meta(primary_key, metadict)
 
 v. INSERT TRIGGER
 -----------------
@@ -118,13 +121,8 @@ This is called a trigger.
 
 ::
 
-    def make_add_trigger(proc, onwhat, target, arg):
-        if hasattr(arg,'to_json'):
-            arg = arg.to_json()
-        return json.dumps({'proc':proc,'onwhat':onwhat,'target':target,'arg':arg})
-
-    m, queryts = tsmaker(0.5, 0.2, 0.1)
-    requests.post(server_url+'/add/trigger', make_add_trigger('corr', 'insert_ts', 'd', queryts))
+    r = w.add_trigger('junk', 'insert_ts', None, 'db:one:ts')
+    assert r.status_code == 200
 
 vi. REMOVE TRIGGER
 ------------------
@@ -132,6 +130,24 @@ Remove a trigger from the database.
 
 - Endpoint: **/tsdb/remove/trigger**
 - Verb: **POST**
+- Example:
+
+::
+
+    r = w.remove_trigger('junk', 'insert_ts')
+
+
+vii. FIND SIMILAR
+------------------
+Find the timeseries in our database that is most similar to the query
+
+- Endpoint: **/tsdb/find_similar**
+- Verb: **POST**
+- Example:
+
+::
+
+    r = w.find_similar(query,vpkeys)
 
 ----
 Note

@@ -75,18 +75,26 @@
 <ul class="simple">
 <li>Start the Database Server:</li>
 </ul>
-<div class="highlight-python"><div class="highlight"><pre><span></span>python go_server.py
+<div class="highlight-python"><div class="highlight"><pre><span></span>python go_server.py -len 1024 -vps 10 &amp;
 </pre></div>
 </div>
 <ul class="simple">
 <li>Start the Web Server:</li>
 </ul>
-<div class="highlight-python"><div class="highlight"><pre><span></span>python go_webserver.py
+<div class="highlight-python"><div class="highlight"><pre><span></span>python go_webserver.py &amp;
 </pre></div>
 </div>
 </div>
 <div class="section" id="api-quick-guide">
 <h3>2. API Quick Guide<a class="headerlink" href="#api-quick-guide" title="Permalink to this headline">¶</a></h3>
+<p>We recommned using our WebClient to talk to the database. It
+implements the REST calls that are supported and returns a
+<cite>requests.response</cite> object. See the <a class="reference external" href="https://github.com/CS207Project/cs207project/blob/master/tests/web_server_testing.ipynb">demo</a> for a full example.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">w</span> <span class="o">=</span> <span class="n">WebClient</span><span class="p">(</span><span class="s1">&#39;http://localhost:8080&#39;</span><span class="p">)</span>
+<span class="c1"># or</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">WebClient</span><span class="p">(</span><span class="s1">&#39;http://www.adjch.me:8080&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 <div class="section" id="i-select">
 <h4>i. SELECT<a class="headerlink" href="#i-select" title="Permalink to this headline">¶</a></h4>
 <p>Select from the timeseries database.</p>
@@ -96,13 +104,11 @@
 <li>Format: json text as a parameter with the key &#8216;query&#8217;- i.e url ends with <cite>?query=json_text</cite></li>
 <li>Example:</li>
 </ul>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;where&#39;</span><span class="p">:{</span><span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;&gt;=&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">}},</span>
-    <span class="s1">&#39;fields&#39;</span><span class="p">:[</span><span class="s1">&#39;order&#39;</span><span class="p">,</span><span class="s1">&#39;vp&#39;</span><span class="p">],</span>
-    <span class="s1">&#39;additional&#39;</span><span class="p">:{</span><span class="s1">&#39;sort_by&#39;</span><span class="p">:</span><span class="s1">&#39;-order&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;limit&#39;</span><span class="p">:</span><span class="mi">10</span><span class="p">}}</span>
-
-<span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">server_url</span><span class="o">+</span><span class="s1">&#39;/select&#39;</span><span class="p">,</span>
-    <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;query&#39;</span><span class="p">:</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">)})</span><span class="o">.</span><span class="n">content</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">select</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+<span class="c1"># or</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">additional</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;sort_by&#39;</span><span class="p">:</span><span class="s1">&#39;+pk&#39;</span><span class="p">,</span><span class="s1">&#39;limit&#39;</span><span class="p">:</span><span class="mi">100</span><span class="p">})</span>
+<span class="k">assert</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
 </pre></div>
 </div>
 </div>
@@ -111,13 +117,10 @@
 <p>Select a set of rows and then run a predefined stored procedure on it</p>
 <ul class="simple">
 <li>Endpoint: <strong>/augselect</strong></li>
-<li>Verb: <strong>GET</strong></li>
-<li>Format: json text as a parameter with the key &#8216;query&#8217;- i.e url ends with <cite>?query=json_text</cite></li>
+<li>Verb: <strong>POST</strong></li>
 <li>Example:</li>
 </ul>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">m</span><span class="p">,</span> <span class="n">queryts</span> <span class="o">=</span> <span class="n">tsmaker</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
-<span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;proc&#39;</span><span class="p">:</span><span class="s1">&#39;corr&#39;</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">:</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;arg&#39;</span><span class="p">:</span><span class="n">queryts</span><span class="o">.</span><span class="n">to_json</span><span class="p">(),</span> <span class="s1">&#39;where&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;pk&#39;</span><span class="p">:</span> <span class="n">v</span><span class="p">}}</span>
-<span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">server_url</span><span class="o">+</span><span class="s1">&#39;/augselect&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;query&#39;</span><span class="p">:</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">)})</span><span class="o">.</span><span class="n">content</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">augselect</span><span class="p">(</span><span class="s1">&#39;corr&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="n">where_dict</span><span class="p">,</span><span class="n">arg</span><span class="o">=</span><span class="n">query</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -129,11 +132,8 @@
 <li>Verb: <strong>POST</strong></li>
 <li>Example:</li>
 </ul>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">make_insert_ts</span><span class="p">(</span><span class="n">primary_key</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s1">&#39;primary_key&#39;</span><span class="p">:</span><span class="n">primary_key</span><span class="p">,</span><span class="s1">&#39;ts&#39;</span><span class="p">:</span><span class="n">t</span><span class="o">.</span><span class="n">to_json</span><span class="p">()})</span>
-
-<span class="n">meta1</span><span class="p">,</span><span class="n">ts1</span> <span class="o">=</span> <span class="n">tsmaker</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.2</span><span class="p">,</span><span class="mf">0.3</span><span class="p">)</span>
-<span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">server_url</span><span class="o">+</span><span class="s1">&#39;/add/ts&#39;</span><span class="p">,</span> <span class="n">make_insert_ts</span><span class="p">(</span><span class="s1">&#39;ts-1&#39;</span><span class="p">,</span> <span class="n">ts1</span><span class="p">))</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">insert_ts</span><span class="p">(</span><span class="n">primary_key</span><span class="p">,</span> <span class="n">timeseries</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
 </pre></div>
 </div>
 </div>
@@ -145,11 +145,7 @@
 <li>Verb: <strong>POST</strong></li>
 <li>Example:</li>
 </ul>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">make_upsert_meta</span><span class="p">(</span><span class="n">primary_key</span><span class="p">,</span> <span class="n">metadata_dict</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s1">&#39;primary_key&#39;</span><span class="p">:</span><span class="n">primary_key</span><span class="p">,</span> <span class="s1">&#39;metadata_dict&#39;</span><span class="p">:</span> <span class="n">metadata_dict</span><span class="p">})</span>
-
-<span class="n">meta1</span><span class="p">,</span><span class="n">ts1</span> <span class="o">=</span> <span class="n">tsmaker</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.2</span><span class="p">,</span><span class="mf">0.3</span><span class="p">)</span>
-<span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">server_url</span><span class="o">+</span><span class="s1">&#39;/add/metadata&#39;</span><span class="p">,</span> <span class="n">make_upsert_meta</span><span class="p">(</span><span class="s1">&#39;ts-1&#39;</span><span class="p">,</span> <span class="n">meta1</span><span class="p">))</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">upsert_meta</span><span class="p">(</span><span class="n">primary_key</span><span class="p">,</span> <span class="n">metadict</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -162,13 +158,8 @@ This is called a trigger.</p>
 <li>Verb: <strong>POST</strong></li>
 <li>Example:</li>
 </ul>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">make_add_trigger</span><span class="p">(</span><span class="n">proc</span><span class="p">,</span> <span class="n">onwhat</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
-    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span><span class="s1">&#39;to_json&#39;</span><span class="p">):</span>
-        <span class="n">arg</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s1">&#39;proc&#39;</span><span class="p">:</span><span class="n">proc</span><span class="p">,</span><span class="s1">&#39;onwhat&#39;</span><span class="p">:</span><span class="n">onwhat</span><span class="p">,</span><span class="s1">&#39;target&#39;</span><span class="p">:</span><span class="n">target</span><span class="p">,</span><span class="s1">&#39;arg&#39;</span><span class="p">:</span><span class="n">arg</span><span class="p">})</span>
-
-<span class="n">m</span><span class="p">,</span> <span class="n">queryts</span> <span class="o">=</span> <span class="n">tsmaker</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
-<span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">server_url</span><span class="o">+</span><span class="s1">&#39;/add/trigger&#39;</span><span class="p">,</span> <span class="n">make_add_trigger</span><span class="p">(</span><span class="s1">&#39;corr&#39;</span><span class="p">,</span> <span class="s1">&#39;insert_ts&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="n">queryts</span><span class="p">))</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">add_trigger</span><span class="p">(</span><span class="s1">&#39;junk&#39;</span><span class="p">,</span> <span class="s1">&#39;insert_ts&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="s1">&#39;db:one:ts&#39;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
 </pre></div>
 </div>
 </div>
@@ -178,7 +169,23 @@ This is called a trigger.</p>
 <ul class="simple">
 <li>Endpoint: <strong>/tsdb/remove/trigger</strong></li>
 <li>Verb: <strong>POST</strong></li>
+<li>Example:</li>
 </ul>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">remove_trigger</span><span class="p">(</span><span class="s1">&#39;junk&#39;</span><span class="p">,</span> <span class="s1">&#39;insert_ts&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="vii-find-similar">
+<h4>vii. FIND SIMILAR<a class="headerlink" href="#vii-find-similar" title="Permalink to this headline">¶</a></h4>
+<p>Find the timeseries in our database that is most similar to the query</p>
+<ul class="simple">
+<li>Endpoint: <strong>/tsdb/find_similar</strong></li>
+<li>Verb: <strong>POST</strong></li>
+<li>Example:</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">find_similar</span><span class="p">(</span><span class="n">query</span><span class="p">,</span><span class="n">vpkeys</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 </div>
 </div>
@@ -213,6 +220,7 @@ information on PyScaffold see <a class="reference external" href="http://pyscaff
 <li><a class="reference internal" href="#iv-upsert-metadata">iv. UPSERT METADATA</a></li>
 <li><a class="reference internal" href="#v-insert-trigger">v. INSERT TRIGGER</a></li>
 <li><a class="reference internal" href="#vi-remove-trigger">vi. REMOVE TRIGGER</a></li>
+<li><a class="reference internal" href="#vii-find-similar">vii. FIND SIMILAR</a></li>
 </ul>
 </li>
 </ul>
