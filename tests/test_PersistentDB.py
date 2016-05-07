@@ -207,6 +207,20 @@ class PersistentDBTests(unittest.TestCase):
             self.assertTrue(r_meta[self.db.metaheap.fields.index('mean')] == series.mean())
             self.assertTrue(r_meta[self.db.metaheap.fields.index('std')] == series.std())
 
+    def test_vps(self):
+        self.db.add_vp('vp-0', 'ts-88')
+        self.db.add_vp('vp-1', 'ts-87')
+        with self.assertRaises(IndexError):
+            self.db.add_vp('vp-2', 'ts-1000')# doesn't exist in db
+        self.assertTrue('vp-0' in self.db.vps)
+        self.db.delete_vp('vp-0')
+        self.assertTrue('vp-0' not in self.db.vps)
+        with self.assertRaises(IndexError):
+            self.db.delete_vp('vp-3')# doesn't exist in db
+
+        self.db.close()
+        self.db = PersistentDB(pk_field='pk', db_name='testing', ts_length=self.tsLength, testing=True)
+        self.assertTrue('vp-1' in self.db.vps)       
 
 if __name__ == '__main__':
     unittest.main()

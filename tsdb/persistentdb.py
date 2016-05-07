@@ -120,6 +120,7 @@ class PersistentDB(BaseDB):
             self.tsLength = ts_length
             self.pkfield = pk_field
             self.schema = dict(schema)
+            self.vps = dict()
             with open(self.data_dir+"/db_metadata.met",'xb',buffering=0) as fd:
                 pickle.dump((self.tsLength, self.pkfield, self.schema), fd)
             # add metavalues to a copy of schema here
@@ -131,6 +132,7 @@ class PersistentDB(BaseDB):
         self.metaheap = MetaHeapFile(FILES_DIR+"/"+self.dbname+"/"+'metaheap', schema)
         self.tsheap = TSHeapFile(FILES_DIR+"/"+self.dbname+"/"+'tsheap', self.tsLength)
 
+        # open / load primary key index
         self.pks = PKIndex(self.dbname)
 
         # DNY: to store fields that will have associated indexes
@@ -143,6 +145,40 @@ class PersistentDB(BaseDB):
                 self.indexes[field] = TreeIndex(field, self.dbname)
             else:
                 self.indexes[field] = TreeIndex(field, self.dbname)
+
+        # load vantage points
+        self.load_vps()
+
+    def load_vps(self):
+        " method to load vantage point labels from disk "
+        if os.path.exists(self.data_dir+"/db_vps.met"):
+            with open(self.data_dir+"/db_vps.met", 'rb', buffering=0) as fd:
+                self.vps = pickle.load(fd)
+        else:
+            self.vps = dict()
+            with open(self.data_dir+"/db_vps.met",'xb',buffering=0) as fd:
+                pickle.dump(self.vps, fd)
+
+    def _save_vps(self):
+        " helper method to save current vp state to disk "
+        with open(self.data_dir+"/db_vps.met", 'wb', buffering=0) as fd:
+            pickle.dump(self.vps, fd)
+
+    def add_vp(self, vp_id, pk):
+        " method to add vp labels to db, and save to disk "
+        if pk in self.pks:
+            self.vps[vp_id] = pk
+        else:
+            raise IndexError("Primary key '{}' not found in database".format(pk))
+        self._save_vps()
+
+    def delete_vp(self, vp_id):
+        " method to delete vp labels from db, and save to disk "
+        if vp_id in self.vps:
+            del self.vps[vp_id]
+        else:
+            raise IndexError("Vantage Point ID '{}' not set in database".format(vp_id))
+        self._save_vps()
 
     def __len__(self):
         "Dunder function to return length of timeseries db"
