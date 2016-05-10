@@ -28,7 +28,7 @@ class BitmapIndexTests(unittest.TestCase):
             os.removedirs(self.dirPath)
 
     def test_getEqual(self):
-        self.assertEqual(set(self.space_index.getEqual('alien')),set(['ts-4','ts-5'])))
+        self.assertEqual(set(self.space_index.getEqual('alien')),set(['ts-4','ts-5']))
 
     def test_getNotEq(self):
         self.assertEqual(set(self.space_index.getNotEq('comet')),set(['ts-4','ts-5','ts-6']))
