@@ -28,10 +28,10 @@ class BitmapIndexTests(unittest.TestCase):
             os.removedirs(self.dirPath)
 
     def test_getEqual(self):
-        self.assertEqual(set(self.space_index.getEqual('alien')),set(['ts-4','ts-5']))
+        self.assertEqual(set(self.space_index.getEqual('alien')),set([b'ts-4',b'ts-5']))
 
     def test_getNotEq(self):
-        self.assertEqual(set(self.space_index.getNotEq('comet')),set(['ts-4','ts-5','ts-6']))
+        self.assertEqual(set(self.space_index.getNotEq('comet')),set([b'ts-4',b'ts-5',b'ts-6']))
 
     def test_wrongLengthKey(self):
         with self.assertRaises(ValueError):
@@ -43,18 +43,18 @@ class BitmapIndexTests(unittest.TestCase):
 
     def test_update(self):
         self.space_index.insert('alien','ts-1')
-        self.assertEqual(set(self.space_index.getEqual('alien')), set(['ts-1', 'ts-4','ts-5']))
+        self.assertEqual(set(self.space_index.getEqual('alien')), set([b'ts-1', b'ts-4',b'ts-5']))
 
     def test_get(self):
         self.assertEqual(set(self.space_index.get('ts-6')), set('satellite'))
 
     def test_remove(self):
         self.space_index.remove('ts-1')
-        self.assertEqual(set(self.space_index.getEqual('alien')), set(['ts-4', 'ts-5']))
+        self.assertEqual(set(self.space_index.getEqual('alien')), set([b'ts-4', b'ts-5']))
 
     def test_allKeys_andInsertNew(self):
-        self.insert('satellite','ts-7')
-        self.assertEqual(set(self.space_index.allKeys()), set(['ts-2', 'ts-3', 'ts-4', 'ts-5', 'ts-6', 'ts-7']))
+        self.space_index.insert('satellite','ts-7')
+        self.assertEqual(set(self.space_index.allKeys()), set([b'ts-2', b'ts-3', b'ts-4', b'ts-5', b'ts-6', b'ts-7']))
 
 if __name__ == '__main__':
     unittest.main()

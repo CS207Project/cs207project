@@ -411,7 +411,11 @@ class BitmapIndex:
             os.remove(self.filename)
             
     def get(self,pk):
-        return self.values[self.pks_dict[bytes(pk, 'utf-8')]]
+        index = self.pks_dict[bytes(pk, 'utf-8')]
+        for ii in range(self.values_len):
+            value_index = self.bmindex_list[ii][index]
+            if value_index == True:
+                return self.values[ii]
             
     def __del__(self):
         self.bmindex.close()
