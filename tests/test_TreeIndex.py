@@ -50,20 +50,5 @@ class TreeIndexTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.blarg_index.remove(fieldValue=8,pk='ts-100')
 
-    def test_remove_missingField(self):
-        with self.assertRaises(ValueError):
-            self.blarg_index.remove(fieldValue=9000,pk='ts-7')
-
-    def test_allKeys(self):
-        self.assertEqual(set(self.blarg_index.allKeys()), set(['ts-1','ts-2','ts-3','ts-4','ts-5',\
-                                                                'ts-6','ts-7','ts-8','ts-9','ts-10']))
-
-    def test_getLowerOrEq(self):
-        self.assertEqual(set(self.blarg_index.getLowerOrEq(2)), set(['ts-1','ts-2','ts-3','ts-4','ts-5'\
-                                                                        'ts-6','ts-9']))
-
-    def test_getNotEq(self):
-        self.assertEqual(set(self.blarg_index.getNotEq(1)), set(['ts-6','ts-7','ts-8','ts-9','ts-10']))
-
 if __name__ == '__main__':
     unittest.main()
