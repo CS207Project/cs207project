@@ -54,7 +54,29 @@ class BitmapIndexTests(unittest.TestCase):
 
     def test_allKeys_andInsertNew(self):
         self.space_index.insert('satellite','ts-7')
-        self.assertEqual(set(self.space_index.allKeys()), set([b'ts-2', b'ts-3', b'ts-4', b'ts-5', b'ts-6', b'ts-7']))
+        self.assertEqual(set(self.space_index.allKeys()), set([b'ts-1', b'ts-2', b'ts-3', b'ts-4', b'ts-5', b'ts-6', b'ts-7']))
+
+    def test_insert_withBytes(self):
+        self.space_index.insert('satellite',b'ts-7')
+        self.assertEqual(set(self.space_index.get('ts-7')), set('satellite'))
+
+    def test_remove_invalidKey(self):
+        with self.assertRaises(KeyError):
+            self.space_index.remove('ts-9')
+
+    def test_getEqual_invalidValue(self):
+        with self.assertRaises(ValueError):
+            self.space_index.getEqual('moon')
+
+    def test_getNotEqual_invalidValue(self):
+        with self.assertRaises(ValueError):
+            self.space_index.getNotEq('moon')
+
+    def test_loadFromFile(self):
+        del self.space_index
+        self.space_index = BitmapIndex(values = ['comet','alien','satellite'], pk_len=4,\
+                            database_name='testing',fieldName='outerspace')
+        self.assertEqual(set(self.space_index.allKeys()), set(b'ts-1', b'ts-2', b'ts-3', b'ts-4', b'ts-5', b'ts-6'))
 
 if __name__ == '__main__':
     unittest.main()
