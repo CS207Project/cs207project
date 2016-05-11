@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
-""" This is a utility file that starts a dictionary based in-memory database server
-with some default settings. It is meant to be an example of how to start our system
-and also servers as a way for us to test our code.
+""" This is a utility file that starts a dictionary based in-memory database
+with a given timeseries length and a given number of vantage points.
+It is meant to be an example of how to start our system and also
+servers as a way for us to test our code.
+
+Takes two arguments:
+    -len : length of timeseries
+    -vps : number of vantage points
 
 IF YOU EDIT THIS FILE TESTS MIGHT BREAK. IT IS MEANT AS A DEMO ONLY.
 """
