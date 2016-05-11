@@ -10,6 +10,7 @@ from .tsdb_error import *
 from .tsdb_ops import *
 import procs
 import time
+from .vptrees import *
 
 def trigger_callback_maker(pk, target, calltomake):
     def callback_(future):
@@ -131,39 +132,59 @@ class TSDBProtocol(asyncio.Protocol):
         """
         arg = op['arg']
         vpkeys = op['vpkeys']
-        print("in find simialar ---->", vpkeys)
-        # compute distance to all vps
-        vpdist = {}
-        for v in vpkeys:
-            row = self.server.db[v]
-            vpdist[v] = self._run_proc('corr', v, row, arg)[0]
-            # time.sleep(1)
+        pks = self.server.db.select({}, None, None)
 
-        #choose the lowest distance vantage point
-        closest_vpk = min(vpkeys,key=lambda v:vpdist[v])
-        closest_vpk_dist_col = 'd_vp-' + str(vpkeys.index(closest_vpk))
-        print(closest_vpk,closest_vpk_dist_col)
+        # distance function
+        def dist_func(vp, pks):
+            row = self.server.db[vp]
+            return self._run_proc('corr', vp, row, arg)[0]
+
+        # create tree (proof of concept)
+        vptree = VPTree(pks, vpkeys, dist_func)
+
+        # print("in find simialar ---->", vpkeys)
+        # # compute distance to all vps
+        # vpdist = {}
+        # for v in vpkeys:
+        #     row = self.server.db[v]
+        #     vpdist[v] = self._run_proc('corr', v, row, arg)[0]
+        #     # time.sleep(1)
+
+        # #choose the lowest distance vantage point
+        # closest_vpk = min(vpkeys,key=lambda v:vpdist[v])
+        # closest_vpk_dist_col = 'd_vp-' + str(vpkeys.index(closest_vpk))
+        # print(closest_vpk,closest_vpk_dist_col)
 
 
-        # find all time series within 2*d(query, nearest_vp_to_query)
-        # this is an augmented select to the same proc in correlation
-        md = {closest_vpk_dist_col: {'<=': 2*vpdist[closest_vpk]}}
-        loids, fields = self.server.db.select(md, None, None)
+        # # find all time series within 2*d(query, nearest_vp_to_query)
+        # # this is an augmented select to the same proc in correlation
+        # md = {closest_vpk_dist_col: {'<=': 2*vpdist[closest_vpk]}}
+        # loids, fields = self.server.db.select(md, None, None)
 
-        print("Find Similar :: Select retured {} rows".format(len(loids)))
+        # print("Find Similar :: Select retured {} rows".format(len(loids)))
 
-        # find distances to all timeseries within this circle around the Vantage
-        # Point
-        results={}
-        for pk in loids:
-            row = self.server.db[pk]
-            results[pk] = self._run_proc('corr', pk, row, arg)[0]
+        # # find distances to all timeseries within this circle around the Vantage
+        # # Point
+        # results={}
+        # for pk in loids:
+        #     row = self.server.db[pk]
+        #     results[pk] = self._run_proc('corr', pk, row, arg)[0]
 
-        # find the smallest distance amongst this ( or k smallest)
-        n = min(results.keys(),key=lambda p: results[p])
+        # # find the smallest distance amongst this ( or k smallest)
+        # n = min(results.keys(),key=lambda p: results[p])
 
-        return TSDBOp_Return(TSDBStatus.OK, op['op'], {n:results[n]})
-        # return TSDBOp_Return(TSDBStatus.OK, op['op'], None)
+        def dist_arg(vp, arg2):
+            row = self.server.db[vp]
+            return self._run_proc('corr', vp, row, arg)[0]
+
+        t = VPTree(pks, vpkeys, dist_func)
+
+        group = t.getCloseSubset(arg, dist_arg)
+
+        n = min(group)
+
+        #return TSDBOp_Return(TSDBStatus.OK, op['op'], {n:results[n]})
+        return TSDBOp_Return(TSDBStatus.OK, op['op'], None)
 
 
     def _add_trigger(self, op):#DNY: Trigger is "if something happens, run this particular process", similar to a stored procedure.

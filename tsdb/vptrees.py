@@ -157,7 +157,7 @@ if __name__ == "__main__":
     d = t.dot()
 
     # print graphiz graph
-    d.render("test",view=T)
+    d.render("test",view=t)
 
     ########## check if this is working
     query = np.random.normal(0,10) # query point
