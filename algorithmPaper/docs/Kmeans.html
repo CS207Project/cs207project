@@ -1,0 +1,2311 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>Kmeans.py</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><h1>Kmeans.py</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>Algorithm Paper:
+Hilawi Belachew, Christian Junge, Akhil Ketkar, Juaquin Sanchez, Daniel Yue</p>
+<p>The Scikit-Learn implementation of K-means contains several optimizations that are designed to reduce computation.  This implementation includes several options that allow the user to navigate the tradeoffs between desired accuracy and computation.  These fall under the following categories:</p>
+<p>1)  Initialization</p>
+<p>2)  Thresholds</p>
+<p>3)  Parallelization of multiple jobs</p>
+<p>4)  C under the hood</p>
+<p>5)  Precompute Distances </p>
+<p>1)  <strong>Initialization</strong></p>
+<p>The k-means clustering algorithm finds cluster centers iteratively by starting with a set of cluster center assignments, and then assigning each point to the closest cluster center.  Once all points are assigned, cluster centers are recalculated to be the center of all of the points in that cluster, and each point is reassigned to the closest cluster center.  This terminates when no updates are made to the cluster assignments or cluster centers.  </p>
+<p>This process is guaranteed to converge, but not necessarily on the global optimum.  The worst case complexity is given by O(n^(k+2/p)) with n = n_samples, p = n_features. (D. Arthur and S. Vassilvitskii, ‘How slow is the k-means method?’ SoCG2006), but in practice the algorithm converges very quickly.  </p>
+<p>Given a specific set of initial clusters, the k-means algorithm is deterministic, so the results are sensitive to initialization.  The most basic initialization is to randomly select k of the data points to be the initial cluster centers.  The weakness of this method is that if these initial points are close together, the algorithm may fail to find the true cluster centers.  The k-means++ initialization attempts to take care of this weakness by first randomly assigning one point to be the first initial cluster center, then choosing the next initial cluster center based on a probability weighted by its distance to the first cluster center, and so on until k initial cluster centers have been assigned.  </p>
+<p>The advantage of k-means++ is that it will, on average, space the initial cluster centers out more evenly across the space than a completely random initialization.  Because the probabilities of being selected are merely weighted by the distance, however, this initialization does not guarantee that the centers will be more widely spaced, it simply makes this more likely.  Furthermore, there is a computational overhead for the k-means++ initialization, as it requires distances between every point and every cluster center so far created to be calculated as each cluster center is added.  The tradeoff is that this initialization tends to produce better cluster centers, and can potentially reduce the number of iterations for convergence.  </p>
+<p>The scikit-learn implementation also allows the user to specify the initial cluster centers rather than using random assignments.  This could be useful if the user has some a priori idea of where the cluster centers should be, potentially based on some domain knowledge, or when adding more data after earlier clustering runs.  This option would be unlikely to be used for clustering that is performed as part of data exploration, however, and in practice most users will be relying on some level of randomization for their initial cluster assignments.  </p>
+<p>Because the cluster assignments are deterministic, they are very sensitive to the initialization, and the algorithm is not guaranteed to converge on the global optimum.  One way to avoid being stuck in an unfavorable local optimum is to reinitialize and run the clustering again.  The scikit-learn implementation includes a ‘n_init’ keyword argument to allow the user to specify the number of re-initializations that are performed, and the final version that is returned is the one that minimizes the sum of the distances from the cluster centers.  </p>
+<p>2)  <strong>Thresholds</strong></p>
+<p>The scikit-learn k-means implementation has two features that allow the user to limit computation explicitly: a threshold for convergence, and a maximum number of iterations.  </p>
+<p>The convergence threshold is passed as the ‘tol’ argument, and the basic idea behind this option is to stop early and declare that the algorithm has converged when changes to the cluster centers become very small, rather than waiting for them to stop changing completely.  In practice, this works by first calculating the product of tol with the mean of the variances of each feature in the whole dataset, producing a quantity to be used to determine convergence that takes into account the scale of the variation of the individual features.  Then when the change in the squared norm falls below this tolerance value, the algorithm terminates, cutting off what could potentially be many more iterations that are making very minute changes to what is already a nearly complete clustering run.  </p>
+<p>The maximum number of iterations is passed as the ‘max_iter’ argument, and the algorithm simply runs within a for loop for this number of iterations.  Within each iteration, the convergence check described above is performed, and allows the algorithm to break out of the for loop early when the updates become small.  </p>
+<p>3)  <strong>Parallelization of multiple jobs</strong></p>
+<p>While the k-means algorithm is serial, the user has the option (described above) to perform multiple runs with different initializations and take the result with the lowest total distance to the cluster centers.  The scikit-learn implementation parallelizes these runs using scikit-learn’s own Parallel function within its externals/joblib module.  By default, this uses Python multiprocessing, and the user can specify the number of jobs to run with the ‘n_jobs’ argument.  The user can allow this assignment to be made automatically by passing ‘n_jobs=-1’, in which case all CPU’s are used.  The user can also opt to run everything with a single job, in which case multiprocessing is not used at all.  </p>
+<p>4)  <strong>C under the hood</strong></p>
+<p>The computation of the cluster means and the computation of the cluster assignments within each iteration are embarrassingly parallel.  All of this computation is performed in Cython in the ._k_means.pyx file.  Both the cluster means and cluster assignments calculations have two versions each, one for dense arrays and one for sparse arrays.  The code first uses scipy.sparse.issparse() to determine identify whether the array to compute on is a regular numpy matrix or a scipy Compressed Sparse Row matrix before selecting which function to pass the array to.  All of these Cython functions enjoy increased efficiency gains from defining variables with static C type declarations and performing matrix multiplication with cblas_ddot.  </p>
+<p>5)  <strong>Precompute Distances</strong></p>
+<p>In all cases, label assignments are updated in-place, reducing memory usage.  Distances to cluster centers can also be updated in place, but speed gains can be made by precomputing the distances via numpy matrix operations within the euclidian_distances function from sklearn.metrics.pairwise, rather than one-by-one within the for loop that updates label assignments.  These speed gains come with the tradeoff of increasing memory usage by requiring two copies of distances to be stored, however, so this option is given to the user.  There is an ‘auto’ option, which precomputes the distances if it will not result in memory usage above a hard-coded threshold.  This threshold corresponds to 100MB of overhead per job, and is calculated as number of samples * number of clusters &lt; 12e6.  </p>
+<p>The option to precompute distances is ignored for scipy sparse matrices.  Instead, the distance of each point from its cluster center is updated in a for loop as in the precompute_distances=False option for a regular numpy array.  Examination of the euclidean_distances function revealed that it can operate on scipy sparse matrices, so it is unclear why this option is not applied for this data type.  </p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">CS</span> <span class="mi">207</span> <span class="n">algorithm</span> <span class="n">paper</span>
+
+<span class="n">We</span> <span class="n">discuss</span> <span class="n">K</span><span class="o">-</span><span class="n">means</span> <span class="ow">and</span> <span class="n">K</span><span class="o">-</span><span class="n">means</span><span class="o">++</span><span class="p">,</span> <span class="n">but</span> <span class="n">do</span> <span class="ow">not</span> <span class="n">address</span> <span class="n">Mini</span><span class="o">-</span><span class="n">Batch</span> <span class="n">K</span><span class="o">-</span><span class="n">means</span> <span class="ow">in</span> <span class="n">this</span> <span class="n">paper</span><span class="o">.</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>The following was cut and pasted from https://github.com/scikit-learn/scikit-learn/blob/51a765a/sklearn/cluster/k_means_.py#L660</p>
+<p>We have inserted comments to point out the optimizations described above.  </p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <h3>THE COMMENTS THAT ARE PART OF THE ORIGINAL CODE HAVE BEEN LEFT IN PLACE.</h3>
+<h3>OUR ADDED COMMENTS AND DISCUSSION ARE BOLDED AND IN ALL CAPS TO MAKE THEM EASY TO IDENTIFY.</h3>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <h2>K-means clustering</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>Authors: Gael Varoquaux <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#103;&#97;&#101;&#108;&#46;&#118;&#97;&#114;&#111;&#113;&#117;&#97;&#117;&#120;&#64;&#110;&#111;&#114;&#109;&#97;&#108;&#101;&#115;&#117;&#112;&#46;&#111;&#114;&#103;">&#103;&#97;&#101;&#108;&#46;&#118;&#97;&#114;&#111;&#113;&#117;&#97;&#117;&#120;&#64;&#110;&#111;&#114;&#109;&#97;&#108;&#101;&#115;&#117;&#112;&#46;&#111;&#114;&#103;</a>
+         Thomas Rueckstiess <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#114;&#117;&#101;&#99;&#107;&#115;&#116;&#105;&#64;&#105;&#110;&#46;&#116;&#117;&#109;&#46;&#100;&#101;">&#114;&#117;&#101;&#99;&#107;&#115;&#116;&#105;&#64;&#105;&#110;&#46;&#116;&#117;&#109;&#46;&#100;&#101;</a>
+         James Bergstra <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#106;&#97;&#109;&#101;&#115;&#46;&#98;&#101;&#114;&#103;&#115;&#116;&#114;&#97;&#64;&#117;&#109;&#111;&#110;&#116;&#114;&#101;&#97;&#108;&#46;&#99;&#97;">&#106;&#97;&#109;&#101;&#115;&#46;&#98;&#101;&#114;&#103;&#115;&#116;&#114;&#97;&#64;&#117;&#109;&#111;&#110;&#116;&#114;&#101;&#97;&#108;&#46;&#99;&#97;</a>
+         Jan Schlueter <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#115;&#99;&#105;&#107;&#105;&#116;&#45;&#108;&#101;&#97;&#114;&#110;&#64;&#106;&#97;&#110;&#45;&#115;&#99;&#104;&#108;&#117;&#101;&#116;&#101;&#114;&#46;&#100;&#101;">&#115;&#99;&#105;&#107;&#105;&#116;&#45;&#108;&#101;&#97;&#114;&#110;&#64;&#106;&#97;&#110;&#45;&#115;&#99;&#104;&#108;&#117;&#101;&#116;&#101;&#114;&#46;&#100;&#101;</a>
+         Nelle Varoquaux
+         Peter Prettenhofer <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#112;&#101;&#116;&#101;&#114;&#46;&#112;&#114;&#101;&#116;&#116;&#101;&#110;&#104;&#111;&#102;&#101;&#114;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#112;&#101;&#116;&#101;&#114;&#46;&#112;&#114;&#101;&#116;&#116;&#101;&#110;&#104;&#111;&#102;&#101;&#114;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a>
+         Olivier Grisel <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#111;&#108;&#105;&#118;&#105;&#101;&#114;&#46;&#103;&#114;&#105;&#115;&#101;&#108;&#64;&#101;&#110;&#115;&#116;&#97;&#46;&#111;&#114;&#103;">&#111;&#108;&#105;&#118;&#105;&#101;&#114;&#46;&#103;&#114;&#105;&#115;&#101;&#108;&#64;&#101;&#110;&#115;&#116;&#97;&#46;&#111;&#114;&#103;</a>
+         Mathieu Blondel <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#109;&#97;&#116;&#104;&#105;&#101;&#117;&#64;&#109;&#98;&#108;&#111;&#110;&#100;&#101;&#108;&#46;&#111;&#114;&#103;">&#109;&#97;&#116;&#104;&#105;&#101;&#117;&#64;&#109;&#98;&#108;&#111;&#110;&#100;&#101;&#108;&#46;&#111;&#114;&#103;</a>
+         Robert Layton <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#114;&#111;&#98;&#101;&#114;&#116;&#108;&#97;&#121;&#116;&#111;&#110;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#114;&#111;&#98;&#101;&#114;&#116;&#108;&#97;&#121;&#116;&#111;&#110;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a>
+License: BSD 3 clause</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="kn">as</span> <span class="nn">sp</span>
+
+<span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">ClusterMixin</span><span class="p">,</span> <span class="n">TransformerMixin</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <h2>THE euclidean_distances() FUNCTION IS USED THROUGHOUT THE CODE, AND USES FUNCTIONS LIKE slearn.utils.extmath.row_norms AND sklearn.utils.extmath.safe_sparse_dot, WHICH CALL sklearn.sparsefuncs_fast.csr_row_norms, WHICH IS A CYTHON FUNCTION.  ALL OF THIS IS MUCH MORE EFFICIENT THAN IMPLEMENTING THE LINEAR ALGEBRA IN PYTHON.</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kn">from</span> <span class="nn">..metrics.pairwise</span> <span class="kn">import</span> <span class="n">euclidean_distances</span>
+<span class="kn">from</span> <span class="nn">..utils.extmath</span> <span class="kn">import</span> <span class="n">row_norms</span><span class="p">,</span> <span class="n">squared_norm</span>
+<span class="kn">from</span> <span class="nn">..utils.sparsefuncs_fast</span> <span class="kn">import</span> <span class="n">assign_rows_csr</span>
+<span class="kn">from</span> <span class="nn">..utils.sparsefuncs</span> <span class="kn">import</span> <span class="n">mean_variance_axis</span>
+<span class="kn">from</span> <span class="nn">..utils.fixes</span> <span class="kn">import</span> <span class="n">astype</span>
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">check_array</span>
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">check_random_state</span>
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">as_float_array</span>
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">gen_batches</span>
+<span class="kn">from</span> <span class="nn">..utils.validation</span> <span class="kn">import</span> <span class="n">check_is_fitted</span>
+<span class="kn">from</span> <span class="nn">..utils.validation</span> <span class="kn">import</span> <span class="n">FLOAT_DTYPES</span>
+<span class="kn">from</span> <span class="nn">..utils.random</span> <span class="kn">import</span> <span class="n">choice</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      <h2>sklearn.externals.joblib.Parallel IS USED TO RUN K-MEANS WITH MULTIPLE INITIALIZATIONS IN PARALLEL USING MULTIPROCESSING.</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kn">from</span> <span class="nn">..externals.joblib</span> <span class="kn">import</span> <span class="n">Parallel</span>
+<span class="kn">from</span> <span class="nn">..externals.joblib</span> <span class="kn">import</span> <span class="n">delayed</span>
+<span class="kn">from</span> <span class="nn">..externals.six</span> <span class="kn">import</span> <span class="n">string_types</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      <h2>THE _k_means FILE IS A CYTHON FILE THAT PERFORMS THE LABEL ASSIGNMENTS AND CLUSTER CENTER DISTANCE CALCULATIONS IN CYTHON.  EACH OF THESE TASKS HAS AN IMPLEMENTATION FOR SCIPY SPARSE MATRICES AND REGULAR NUMPY MATRICES, ALLOWING THE USER TO POTENTIALLY SPEED UP COMPUTATION BY USING SPARSE MATRICES IF THE DATASET IS APPROPRIATE.</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">_k_means</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      <h6></h6>
+<p>Initialization heuristic</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      <h3>_k_init USES THE K-MEANS++ INITIALIZATION TO HAVE A BETTER CHANCE OF PICKING INITIAL CLUSTER CENTERS THAT BETTER SEPARATE THE DATA, POTENTIALLY LEADING TO FASTER CONVERGENCE AND BETTER RESULTS.</h3>
+<p>Init n_clusters seeds according to k-means++</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">_k_init</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">n_clusters</span><span class="p">,</span> <span class="n">x_squared_norms</span><span class="p">,</span> <span class="n">random_state</span><span class="p">,</span> <span class="n">n_local_trials</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-10'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10'>#</a>
+      </div>
+      <h2>Parameters</h2>
+<p>X: array or sparse matrix, shape (n_samples, n_features)
+    The data to pick seeds for. To avoid memory copy, the input data
+    should be double precision (dtype=np.float64).
+n_clusters: integer
+    The number of seeds to choose
+x_squared_norms: array, shape (n_samples,)
+    Squared Euclidean norm of each data point.
+random_state: numpy.RandomState
+    The generator used to initialize the centers.
+n_local_trials: integer, optional
+    The number of seeding trials for each center (except the first),
+    of which the one reducing inertia the most is greedily chosen.
+    Set to None to make the number of trials depend logarithmically
+    on the number of seeds (2+log(k)); this is the default.
+Notes</p>
+<hr />
+<p>Selects initial cluster centers for k-mean clustering in a smart way
+to speed up convergence. see: Arthur, D. and Vassilvitskii, S.
+"k-means++: the advantages of careful seeding". ACM-SIAM symposium
+on Discrete algorithms. 2007
+Version ported from http://www.stanford.edu/~darthur/kMeansppTest.zip,
+which is the implementation used in the aforementioned paper.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="n">centers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n_clusters</span><span class="p">,</span> <span class="n">n_features</span><span class="p">))</span>
+
+    <span class="k">assert</span> <span class="n">x_squared_norms</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">,</span> <span class="s">&#39;x_squared_norms None in _k_init&#39;</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-11'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-11'>#</a>
+      </div>
+      <p>Set the number of local seeding trials if none is given</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">if</span> <span class="n">n_local_trials</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-12'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-12'>#</a>
+      </div>
+      <p>This is what Arthur/Vassilvitskii tried, but did not report
+specific results for other than mentioning in the conclusion
+that it helped.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">n_local_trials</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">n_clusters</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-13'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-13'>#</a>
+      </div>
+      <p>Pick first center randomly</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">center_id</span> <span class="o">=</span> <span class="n">random_state</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sp</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
+        <span class="n">centers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">center_id</span><span class="p">]</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">centers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">center_id</span><span class="p">]</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-14'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-14'>#</a>
+      </div>
+      <p>Initialize list of closest distances and calculate current potential</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">closest_dist_sq</span> <span class="o">=</span> <span class="n">euclidean_distances</span><span class="p">(</span>
+        <span class="n">centers</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y_norm_squared</span><span class="o">=</span><span class="n">x_squared_norms</span><span class="p">,</span>
+        <span class="n">squared</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">current_pot</span> <span class="o">=</span> <span class="n">closest_dist_sq</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-15'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-15'>#</a>
+      </div>
+      <p>Pick the remaining n_clusters-1 points</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_clusters</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-16'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-16'>#</a>
+      </div>
+      <p>Choose center candidates by sampling with probability proportional
+to the squared distance to the closest existing center</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">rand_vals</span> <span class="o">=</span> <span class="n">random_state</span><span class="o">.</span><span class="n">random_sample</span><span class="p">(</span><span class="n">n_local_trials</span><span class="p">)</span> <span class="o">*</span> <span class="n">current_pot</span>
+        <span class="n">candidate_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">closest_dist_sq</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(),</span> <span class="n">rand_vals</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-17'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-17'>#</a>
+      </div>
+      <p>Compute distances to center candidates</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">distance_to_candidates</span> <span class="o">=</span> <span class="n">euclidean_distances</span><span class="p">(</span>
+            <span class="n">X</span><span class="p">[</span><span class="n">candidate_ids</span><span class="p">],</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y_norm_squared</span><span class="o">=</span><span class="n">x_squared_norms</span><span class="p">,</span> <span class="n">squared</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-18'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-18'>#</a>
+      </div>
+      <p>Decide which candidate is the best</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">best_candidate</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">best_pot</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">best_dist_sq</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">for</span> <span class="n">trial</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_local_trials</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-19'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-19'>#</a>
+      </div>
+      <p>Compute potential when including center candidate</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>            <span class="n">new_dist_sq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">closest_dist_sq</span><span class="p">,</span>
+                                     <span class="n">distance_to_candidates</span><span class="p">[</span><span class="n">trial</span><span class="p">])</span>
+            <span class="n">new_pot</span> <span class="o">=</span> <span class="n">new_dist_sq</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-20'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-20'>#</a>
+      </div>
+      <p>Store result if it is the best local trial so far</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>            <span class="k">if</span> <span class="p">(</span><span class="n">best_candidate</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">new_pot</span> <span class="o">&lt;</span> <span class="n">best_pot</span><span class="p">):</span>
+                <span class="n">best_candidate</span> <span class="o">=</span> <span class="n">candidate_ids</span><span class="p">[</span><span class="n">trial</span><span class="p">]</span>
+                <span class="n">best_pot</span> <span class="o">=</span> <span class="n">new_pot</span>
+                <span class="n">best_dist_sq</span> <span class="o">=</span> <span class="n">new_dist_sq</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-21'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-21'>#</a>
+      </div>
+      <p>Permanently add best center candidate found in local tries</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">if</span> <span class="n">sp</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
+            <span class="n">centers</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">best_candidate</span><span class="p">]</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">centers</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">best_candidate</span><span class="p">]</span>
+        <span class="n">current_pot</span> <span class="o">=</span> <span class="n">best_pot</span>
+        <span class="n">closest_dist_sq</span> <span class="o">=</span> <span class="n">best_dist_sq</span>
+
+    <span class="k">return</span> <span class="n">centers</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-22'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-22'>#</a>
+      </div>
+      <h6></h6>
+<p>K-means batch estimation by EM (expectation maximization)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-23'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-23'>#</a>
+      </div>
+      <p>Check if centers is compatible with X and n_centers</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">_validate_center_shape</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">n_centers</span><span class="p">,</span> <span class="n">centers</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-24'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-24'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">centers</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n_centers</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;The shape of the initial centers (</span><span class="si">%s</span><span class="s">) &#39;</span>
+                         <span class="s">&#39;does not match the number of clusters </span><span class="si">%i</span><span class="s">&#39;</span>
+                         <span class="o">%</span> <span class="p">(</span><span class="n">centers</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">n_centers</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">centers</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s">&quot;The number of features of the initial centers </span><span class="si">%s</span><span class="s"> &quot;</span>
+            <span class="s">&quot;does not match the number of features of the data </span><span class="si">%s</span><span class="s">.&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="n">centers</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-25'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-25'>#</a>
+      </div>
+      <p>Return a tolerance which is independent of the dataset</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">_tolerance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">tol</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-26'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-26'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">if</span> <span class="n">sp</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
+        <span class="n">variances</span> <span class="o">=</span> <span class="n">mean_variance_axis</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">variances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">variances</span><span class="p">)</span> <span class="o">*</span> <span class="n">tol</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-27'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-27'>#</a>
+      </div>
+      <p>K-means clustering algorithm.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">k_means</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">n_clusters</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="s">&#39;k-means++&#39;</span><span class="p">,</span> <span class="n">precompute_distances</span><span class="o">=</span><span class="s">&#39;auto&#39;</span><span class="p">,</span>
+            <span class="n">n_init</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+            <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">copy_x</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">return_n_iter</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-28'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-28'>#</a>
+      </div>
+      <p>Read more in the :ref:<code>User Guide &lt;k_means&gt;</code>.
+Parameters</p>
+<hr />
+<p>X : array-like or sparse matrix, shape (n_samples, n_features)
+    The observations to cluster.
+n_clusters : int
+    The number of clusters to form as well as the number of
+    centroids to generate.
+max_iter : int, optional, default 300
+    Maximum number of iterations of the k-means algorithm to run.
+n_init : int, optional, default: 10
+    Number of time the k-means algorithm will be run with different
+    centroid seeds. The final results will be the best output of
+    n_init consecutive runs in terms of inertia.
+init : {'k-means++', 'random', or ndarray, or a callable}, optional
+    Method for initialization, default to 'k-means++':
+    'k-means++' : selects initial cluster centers for k-mean
+    clustering in a smart way to speed up convergence. See section
+    Notes in k_init for more details.
+    'random': generate k centroids from a Gaussian with mean and
+    variance estimated from the data.
+    If an ndarray is passed, it should be of shape (n_clusters, n_features)
+    and gives the initial centers.
+    If a callable is passed, it should take arguments X, k and
+    and a random state and return an initialization.
+precompute_distances : {'auto', True, False}
+    Precompute distances (faster but takes more memory).
+    'auto' : do not precompute distances if n_samples * n_clusters &gt; 12
+    million. This corresponds to about 100MB overhead per job using
+    double precision.
+    True : always precompute distances
+    False : never precompute distances
+tol : float, optional
+    The relative increment in the results before declaring convergence.
+verbose : boolean, optional
+    Verbosity mode.
+random_state : integer or numpy.RandomState, optional
+    The generator used to initialize the centers. If an integer is
+    given, it fixes the seed. Defaults to the global numpy random
+    number generator.
+copy_x : boolean, optional
+    When pre-computing distances it is more numerically accurate to center
+    the data first.  If copy_x is True, then the original data is not
+    modified.  If False, the original data is modified, and put back before
+    the function returns, but small numerical differences may be introduced
+    by subtracting and then adding the data mean.
+n_jobs : int
+    The number of jobs to use for the computation. This works by computing
+    each of the n_init runs in parallel.
+    If -1 all CPUs are used. If 1 is given, no parallel computing code is
+    used at all, which is useful for debugging. For n_jobs below -1,
+    (n_cpus + 1 + n_jobs) are used. Thus for n_jobs = -2, all CPUs but one
+    are used.
+return_n_iter : bool, optional
+    Whether or not to return the number of iterations.
+Returns</p>
+<hr />
+<p>centroid : float ndarray with shape (k, n_features)
+    Centroids found at the last iteration of k-means.
+label : integer ndarray with shape (n_samples,)
+    label[i] is the code or index of the centroid the
+    i'th observation is closest to.
+inertia : float
+    The final value of the inertia criterion (sum of squared distances to
+    the closest centroid for all observations in the training set).
+best_n_iter: int
+    Number of iterations corresponding to the best results.
+    Returned only if <code>return_n_iter</code> is set to True.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">if</span> <span class="n">n_init</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Invalid number of initializations.&quot;</span>
+                         <span class="s">&quot; n_init=</span><span class="si">%d</span><span class="s"> must be bigger than zero.&quot;</span> <span class="o">%</span> <span class="n">n_init</span><span class="p">)</span>
+    <span class="n">random_state</span> <span class="o">=</span> <span class="n">check_random_state</span><span class="p">(</span><span class="n">random_state</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">max_iter</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Number of iterations should be a positive number,&#39;</span>
+                         <span class="s">&#39; got </span><span class="si">%d</span><span class="s"> instead&#39;</span> <span class="o">%</span> <span class="n">max_iter</span><span class="p">)</span>
+
+    <span class="n">best_inertia</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">infty</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">as_float_array</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy_x</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-29'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-29'>#</a>
+      </div>
+      <h2>TOLERANCE IS USED HERE TO SPECIFY A CONVERGENCE THRESHOLD TO PREMATURELY STOP THE ALGORITHM WHEN UPDATES ARE MAKING VERY SMALL CHANGES, POTENTIALLY SPEEDING UP THE ALGORITHM IF IT IS TAKING A LONG TIME TO CONVERGE.</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">tol</span> <span class="o">=</span> <span class="n">_tolerance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">tol</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-30'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-30'>#</a>
+      </div>
+      <p>If the distances are precomputed every job will create a matrix of shape
+(n_clusters, n_samples). To stop KMeans from eating up memory we only
+activate this if the created matrix is guaranteed to be under 100MB. 12
+million entries consume a little under 100MB if they are of type double.</p>
+<h2>precompute_distances  HAS AN 'auto' OPTION WHICH USES 12e6 ENTRIES AS THE CUTOFF FOR WHEN THE INCREASED MEMORY COSTS OUTWEIGH THE SPEED GAINS FROM PRECOMPUTING DISTANCES.  IF 'auto' IS SPECIFIED, THE ALGORITHM UPDATES precompute_distances TO True OR False BASED ON THIS THRESHOLD.</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">if</span> <span class="n">precompute_distances</span> <span class="o">==</span> <span class="s">&#39;auto&#39;</span><span class="p">:</span>
+        <span class="n">n_samples</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">precompute_distances</span> <span class="o">=</span> <span class="p">(</span><span class="n">n_clusters</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">12e6</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">precompute_distances</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;precompute_distances should be &#39;auto&#39; or True/False&quot;</span>
+                         <span class="s">&quot;, but a value of </span><span class="si">%r</span><span class="s"> was passed&quot;</span> <span class="o">%</span>
+                         <span class="n">precompute_distances</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-31'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-31'>#</a>
+      </div>
+      <p>subtract of mean of x for more accurate distance computations</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">if</span> <span class="ow">not</span> <span class="n">sp</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">init</span><span class="p">,</span> <span class="s">&#39;__array__&#39;</span><span class="p">):</span>
+        <span class="n">X_mean</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">sp</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">X</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-32'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-32'>#</a>
+      </div>
+      <p>The copy was already done above</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">X</span> <span class="o">-=</span> <span class="n">X_mean</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">init</span><span class="p">,</span> <span class="s">&#39;__array__&#39;</span><span class="p">):</span>
+        <span class="n">init</span> <span class="o">=</span> <span class="n">check_array</span><span class="p">(</span><span class="n">init</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">_validate_center_shape</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">n_clusters</span><span class="p">,</span> <span class="n">init</span><span class="p">)</span>
+
+        <span class="n">init</span> <span class="o">-=</span> <span class="n">X_mean</span>
+        <span class="k">if</span> <span class="n">n_init</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s">&#39;Explicit initial center position passed: &#39;</span>
+                <span class="s">&#39;performing only one init in k-means instead of n_init=</span><span class="si">%d</span><span class="s">&#39;</span>
+                <span class="o">%</span> <span class="n">n_init</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">n_init</span> <span class="o">=</span> <span class="mi">1</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-33'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-33'>#</a>
+      </div>
+      <p>precompute squared norms of data points</p>
+<h2>HERE, row_norms() USES CYTHON FUNCTIONS DOWNSTREAM TO CALCULATE THESE NORMS MORE QUICKLY.</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">x_squared_norms</span> <span class="o">=</span> <span class="n">row_norms</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">squared</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">best_labels</span><span class="p">,</span> <span class="n">best_inertia</span><span class="p">,</span> <span class="n">best_centers</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+    <span class="k">if</span> <span class="n">n_jobs</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-34'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-34'>#</a>
+      </div>
+      <h2>IF THE USER HAS SPECIFIED n_jobs=1, MULTIPROCESSING IN PARALLEL IS NOT USED BECAUSE THIS WOULD NEEDLESSLY CREATE OVERHEAD FROM SETTING UP THE MULTIPROCCESSING FOR A SINGLE PROCESS.</h2>
+<p>For a single thread, less memory is needed if we just store one set
+of the best results (as opposed to one set per run per thread).</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_init</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-35'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-35'>#</a>
+      </div>
+      <p>run a k-means once</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>            <span class="n">labels</span><span class="p">,</span> <span class="n">inertia</span><span class="p">,</span> <span class="n">centers</span><span class="p">,</span> <span class="n">n_iter_</span> <span class="o">=</span> <span class="n">_kmeans_single</span><span class="p">(</span>
+                <span class="n">X</span><span class="p">,</span> <span class="n">n_clusters</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="n">init</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                <span class="n">precompute_distances</span><span class="o">=</span><span class="n">precompute_distances</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span>
+                <span class="n">x_squared_norms</span><span class="o">=</span><span class="n">x_squared_norms</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-36'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-36'>#</a>
+      </div>
+      <p>determine if these results are the best so far</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>            <span class="k">if</span> <span class="n">best_inertia</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">inertia</span> <span class="o">&lt;</span> <span class="n">best_inertia</span><span class="p">:</span>
+                <span class="n">best_labels</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">best_centers</span> <span class="o">=</span> <span class="n">centers</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">best_inertia</span> <span class="o">=</span> <span class="n">inertia</span>
+                <span class="n">best_n_iter</span> <span class="o">=</span> <span class="n">n_iter_</span>
+    <span class="k">else</span><span class="p">:</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-37'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-37'>#</a>
+      </div>
+      <p>parallelisation of k-means runs</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">seeds</span> <span class="o">=</span> <span class="n">random_state</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n_init</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-38'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-38'>#</a>
+      </div>
+      <h2>IF THE USER HAS SPECIFIED MULTIPLE RE-INITIALIZATIONS TO BE PERFORMED WITH MULTIPLE JOBS, THESE ARE DONE IN PARALLEL HERE.  THE USER CAN EVEN PASS -1 AS AN ARGUMENT TO ALLOW Parallel TO CALCULATE THE APPROPRIATE NUMBER OF CORES TO RUN ON.</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">results</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)(</span>
+            <span class="n">delayed</span><span class="p">(</span><span class="n">_kmeans_single</span><span class="p">)(</span><span class="n">X</span><span class="p">,</span> <span class="n">n_clusters</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span>
+                                    <span class="n">init</span><span class="o">=</span><span class="n">init</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span>
+                                    <span class="n">precompute_distances</span><span class="o">=</span><span class="n">precompute_distances</span><span class="p">,</span>
+                                    <span class="n">x_squared_norms</span><span class="o">=</span><span class="n">x_squared_norms</span><span class="p">,</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-39'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-39'>#</a>
+      </div>
+      <p>Change seed to ensure variety</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>                                    <span class="n">random_state</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">seed</span> <span class="ow">in</span> <span class="n">seeds</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-40'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-40'>#</a>
+      </div>
+      <p>Get results with the lowest inertia</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">labels</span><span class="p">,</span> <span class="n">inertia</span><span class="p">,</span> <span class="n">centers</span><span class="p">,</span> <span class="n">n_iters</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">results</span><span class="p">)</span>
+        <span class="n">best</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">inertia</span><span class="p">)</span>
+        <span class="n">best_labels</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">best</span><span class="p">]</span>
+        <span class="n">best_inertia</span> <span class="o">=</span> <span class="n">inertia</span><span class="p">[</span><span class="n">best</span><span class="p">]</span>
+        <span class="n">best_centers</span> <span class="o">=</span> <span class="n">centers</span><span class="p">[</span><span class="n">best</span><span class="p">]</span>
+        <span class="n">best_n_iter</span> <span class="o">=</span> <span class="n">n_iters</span><span class="p">[</span><span class="n">best</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">sp</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">copy_x</span><span class="p">:</span>
+            <span class="n">X</span> <span class="o">+=</span> <span class="n">X_mean</span>
+        <span class="n">best_centers</span> <span class="o">+=</span> <span class="n">X_mean</span>
+
+    <span class="k">if</span> <span class="n">return_n_iter</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">best_centers</span><span class="p">,</span> <span class="n">best_labels</span><span class="p">,</span> <span class="n">best_inertia</span><span class="p">,</span> <span class="n">best_n_iter</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">best_centers</span><span class="p">,</span> <span class="n">best_labels</span><span class="p">,</span> <span class="n">best_inertia</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-41'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-41'>#</a>
+      </div>
+      <p>A single run of k-means, assumes preparation completed prior.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">_kmeans_single</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">n_clusters</span><span class="p">,</span> <span class="n">x_squared_norms</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+                   <span class="n">init</span><span class="o">=</span><span class="s">&#39;k-means++&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                   <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">precompute_distances</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-42'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-42'>#</a>
+      </div>
+      <h2>Parameters</h2>
+<p>X: array-like of floats, shape (n_samples, n_features)
+    The observations to cluster.
+n_clusters: int
+    The number of clusters to form as well as the number of
+    centroids to generate.
+max_iter: int, optional, default 300
+    Maximum number of iterations of the k-means algorithm to run.
+init: {'k-means++', 'random', or ndarray, or a callable}, optional
+    Method for initialization, default to 'k-means++':
+    'k-means++' : selects initial cluster centers for k-mean
+    clustering in a smart way to speed up convergence. See section
+    Notes in k_init for more details.
+    'random': generate k centroids from a Gaussian with mean and
+    variance estimated from the data.
+    If an ndarray is passed, it should be of shape (k, p) and gives
+    the initial centers.
+    If a callable is passed, it should take arguments X, k and
+    and a random state and return an initialization.
+tol: float, optional
+    The relative increment in the results before declaring convergence.
+verbose: boolean, optional
+    Verbosity mode
+x_squared_norms: array
+    Precomputed x_squared_norms.
+precompute_distances : boolean, default: True
+    Precompute distances (faster but takes more memory).
+random_state: integer or numpy.RandomState, optional
+    The generator used to initialize the centers. If an integer is
+    given, it fixes the seed. Defaults to the global numpy random
+    number generator.
+Returns</p>
+<hr />
+<p>centroid: float ndarray with shape (k, n_features)
+    Centroids found at the last iteration of k-means.
+label: integer ndarray with shape (n_samples,)
+    label[i] is the code or index of the centroid the
+    i'th observation is closest to.
+inertia: float
+    The final value of the inertia criterion (sum of squared distances to
+    the closest centroid for all observations in the training set).
+n_iter : int
+    Number of iterations run.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">random_state</span> <span class="o">=</span> <span class="n">check_random_state</span><span class="p">(</span><span class="n">random_state</span><span class="p">)</span>
+
+    <span class="n">best_labels</span><span class="p">,</span> <span class="n">best_inertia</span><span class="p">,</span> <span class="n">best_centers</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-43'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-43'>#</a>
+      </div>
+      <p>init</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">centers</span> <span class="o">=</span> <span class="n">_init_centroids</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">n_clusters</span><span class="p">,</span> <span class="n">init</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+                              <span class="n">x_squared_norms</span><span class="o">=</span><span class="n">x_squared_norms</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;Initialization complete&quot;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-44'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-44'>#</a>
+      </div>
+      <p>Allocate memory to store the distances for each sample to its
+closer center for reallocation in case of ties</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">distances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-45'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-45'>#</a>
+      </div>
+      <p>iterations</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iter</span><span class="p">):</span>
+        <span class="n">centers_old</span> <span class="o">=</span> <span class="n">centers</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-46'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-46'>#</a>
+      </div>
+      <p>labels assignment is also called the E-step of EM</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">labels</span><span class="p">,</span> <span class="n">inertia</span> <span class="o">=</span> \</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-47'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-47'>#</a>
+      </div>
+      <h2>_labels_inertia DETERMINES WHETHER THE MATRIX IS SPARSE OR NOT, AND IF IT IS NOT, DISTANCES ARE OPTIONALLY PRECOMPUTED TO DECREASE RUNTIME.  IN EITHER CASE, LABELING (CLUSTER ASSIGNMENT FOR EACH POINT) IS PERFORMED IN PLACE, WHICH REMOVES THE NEED TO STORE AN EXTRA COPY OF THE ASSIGNMENTS IN MEMORY.</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>            <span class="n">_labels_inertia</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">x_squared_norms</span><span class="p">,</span> <span class="n">centers</span><span class="p">,</span>
+                            <span class="n">precompute_distances</span><span class="o">=</span><span class="n">precompute_distances</span><span class="p">,</span>
+                            <span class="n">distances</span><span class="o">=</span><span class="n">distances</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-48'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-48'>#</a>
+      </div>
+      <p>computation of the means is also called the M-step of EM</p>
+<h2>THE _centers_sparse FUNCTION IS WRITTEN IN CYTHON, AND CALCULATES THE CLUSTER CENTERS FOR SCIPY SPARSE MATRICES.</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">if</span> <span class="n">sp</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
+            <span class="n">centers</span> <span class="o">=</span> <span class="n">_k_means</span><span class="o">.</span><span class="n">_centers_sparse</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">n_clusters</span><span class="p">,</span>
+                                               <span class="n">distances</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-49'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-49'>#</a>
+      </div>
+      <h2>THE _centers_dense FUNCTION IS WRITTEN IN CYTHON, AND CALCULATES THE CLUSTER CENTERS FOR NUMPY MATRICES</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">else</span><span class="p">:</span>
+            <span class="n">centers</span> <span class="o">=</span> <span class="n">_k_means</span><span class="o">.</span><span class="n">_centers_dense</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">n_clusters</span><span class="p">,</span> <span class="n">distances</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot;Iteration </span><span class="si">%2d</span><span class="s">, inertia </span><span class="si">%.3f</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">inertia</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">best_inertia</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">inertia</span> <span class="o">&lt;</span> <span class="n">best_inertia</span><span class="p">:</span>
+            <span class="n">best_labels</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">best_centers</span> <span class="o">=</span> <span class="n">centers</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">best_inertia</span> <span class="o">=</span> <span class="n">inertia</span>
+
+        <span class="n">shift</span> <span class="o">=</span> <span class="n">squared_norm</span><span class="p">(</span><span class="n">centers_old</span> <span class="o">-</span> <span class="n">centers</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">shift</span> <span class="o">&lt;=</span> <span class="n">tol</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&quot;Converged at iteration </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
+
+            <span class="k">break</span>
+
+    <span class="k">if</span> <span class="n">shift</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-50'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-50'>#</a>
+      </div>
+      <p>rerun E-step in case of non-convergence so that predicted labels
+match cluster centers</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">best_labels</span><span class="p">,</span> <span class="n">best_inertia</span> <span class="o">=</span> \
+            <span class="n">_labels_inertia</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">x_squared_norms</span><span class="p">,</span> <span class="n">best_centers</span><span class="p">,</span>
+                            <span class="n">precompute_distances</span><span class="o">=</span><span class="n">precompute_distances</span><span class="p">,</span>
+                            <span class="n">distances</span><span class="o">=</span><span class="n">distances</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">best_labels</span><span class="p">,</span> <span class="n">best_inertia</span><span class="p">,</span> <span class="n">best_centers</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-51'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-51'>#</a>
+      </div>
+      <h2>_labels_inertia_precompute_dense IS CALLED WHEN THE MATRIX IS A REGULAR (NON-SPARSE) TYPE, AND THE USER ELECTED TO PRECOMPUTE DISTANCES TO REDUCE RUNTIME.</h2>
+<p>Compute labels and inertia using a full distance matrix.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">_labels_inertia_precompute_dense</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">x_squared_norms</span><span class="p">,</span> <span class="n">centers</span><span class="p">,</span> <span class="n">distances</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-52'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-52'>#</a>
+      </div>
+      <p>This will overwrite the 'distances' array in-place.
+Parameters</p>
+<hr />
+<p>X : numpy array, shape (n_sample, n_features)
+    Input data.
+x_squared_norms : numpy array, shape (n_samples,)
+    Precomputed squared norms of X.
+centers : numpy array, shape (n_clusters, n_features)
+    Cluster centers which data is assigned to.
+distances : numpy array, shape (n_samples,)
+    Pre-allocated array in which distances are stored.
+Returns</p>
+<hr />
+<p>labels : numpy array, dtype=np.int, shape (n_samples,)
+    Indices of clusters that samples are assigned to.
+inertia : float
+    Sum of distances of samples to their closest cluster center.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">n_samples</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">centers</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-53'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-53'>#</a>
+      </div>
+      <h2>HERE, DISTANCES ARE PRECOMPUTED INSTEAD OF UPDATED IN A FOR LOOP, MAKING THIS MUCH FASTER.</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">all_distances</span> <span class="o">=</span> <span class="n">euclidean_distances</span><span class="p">(</span><span class="n">centers</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">x_squared_norms</span><span class="p">,</span>
+                                        <span class="n">squared</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+    <span class="n">labels</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">mindist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span>
+    <span class="n">mindist</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">infty</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">center_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-54'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-54'>#</a>
+      </div>
+      <h2>THE FOR LOOP GOES OVER THE CLUSTER CENTERS RATHER THAN THE DATA POINTS, SLICING OUT THE PRECOMPUTED DISTANCES FOR THE POINTS ASSIGNED TO THAT CLUSTER.  THIS IS MUCH MORE TIME-EFFICIENT THAN GOING OVER THE DATA POINTS, BUT REQUIRES THE SET OF ALL DISTANCES TO BE STORED IN MEMORY.</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">dist</span> <span class="o">=</span> <span class="n">all_distances</span><span class="p">[</span><span class="n">center_id</span><span class="p">]</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-55'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-55'>#</a>
+      </div>
+      <h2>LABELS ARE UPDATED IN PLACE, WHICH IS AN EFFICIENT USE OF MEMORY, AND SLICING IS USED TO PERFORM PERFORM MULTIPLE ASSIGNMENTS SIMULTANEOUSLY.</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">labels</span><span class="p">[</span><span class="n">dist</span> <span class="o">&lt;</span> <span class="n">mindist</span><span class="p">]</span> <span class="o">=</span> <span class="n">center_id</span>
+        <span class="n">mindist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">mindist</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n_samples</span> <span class="o">==</span> <span class="n">distances</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-56'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-56'>#</a>
+      </div>
+      <p>distances will be changed in-place</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">distances</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">mindist</span>
+    <span class="n">inertia</span> <span class="o">=</span> <span class="n">mindist</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">labels</span><span class="p">,</span> <span class="n">inertia</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-57'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-57'>#</a>
+      </div>
+      <h2>_labels_inertia DELEGATES THE LABEL ASSIGNMENT TO THE APPROPRIATE FUNCTION BASED ON THE ARRAY TYPE AND WHETHER precompute_distances HAS BEEN SELECTED.</h2>
+<p>E step of the K-means EM algorithm.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">_labels_inertia</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">x_squared_norms</span><span class="p">,</span> <span class="n">centers</span><span class="p">,</span>
+                    <span class="n">precompute_distances</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">distances</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-58'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-58'>#</a>
+      </div>
+      <p>Compute the labels and the inertia of the given samples and centers.
+This will compute the distances in-place.
+Parameters</p>
+<hr />
+<p>X: float64 array-like or CSR sparse matrix, shape (n_samples, n_features)
+    The input samples to assign to the labels.
+x_squared_norms: array, shape (n_samples,)
+    Precomputed squared euclidean norm of each data point, to speed up
+    computations.
+centers: float64 array, shape (k, n_features)
+    The cluster centers.
+precompute_distances : boolean, default: True
+    Precompute distances (faster but takes more memory).
+distances: float64 array, shape (n_samples,)
+    Pre-allocated array to be filled in with each sample's distance
+    to the closest center.
+Returns</p>
+<hr />
+<p>labels: int array of shape(n)
+    The resulting assignment
+inertia : float
+    Sum of distances of samples to their closest cluster center.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">n_samples</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-59'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-59'>#</a>
+      </div>
+      <p>set the default value of centers to -1 to be able to detect any anomaly
+easily</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">labels</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">distances</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">distances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-60'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-60'>#</a>
+      </div>
+      <p>distances will be changed in-place</p>
+<h2>FOR SPARSE MATRICES, DISTANCES ARE NEVER PRECOMPUTED, RATHER THE _k_means._assign_labels_csr IS A CYTHON FUNCTION THAT UPDATES CLUSTER ASSIGNMENTS IN PLACE USING A FOR LOOP.</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">if</span> <span class="n">sp</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
+        <span class="n">inertia</span> <span class="o">=</span> <span class="n">_k_means</span><span class="o">.</span><span class="n">_assign_labels_csr</span><span class="p">(</span>
+            <span class="n">X</span><span class="p">,</span> <span class="n">x_squared_norms</span><span class="p">,</span> <span class="n">centers</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">distances</span><span class="o">=</span><span class="n">distances</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">precompute_distances</span><span class="p">:</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-61'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-61'>#</a>
+      </div>
+      <h2>REGULAR MATRICES HAVE THE OPTION TO USE THE PRECOMPUTATION OPTION ABOVE TO AVOID LOOPING OVER ALL THE DATA POINTS.</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>            <span class="k">return</span> <span class="n">_labels_inertia_precompute_dense</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">x_squared_norms</span><span class="p">,</span>
+                                                    <span class="n">centers</span><span class="p">,</span> <span class="n">distances</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-62'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-62'>#</a>
+      </div>
+      <h2>EVEN IF DISTANCES ARE NOT PRECOMPUTED, THE CLUSTER ASSIGNMENTS ARE PERFORMED IN PLACE, REDUCING MEMORY USAGE, AND BENEFITTING FROM THE EFFICIENCY OF THE CYTHON IMPLEMENTATION IN SPITE OF THE FOR LOOP OVER ALL THE DATA POINTS.</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">inertia</span> <span class="o">=</span> <span class="n">_k_means</span><span class="o">.</span><span class="n">_assign_labels_array</span><span class="p">(</span>
+            <span class="n">X</span><span class="p">,</span> <span class="n">x_squared_norms</span><span class="p">,</span> <span class="n">centers</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">distances</span><span class="o">=</span><span class="n">distances</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">labels</span><span class="p">,</span> <span class="n">inertia</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-63'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-63'>#</a>
+      </div>
+      <p>Compute the initial centroids</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">_init_centroids</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">init</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">x_squared_norms</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                    <span class="n">init_size</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-64'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-64'>#</a>
+      </div>
+      <h2>Parameters</h2>
+<p>X: array, shape (n_samples, n_features)
+k: int
+    number of centroids
+init: {'k-means++', 'random' or ndarray or callable} optional
+    Method for initialization
+random_state: integer or numpy.RandomState, optional
+    The generator used to initialize the centers. If an integer is
+    given, it fixes the seed. Defaults to the global numpy random
+    number generator.
+x_squared_norms:  array, shape (n_samples,), optional
+    Squared euclidean norm of each data point. Pass it if you have it at
+    hands already to avoid it being recomputed here. Default: None
+init_size : int, optional
+    Number of samples to randomly sample for speeding up the
+    initialization (sometimes at the expense of accuracy): the
+    only algorithm is initialized by running a batch KMeans on a
+    random subset of the data. This needs to be larger than k.
+Returns</p>
+<hr />
+<p>centers: array, shape(k, n_features)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">random_state</span> <span class="o">=</span> <span class="n">check_random_state</span><span class="p">(</span><span class="n">random_state</span><span class="p">)</span>
+    <span class="n">n_samples</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">x_squared_norms</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">x_squared_norms</span> <span class="o">=</span> <span class="n">row_norms</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">squared</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">init_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">init_size</span> <span class="o">&lt;</span> <span class="n">n_samples</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">init_size</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s">&quot;init_size=</span><span class="si">%d</span><span class="s"> should be larger than k=</span><span class="si">%d</span><span class="s">. &quot;</span>
+                <span class="s">&quot;Setting it to 3*k&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">init_size</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span>
+                <span class="ne">RuntimeWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">init_size</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">k</span>
+        <span class="n">init_indices</span> <span class="o">=</span> <span class="n">random_state</span><span class="o">.</span><span class="n">random_integers</span><span class="p">(</span>
+            <span class="mi">0</span><span class="p">,</span> <span class="n">n_samples</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">init_size</span><span class="p">)</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">init_indices</span><span class="p">]</span>
+        <span class="n">x_squared_norms</span> <span class="o">=</span> <span class="n">x_squared_norms</span><span class="p">[</span><span class="n">init_indices</span><span class="p">]</span>
+        <span class="n">n_samples</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">n_samples</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s">&quot;n_samples=</span><span class="si">%d</span><span class="s"> should be larger than k=</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">init</span><span class="p">,</span> <span class="n">string_types</span><span class="p">)</span> <span class="ow">and</span> <span class="n">init</span> <span class="o">==</span> <span class="s">&#39;k-means++&#39;</span><span class="p">:</span>
+        <span class="n">centers</span> <span class="o">=</span> <span class="n">_k_init</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+                          <span class="n">x_squared_norms</span><span class="o">=</span><span class="n">x_squared_norms</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">init</span><span class="p">,</span> <span class="n">string_types</span><span class="p">)</span> <span class="ow">and</span> <span class="n">init</span> <span class="o">==</span> <span class="s">&#39;random&#39;</span><span class="p">:</span>
+        <span class="n">seeds</span> <span class="o">=</span> <span class="n">random_state</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)[:</span><span class="n">k</span><span class="p">]</span>
+        <span class="n">centers</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">seeds</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">init</span><span class="p">,</span> <span class="s">&#39;__array__&#39;</span><span class="p">):</span>
+        <span class="n">centers</span> <span class="o">=</span> <span class="n">init</span>
+    <span class="k">elif</span> <span class="nb">callable</span><span class="p">(</span><span class="n">init</span><span class="p">):</span>
+        <span class="n">centers</span> <span class="o">=</span> <span class="n">init</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;the init parameter for the k-means should &quot;</span>
+                         <span class="s">&quot;be &#39;k-means++&#39; or &#39;random&#39; or an ndarray, &quot;</span>
+                         <span class="s">&quot;&#39;</span><span class="si">%s</span><span class="s">&#39; (type &#39;</span><span class="si">%s</span><span class="s">&#39;) was passed.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">init</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">init</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="n">sp</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">centers</span><span class="p">):</span>
+        <span class="n">centers</span> <span class="o">=</span> <span class="n">centers</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+
+    <span class="n">_validate_center_shape</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">centers</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">centers</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-65'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-65'>#</a>
+      </div>
+      <h2>ALL OF THE FUNCTIONS AND OPTIMIZATIONS ABOVE HAVE BEEN BROUGHT TOGETHER IN THE KMeans CLASS TO PERFORM CLUSTERING EFFICIENTLY.  WE HAVE REMOVED THE MINI-BATCH CODE FROM THIS PAPER FOR BREVITY, BUT THE GIST OF THE MINI-BATCH IMPLEMENTATION IS THAT IT REDUCES COMPUTATION BY OPERATING ON SUBSETS OF THE DATA.  THIS IS AN ALGORITHMIC OPTIMIZATION, AND DOES NOT INTRODUCE ANY ADDITIONAL INTERESTING INTEGRATED C-CODE TO ENHANCE PERFORMANCE.</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-66'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-66'>#</a>
+      </div>
+      <p>K-Means clustering</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">class</span> <span class="nc">KMeans</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">ClusterMixin</span><span class="p">,</span> <span class="n">TransformerMixin</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-67'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-67'>#</a>
+      </div>
+      <p>Read more in the :ref:<code>User Guide &lt;k_means&gt;</code>.
+Parameters</p>
+<hr />
+<p>n_clusters : int, optional, default: 8
+    The number of clusters to form as well as the number of
+    centroids to generate.
+max_iter : int, default: 300
+    Maximum number of iterations of the k-means algorithm for a
+    single run.
+n_init : int, default: 10
+    Number of time the k-means algorithm will be run with different
+    centroid seeds. The final results will be the best output of
+    n_init consecutive runs in terms of inertia.
+init : {'k-means++', 'random' or an ndarray}
+    Method for initialization, defaults to 'k-means++':
+    'k-means++' : selects initial cluster centers for k-mean
+    clustering in a smart way to speed up convergence. See section
+    Notes in k_init for more details.
+    'random': choose k observations (rows) at random from data for
+    the initial centroids.
+    If an ndarray is passed, it should be of shape (n_clusters, n_features)
+    and gives the initial centers.
+precompute_distances : {'auto', True, False}
+    Precompute distances (faster but takes more memory).
+    'auto' : do not precompute distances if n_samples * n_clusters &gt; 12
+    million. This corresponds to about 100MB overhead per job using
+    double precision.
+    True : always precompute distances
+    False : never precompute distances
+tol : float, default: 1e-4
+    Relative tolerance with regards to inertia to declare convergence
+n_jobs : int
+    The number of jobs to use for the computation. This works by computing
+    each of the n_init runs in parallel.
+    If -1 all CPUs are used. If 1 is given, no parallel computing code is
+    used at all, which is useful for debugging. For n_jobs below -1,
+    (n_cpus + 1 + n_jobs) are used. Thus for n_jobs = -2, all CPUs but one
+    are used.
+random_state : integer or numpy.RandomState, optional
+    The generator used to initialize the centers. If an integer is
+    given, it fixes the seed. Defaults to the global numpy random
+    number generator.
+verbose : int, default 0
+    Verbosity mode.
+copy_x : boolean, default True
+    When pre-computing distances it is more numerically accurate to center
+    the data first.  If copy_x is True, then the original data is not
+    modified.  If False, the original data is modified, and put back before
+    the function returns, but small numerical differences may be introduced
+    by subtracting and then adding the data mean.
+Attributes</p>
+<hr />
+<p>cluster_centers_ : array, [n_clusters, n_features]
+    Coordinates of cluster centers
+labels_ :
+    Labels of each point
+inertia_ : float
+    Sum of distances of samples to their closest cluster center.
+Notes</p>
+<hr />
+<p>The k-means problem is solved using Lloyd's algorithm.
+The average complexity is given by O(k n T), were n is the number of
+samples and T is the number of iteration.
+The worst case complexity is given by O(n^(k+2/p)) with
+n = n_samples, p = n_features. (D. Arthur and S. Vassilvitskii,
+'How slow is the k-means method?' SoCG2006)
+In practice, the k-means algorithm is very fast (one of the fastest
+clustering algorithms available), but it falls in local minima. That's why
+it can be useful to restart it several times.
+See also</p>
+<hr />
+<p>MiniBatchKMeans:
+    Alternative online implementation that does incremental updates
+    of the centers positions using mini-batches.
+    For large scale learning (say n_samples &gt; 10k) MiniBatchKMeans is
+    probably much faster to than the default batch implementation.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-68'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-68'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_clusters</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="s">&#39;k-means++&#39;</span><span class="p">,</span> <span class="n">n_init</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+                 <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">precompute_distances</span><span class="o">=</span><span class="s">&#39;auto&#39;</span><span class="p">,</span>
+                 <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">copy_x</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span> <span class="o">=</span> <span class="n">n_clusters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="o">=</span> <span class="n">init</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">=</span> <span class="n">max_iter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tol</span> <span class="o">=</span> <span class="n">tol</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">precompute_distances</span> <span class="o">=</span> <span class="n">precompute_distances</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_init</span> <span class="o">=</span> <span class="n">n_init</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="n">random_state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">copy_x</span> <span class="o">=</span> <span class="n">copy_x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">=</span> <span class="n">n_jobs</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-69'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-69'>#</a>
+      </div>
+      <p>Verify that the number of samples given is larger than k</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">_check_fit_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-70'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-70'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">X</span> <span class="o">=</span> <span class="n">check_array</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">accept_sparse</span><span class="o">=</span><span class="s">&#39;csr&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;n_samples=</span><span class="si">%d</span><span class="s"> should be &gt;= n_clusters=</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">X</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-71'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-71'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">_check_test_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">check_array</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">accept_sparse</span><span class="o">=</span><span class="s">&#39;csr&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">FLOAT_DTYPES</span><span class="p">,</span>
+                        <span class="n">warn_on_dtype</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">expected_n_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_centers_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">n_features</span> <span class="o">==</span> <span class="n">expected_n_features</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Incorrect number of features. &quot;</span>
+                             <span class="s">&quot;Got </span><span class="si">%d</span><span class="s"> features, expected </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                                 <span class="n">n_features</span><span class="p">,</span> <span class="n">expected_n_features</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">X</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-72'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-72'>#</a>
+      </div>
+      <p>Compute k-means clustering.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-73'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-73'>#</a>
+      </div>
+      <h2>Parameters</h2>
+<p>X : array-like or sparse matrix, shape=(n_samples, n_features)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">random_state</span> <span class="o">=</span> <span class="n">check_random_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">random_state</span><span class="p">)</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_fit_data</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cluster_centers_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inertia_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_iter_</span> <span class="o">=</span> \
+            <span class="n">k_means</span><span class="p">(</span>
+                <span class="n">X</span><span class="p">,</span> <span class="n">n_clusters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">,</span>
+                <span class="n">n_init</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_init</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">,</span>
+                <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span> <span class="n">return_n_iter</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                <span class="n">precompute_distances</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">precompute_distances</span><span class="p">,</span>
+                <span class="n">tol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span> <span class="n">copy_x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">copy_x</span><span class="p">,</span>
+                <span class="n">n_jobs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-74'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-74'>#</a>
+      </div>
+      <p>Compute cluster centers and predict cluster index for each sample.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">fit_predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-75'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-75'>#</a>
+      </div>
+      <p>Convenience method; equivalent to calling fit(X) followed by
+predict(X).</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">labels_</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-76'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-76'>#</a>
+      </div>
+      <p>Compute clustering and transform X to cluster-distance space.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-77'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-77'>#</a>
+      </div>
+      <p>Equivalent to fit(X).transform(X), but more efficiently implemented.</p>
+<p>Currently, this just skips a copy of the data if it is not in
+np.array or CSR format already.
+XXX This skips _check_test_data, which may change the dtype;
+we should refactor the input validation.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_fit_data</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-78'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-78'>#</a>
+      </div>
+      <p>Transform X to a cluster-distance space.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-79'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-79'>#</a>
+      </div>
+      <p>In the new space, each dimension is the distance to the cluster
+centers.  Note that even if X is sparse, the array returned by
+<code>transform</code> will typically be dense.
+Parameters</p>
+<hr />
+<p>X : {array-like, sparse matrix}, shape = [n_samples, n_features]
+    New data to transform.
+Returns</p>
+<hr />
+<p>X_new : array, shape [n_samples, k]
+    X transformed in the new space.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">check_is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;cluster_centers_&#39;</span><span class="p">)</span>
+
+        <span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_test_data</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-80'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-80'>#</a>
+      </div>
+      <p>guts of transform method; no input validation</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-81'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-81'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">return</span> <span class="n">euclidean_distances</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_centers_</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-82'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-82'>#</a>
+      </div>
+      <p>Predict the closest cluster each sample in X belongs to.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-83'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-83'>#</a>
+      </div>
+      <p>In the vector quantization literature, <code>cluster_centers_</code> is called
+the code book and each value returned by <code>predict</code> is the index of
+the closest code in the code book.
+Parameters</p>
+<hr />
+<p>X : {array-like, sparse matrix}, shape = [n_samples, n_features]
+    New data to predict.
+Returns</p>
+<hr />
+<p>labels : array, shape [n_samples,]
+    Index of the cluster each sample belongs to.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">check_is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;cluster_centers_&#39;</span><span class="p">)</span>
+
+        <span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_test_data</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">x_squared_norms</span> <span class="o">=</span> <span class="n">row_norms</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">squared</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_labels_inertia</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">x_squared_norms</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_centers_</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-84'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-84'>#</a>
+      </div>
+      <p>Opposite of the value of X on the K-means objective.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-85'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-85'>#</a>
+      </div>
+      <h2>Parameters</h2>
+<p>X : {array-like, sparse matrix}, shape = [n_samples, n_features]
+    New data.
+Returns</p>
+<hr />
+<p>score : float
+    Opposite of the value of X on the K-means objective.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">check_is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;cluster_centers_&#39;</span><span class="p">)</span>
+
+        <span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_test_data</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">x_squared_norms</span> <span class="o">=</span> <span class="n">row_norms</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">squared</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">_labels_inertia</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">x_squared_norms</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_centers_</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+
+
+<span class="n">d</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-86'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-86'>#</a>
+      </div>
+      <h2>BELOW IS THE BASIC PYTHON K-MEANS IMPLEMENTATION THAT WE WROTE.  THIS WAS GENERATED FOR AND TESTED ON 28*28 PIXEL IMAGES OF HANDWRITTEN DIGITS, SO THE DISPLAY CODE REFLECTS THAT.  THIS WAS ORIGINALLY WRITTEN AS PART OF A HOMEWORK ASSIGNMENT FOR CS181: MACHINE LEARNING.</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span> 
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib.image</span> <span class="kn">as</span> <span class="nn">mpimg</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-87'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-87'>#</a>
+      </div>
+      <p>L2 norm</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">distance</span><span class="p">(</span><span class="n">image1</span><span class="p">,</span> <span class="n">image2</span><span class="p">):</span>
+    <span class="n">difference</span> <span class="o">=</span> <span class="n">image1</span> <span class="o">-</span> <span class="n">image2</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">difference</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-88'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-88'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">class</span> <span class="nc">KMeans</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-89'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-89'>#</a>
+      </div>
+      <p>K is the K in KMeans
+useKMeansPP is a boolean. If True, initialize using KMeans++</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">useKMeansPP</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">K</span> <span class="o">=</span> <span class="n">K</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">useKMeansPP</span> <span class="o">=</span> <span class="n">useKMeansPP</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-90'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-90'>#</a>
+      </div>
+      <p>X is a (N x 28 x 28) array where 28x28 is the dimensions of each of the N images.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">show_initial</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-91'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-91'>#</a>
+      </div>
+      <p>Create an empty array of K cluster centers that will be initialized and updated. </p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">cluster_centers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-92'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-92'>#</a>
+      </div>
+      <p>Create arrays to store the cluster identities of each image.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">N</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c"># number of images</span>
+        <span class="n">cluster_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+        <span class="n">cluster_ids_old</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="c"># To hold last iteration&#39;s clusters to compare for convergence.</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">useKMeansPP</span><span class="o">==</span><span class="bp">False</span><span class="p">:</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-93'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-93'>#</a>
+      </div>
+      <p>1) Define random initial cluster centers using Forgy's method:</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-94'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-94'>#</a>
+      </div>
+      <p>Sample indices for the points that will be used as initial cluster centers:</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>            <span class="n">idxs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-95'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-95'>#</a>
+      </div>
+      <p>Assign the sampled points to be the initial cluster centers. </p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>            <span class="n">cluster_centers</span><span class="p">[</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">)]</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">idxs</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span> <span class="c"># K-means ++</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-96'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-96'>#</a>
+      </div>
+      <p>Pick the first cluster center randomly.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>            <span class="n">cluster_centers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">N</span><span class="p">)]</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-97'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-97'>#</a>
+      </div>
+      <p>Array of probabilities of selecting each point to be the next cluster center.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>            <span class="n">prob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-98'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-98'>#</a>
+      </div>
+      <p>For each of the remaining cluster centers, calculate distances from each cluster
+  center that has been defined to each data point, and assign the minimum of these
+  distances as the probability of selecting that point to be the next cluster center.  </p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+                    <span class="n">prob</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">distance</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">cluster_centers</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)])</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-99'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-99'>#</a>
+      </div>
+      <p>Normalize probabilities.  </p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>                <span class="n">prob</span> <span class="o">=</span> <span class="n">prob</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">prob</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-100'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-100'>#</a>
+      </div>
+      <p>Select index of the next cluster</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>                <span class="n">index_of_next_cluster_center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">),</span><span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">p</span><span class="o">=</span><span class="n">prob</span><span class="p">)</span>
+                <span class="n">cluster_centers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">index_of_next_cluster_center</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">show_initial</span><span class="o">==</span><span class="bp">True</span><span class="p">:</span> <span class="c"># Show initial cluster means</span>
+            <span class="n">initials</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="o">*</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">):</span>
+                <span class="n">initials</span><span class="p">[:,</span><span class="n">i</span><span class="o">*</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="n">cluster_centers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="o">-</span><span class="n">initials</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s">&#39;Greys_r&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;img12.png&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-101'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-101'>#</a>
+      </div>
+      <p>2) Start iteratively assigning all the images to their closest cluster center</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-102'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-102'>#</a>
+      </div>
+      <p>Array used to store distances used to calculate objective function.  </p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">objectives</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-103'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-103'>#</a>
+      </div>
+      <p>List of objective function values at each iteration</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">objective</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span><span class="c">#not converged:</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-104'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-104'>#</a>
+      </div>
+      <p>Assign every image to its closest cluster center</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-105'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-105'>#</a>
+      </div>
+      <p>Calculate norm to every cluster center and store to calculate objective function value</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>                <span class="n">dists</span> <span class="o">=</span> <span class="p">[</span><span class="n">distance</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">cluster_centers</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">)]</span>
+                <span class="n">objectives</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">dists</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-106'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-106'>#</a>
+      </div>
+      <p>Assign the image to the closest cluster center.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>                <span class="n">cluster_id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">dists</span><span class="p">)</span>
+                <span class="n">cluster_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">cluster_id</span>
+
+            <span class="n">objective</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">objectives</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-107'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-107'>#</a>
+      </div>
+      <p>Verify that objective function only increases:</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>            <span class="k">if</span> <span class="n">objective</span><span class="p">[</span><span class="n">counter</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">objective</span><span class="p">[</span><span class="n">counter</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">print</span> <span class="s">&quot;Objective function increased!&quot;</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-108'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-108'>#</a>
+      </div>
+      <p>After each pass through all the images, update the cluster centers to the mean of each.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>            <span class="n">cluster_centers</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">cluster_ids</span><span class="o">==</span><span class="n">i</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">)]</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-109'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-109'>#</a>
+      </div>
+      <p>After each pass through all the images, check for convergence.<br />
+If the cluster assignments are the same as last iteration, break.   </p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">cluster_ids_old</span><span class="p">,</span> <span class="n">cluster_ids</span><span class="p">):</span> 
+                <span class="k">break</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-110'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-110'>#</a>
+      </div>
+      <p>If we haven't converged, keep a copy of this iteration's results for the next one.  </p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>            <span class="n">cluster_ids_old</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">cluster_ids</span><span class="p">)</span>
+
+            <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">counter</span><span class="o">%</span><span class="mi">1</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                <span class="k">print</span> <span class="n">counter</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-111'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-111'>#</a>
+      </div>
+      <p>Store the images, means, and cluster assignments to use later</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">X</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">means</span> <span class="o">=</span> <span class="n">cluster_centers</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="n">cluster_ids_old</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-112'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-112'>#</a>
+      </div>
+      <p>Show plot of objective function values over time.  </p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">objective</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&quot;Iterations&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;Value of Objective Function&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;Objective Function Value over Time&quot;</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-113'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-113'>#</a>
+      </div>
+      <p>plt.savefig("obj.png")</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-114'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-114'>#</a>
+      </div>
+      <p>This should return the arrays for K images. Each image should represent the mean of each of the fitted clusters.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">get_mean_images</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">means</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-115'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-115'>#</a>
+      </div>
+      <p>This should return the arrays for D images from each cluster that are representative of the clusters.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">get_representative_images</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-116'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-116'>#</a>
+      </div>
+      <p>Here, I define shortest distance to the cluster mean as most representative of the cluster.  </p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-117'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-117'>#</a>
+      </div>
+      <p>Empty array, to fill each row with the representative images for each cluster.  </p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">rep_images</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-118'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-118'>#</a>
+      </div>
+      <p>For each cluster, sort the images by their distance from the cluster mean.  </p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>            
+            <span class="n">distances</span> <span class="o">=</span> <span class="p">[]</span>              <span class="c"># Distances from mean for each cluster</span>
+            <span class="n">idxs</span> <span class="o">=</span> <span class="p">[]</span>                   <span class="c"># Indexes of each distance in the distance list</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">==</span><span class="n">i</span><span class="p">)</span>   <span class="c"># Mask to use only the images in this cluster.  </span>
+
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">):</span> 
+                <span class="k">if</span> <span class="n">mask</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">==</span><span class="bp">True</span><span class="p">:</span>   <span class="c"># Consider only the images in this class.</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-119'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-119'>#</a>
+      </div>
+      <p>For each image in the cluster, calculate the distance from the cluster mean.  </p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>                    <span class="n">distances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">distance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">means</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                    <span class="n">idxs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-120'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-120'>#</a>
+      </div>
+      <p>Get the indices of the order of the distances for the cluster.     </p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>            <span class="n">order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-121'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-121'>#</a>
+      </div>
+      <p>Take the specified number from the list, and slice out the corresponding indexes from the list
+  created in the loop.  </p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>            <span class="n">indexes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">idxs</span><span class="p">)[</span><span class="n">order</span><span class="p">[:</span><span class="n">D</span><span class="p">]]</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-122'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-122'>#</a>
+      </div>
+      <p>Use the indexes to call the appropriate images.  </p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>            <span class="n">rep_images</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">[[</span><span class="n">indexes</span><span class="p">]]</span>
+
+        <span class="k">return</span> <span class="n">rep_images</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-123'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-123'>#</a>
+      </div>
+      <p>img_array should be a 2D (square) numpy array.
+Note, you are welcome to change this function (including its arguments and return values) to suit your needs. 
+However, we do ask that any images in your writeup be grayscale images, just as in this example.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">create_image_from_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img_array</span><span class="p">):</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img_array</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s">&#39;Greys_r&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;img5.png&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="k">return</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-124'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-124'>#</a>
+      </div>
+      <p>This line loads the images.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">pics</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;images.npy&quot;</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="n">K</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">num_ex</span> <span class="o">=</span> <span class="mi">4</span>
+
+<span class="n">KMeansClassifier</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">useKMeansPP</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">KMeansClassifier</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">pics</span><span class="p">,</span> <span class="n">show_initial</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">cluster_means</span> <span class="o">=</span> <span class="n">KMeansClassifier</span><span class="o">.</span><span class="n">get_mean_images</span><span class="p">()</span>
+
+<span class="n">representative_images</span> <span class="o">=</span> <span class="n">KMeansClassifier</span><span class="o">.</span><span class="n">get_representative_images</span><span class="p">(</span><span class="n">num_ex</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-125'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-125'>#</a>
+      </div>
+      <p>Make an empty array to hold the output display.  </p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-126'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-126'>#</a>
+      </div>
+      <p>Separator in the output array to distinguish cluster means from representative examples.  </p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">sep_width</span> <span class="o">=</span> <span class="mi">2</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-127'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-127'>#</a>
+      </div>
+      <p>It has a column for the means, a separator</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">cluster_examples</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">K</span> <span class="o">*</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span> <span class="o">+</span> <span class="n">sep_width</span> <span class="o">+</span> <span class="mi">28</span><span class="o">*</span><span class="n">num_ex</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-128'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-128'>#</a>
+      </div>
+      <p>Fill in the separator as the max pixel value to make a dark vertical bar</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">cluster_examples</span><span class="p">[:,</span><span class="mi">28</span><span class="p">:</span><span class="mi">28</span><span class="o">+</span><span class="n">sep_width</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">pics</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-129'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-129'>#</a>
+      </div>
+      <p>Fill in the rows</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">K</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-130'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-130'>#</a>
+      </div>
+      <p>Cluster means</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="n">cluster_examples</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">28</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">28</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">28</span><span class="p">]</span> <span class="o">=</span> <span class="n">cluster_means</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_ex</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-131'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-131'>#</a>
+      </div>
+      <p>Representative images</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">cluster_examples</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">28</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">28</span><span class="p">,</span> <span class="n">sep_width</span><span class="o">+</span><span class="mi">28</span><span class="o">+</span><span class="n">j</span><span class="o">*</span><span class="mi">28</span><span class="p">:</span><span class="n">sep_width</span><span class="o">+</span><span class="mi">28</span><span class="o">+</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">28</span><span class="p">]</span><span class="o">=</span><span class="n">representative_images</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span>
+        
+<span class="n">KMeansClassifier</span><span class="o">.</span><span class="n">create_image_from_array</span><span class="p">(</span><span class="o">-</span><span class="n">cluster_examples</span><span class="p">)</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>
