@@ -1,8 +1,3 @@
-# CS 181, Spring 2016
-# Homework 4: Clustering
-# Name: Christian Junge
-# Email: christianjunge@g.harvard.edu
-
 import numpy as np 
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
@@ -14,7 +9,7 @@ def distance(image1, image2):
 
 class KMeans(object):
     # K is the K in KMeans
-    # useKMeansPP is a boolean. If True, you should initialize using KMeans++
+    # useKMeansPP is a boolean. If True, initialize using KMeans++
     def __init__(self, K, useKMeansPP):
         self.K = K
         self.useKMeansPP = useKMeansPP
@@ -168,13 +163,9 @@ class KMeans(object):
         plt.show()
         return
 
-# This line loads the images for you. Don't change it! 
+# This line loads the images.
 pics = np.load("images.npy", allow_pickle=False)
 
-# You are welcome to change anything below this line. This is just an example of how your code may look.
-# That being said, keep in mind that you should not change the constructor for the KMeans class, 
-# though you may add more public methods for things like the visualization if you want.
-# Also, you must cluster all of the images in the provided dataset, so your code should be fast enough to do that.
 K = 10
 num_ex = 4
 
