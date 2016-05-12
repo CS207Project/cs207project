@@ -247,16 +247,13 @@ class TreeIndex(SimpleIndex):
     def getNotEq(self, fieldValue):
         return self.allKeys() - self.getEqual(fieldValue)
 
-
+import os
 
 class BitmapIndex:
 
-    def __init__(self, values, pk_len = 4, fieldName='default', database_name='default'):
-        # Requires the user to specify pk_len, the fixed length of the primary keys
-        self.pks_len = pk_len
-        
+    def __init__(self, values, fieldName='default', database_name='default'):
         # 'values' is a list of possible fieldValues
-        self.values = values
+        self.values = [str(ii) for ii in values]
         self.values_len = len(values)
 
         # File containing the bitmap indices for this field
@@ -278,6 +275,11 @@ class BitmapIndex:
         # Open the associated files for updating
         if not os.path.exists(self.filename):
             self.bmindex = open(self.filename, "xb+", buffering=0)
+            # Write the values to the top line of the persistent file
+            for ii in self.values:
+                self.bmindex.write(bytes(str(ii),'utf-8')+b',')
+            self.bmindex.write(b'\n')
+            
             self.last_pk_idx = 0
 
         else:
@@ -286,20 +288,37 @@ class BitmapIndex:
             item_counter = 0
             
             self.bmindex = open(self.filename, "r+b", buffering=0)
+            
+            # Read top line and verify that the values are the same as what 
+            #   was specified.
+            line = self.bmindex.readline().decode('utf-8')
+            vals = line.split(',')[:-1]
+            assert vals == self.values, \
+            "Specified values {} do not match the values stored in the persistent db {}".format(vals, self.values)
+            
             while True:
-                # Try to read the primary key for this line
-                prim_key = self.bmindex.read(self.pks_len)
-                if prim_key == b'':
-                    # Reached last line.
+                # Read in one line at a time, until the end of the file
+                line = self.bmindex.readline()
+                if len(line)==0:
                     break
+                
+                # Try to read the primary key for this line
+                prim_key = line[self.values_len:-1]
+                if prim_key == b'':
+                    raise KeyError("Missing primary key on line {}".format(item_counter))
                 elif prim_key in self.pks_dict.keys():
+                    # Get rid of any entry that already exists in this dictionary, because
+                    #   we no longer want a reference to the old position in the file/indices.
                     del self.dict_pks[self.pks_dict[prim_key]]
                 self.pks_dict.update({prim_key:item_counter})
                 self.dict_pks.update({item_counter:prim_key})
                 
+                line = line[:self.values_len].decode('utf-8')
+                
+                # Take in the bitmask indices
                 for ii in range(self.values_len):
                     try:
-                        boolean = bool(int(self.bmindex.read(1)))
+                        boolean = bool(int(line[ii]))
                         self.bmindex_list[ii].append(boolean)
                     except ValueError:
                         # Thrown if the sentinel value of b'-' has been written
@@ -321,9 +340,6 @@ class BitmapIndex:
         else:
             pk_str = pk
             
-        if len(pk_str) != self.pks_len:
-            raise ValueError("Primary key {} is not of the pre-specified length {}".format(pk,self.pks_len))
-
         # Check if the fieldValue is valid.  If not, throw an error.
         if fieldValue not in self.values:
             raise ValueError('\"{}\" not in the set of user-specified values: {}'.format(fieldValue, self.values))
@@ -341,9 +357,8 @@ class BitmapIndex:
             
             self.last_pk_idx += 1
 
-            # Add the pk and the booleans to the end of the file
+            # Add the booleans and pk to the end of the file
             self.bmindex.seek(0,2)
-            self.bmindex.write(pk_str)
             
             # Update the in-memory lists and write to file
             for ii in range(self.values_len):
@@ -353,6 +368,10 @@ class BitmapIndex:
                 else:
                     self.bmindex_list[ii].append(False)
                     self.bmindex.write(b'0')
+                    
+            self.bmindex.write(pk_str)
+            self.bmindex.write(b'\n')
+            
 
     def remove(self, pk):
         # Removes the entry for this field and primary key from the database
@@ -368,12 +387,14 @@ class BitmapIndex:
             del self.dict_pks[self.pks_dict[pk_str]]
             del self.pks_dict[pk_str]
             
-            # Write a sentinel value to the persistent database
-            self.bmindex.write(pk_str + (self.values_len*b'-'))
+            # Write a sentinel value to the persistent database at the end
+            #   of the file.  
+            self.bmindex.seek(0,2)
+            self.bmindex.write((self.values_len*b'-') + pk_str + b'\n')
 
 
     def getEqual(self, fieldValue):
-        # Returns the list of primary keys that match this fieldValue
+        # Returns the set of primary keys that match this fieldValue
 
         # Find the index of this fieldValue in the list of valid values
         if fieldValue not in self.values:
