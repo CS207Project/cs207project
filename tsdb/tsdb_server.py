@@ -10,7 +10,11 @@ from .tsdb_error import *
 from .tsdb_ops import *
 import procs
 import time
+<<<<<<< HEAD
 import vptrees
+=======
+from .vptrees import *
+>>>>>>> bdb6e427d24eaaccc1845ef9dcf536086ce1f8bc
 
 def trigger_callback_maker(pk, target, calltomake):
     def callback_(future):
@@ -179,7 +183,6 @@ class TSDBProtocol(asyncio.Protocol):
             n = min(results.keys(),key=lambda p: results[p])
 
             return TSDBOp_Return(TSDBStatus.OK, op['op'], {n:results[n]})
-
 
     def _add_trigger(self, op):#DNY: Trigger is "if something happens, run this particular process", similar to a stored procedure.
         """
