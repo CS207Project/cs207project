@@ -70,7 +70,7 @@ class BitmapIndexTests(unittest.TestCase):
 
     def test_loadFromFile(self):
         del self.space_index
-        self.space_index = BitmapIndex(values = ['comet','alien','satellite'], pk_len=4,\
+        self.space_index = BitmapIndex(values = ['comet','alien','satellite'],\
                             database_name='testing',fieldName='outerspace')
         self.assertEqual(set(self.space_index.allKeys()), set([b'ts-1', b'ts-2', b'ts-3', b'ts-4', b'ts-5', b'ts-6']))
 
@@ -79,7 +79,7 @@ class BitmapIndexTests(unittest.TestCase):
         self.space_index.insert('comet', 'ts-7')
         self.space_index.insert('satellite', 'ts-7')
         del self.space_index
-        self.space_index = BitmapIndex(values = ['comet','alien','satellite'], pk_len=4,\
+        self.space_index = BitmapIndex(values = ['comet','alien','satellite'],\
                             database_name='testing',fieldName='outerspace')
         self.assertEqual(set(self.space_index.allKeys()), set([b'ts-1', b'ts-2', b'ts-3', b'ts-4', b'ts-5', b'ts-6', b'ts-7']))
 
