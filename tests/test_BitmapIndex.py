@@ -12,7 +12,7 @@ class BitmapIndexTests(unittest.TestCase):
         else:
             self._createdDirs = False
 
-        self.space_index = BitmapIndex(values = ['comet','alien','satellite'], pk_len=4,\
+        self.space_index = BitmapIndex(values = ['comet','alien','satellite'],\
                             database_name='testing',fieldName='outerspace')
         self.space_index.insert('comet','ts-1')
         self.space_index.insert('comet','ts-2')
@@ -32,10 +32,6 @@ class BitmapIndexTests(unittest.TestCase):
 
     def test_getNotEq(self):
         self.assertEqual(set(self.space_index.getNotEq('comet')),set([b'ts-4',b'ts-5',b'ts-6']))
-
-    def test_wrongLengthKey(self):
-        with self.assertRaises(ValueError):
-            self.space_index.insert('alien','ts-4000000')
 
     def test_fakeField(self):
         with self.assertRaises(ValueError):
