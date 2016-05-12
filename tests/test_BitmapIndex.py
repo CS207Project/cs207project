@@ -83,5 +83,13 @@ class BitmapIndexTests(unittest.TestCase):
                             database_name='testing',fieldName='outerspace')
         self.assertEqual(set(self.space_index.allKeys()), set([b'ts-1', b'ts-2', b'ts-3', b'ts-4', b'ts-5', b'ts-6', b'ts-7']))
 
+    def test_handles_a_deletion_after_reloading_file(self):
+        self.space_index.remove('ts-5')
+        self.space_index.remove('ts-4')
+        del self.space_index
+        self.space_index = BitmapIndex(values = ['comet','alien','satellite'],\
+                            database_name='testing',fieldName='outerspace')
+        self.assertEqual(set(self.getEqual('alien')), set())
+
 if __name__ == '__main__':
     unittest.main()
