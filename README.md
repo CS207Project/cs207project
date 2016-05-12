@@ -18,7 +18,14 @@ Group project for CS207 Spring 2016. Team Name: **cs207project**
 ### Implementation Details
 
 #### 1. Architechure of Persistance
-
+The Persistence of our database system is achieved as follows:
+1. The meta data for each time series is stored in a heap file (metaheap). The meta data stores all submitted data, in addition to pointers to the associated time series data in a timeseries heap file.
+2. The timeseries heap file (tsheap) stores the actual values of the time series.
+3. A Primary Key Index stores the association between primary keys and their associated meta data offset (in metaheap). This index is implemented as a python dictionary in memory, stored using pickle and a write-ahead log.
+4. Our database system supports two other types of indices.
+    - The TreeIndex is a balanced binary search tree, which supports logarithmic lookup time. This index supports ordered selects, in addition to the standard selection criteria. It is implemented using the bintrees python module. The tree is not currently optimal, and supports O(n) insertion rather than O(log n).
+    - The BitMask index is created for low-cardinality meta-data. It does not support ordering on selection.
+5. In summary, our database supports O(1) insertion of new timeseries and lookup under primary key, O(log n) read/ select, including various criteria and operators, and O(n) insertion/ updating of metadata, where n is the number of timeseries in the database.
 
 #### 2. Extension beyond milestone2 -- Vantage Point Trees
 
