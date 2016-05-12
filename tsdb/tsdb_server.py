@@ -10,6 +10,7 @@ from .tsdb_error import *
 from .tsdb_ops import *
 import procs
 import time
+import vptrees
 
 def trigger_callback_maker(pk, target, calltomake):
     def callback_(future):
@@ -113,7 +114,7 @@ class TSDBProtocol(asyncio.Protocol):
         results=[]
         for pk in loids:
             row = self.server.db[pk]
-            result = self._run_proc(proc, pk, row, arg)
+            result = self.server._run_proc(proc, pk, row, arg)
             results.append(dict(zip(target, result)))
         return TSDBOp_Return(TSDBStatus.OK, op['op'], dict(zip(loids, results)))
 
@@ -126,44 +127,58 @@ class TSDBProtocol(asyncio.Protocol):
         ----------
         op : a TSDBOp object
             contains a query timeseries (`op[arg]`)
-
-            contains the vpkeys (`op[vpkeys]`)
         """
         arg = op['arg']
-        vpkeys = op['vpkeys']
-        print("in find simialar ---->", vpkeys)
-        # compute distance to all vps
-        vpdist = {}
-        for v in vpkeys:
-            row = self.server.db[v]
-            vpdist[v] = self._run_proc('corr', v, row, arg)[0]
-            # time.sleep(1)
 
-        #choose the lowest distance vantage point
-        closest_vpk = min(vpkeys,key=lambda v:vpdist[v])
-        closest_vpk_dist_col = 'd_vp-' + str(vpkeys.index(closest_vpk))
-        print(closest_vpk,closest_vpk_dist_col)
+        if self.server.vptree is not None:
+            # find the right subgroup within the tree and compute distance to
+            # all the points within it
+            loids = self.server.vptree.getCloseSubset(arg, self.server._dist_vp_arg)
+
+            results={}
+            for pk in loids:
+                row = self.server.db[pk]
+                results[pk] = self.server._run_proc('corr', pk, row, arg)[0]
+
+            # find the smallest distance amongst this ( or k smallest)
+            n = min(results.keys(),key=lambda p: results[p])
+
+            return TSDBOp_Return(TSDBStatus.OK, op['op'], {n:results[n]})
+
+        else:
+            vpkeys, _ = self.server.db.select({'vp': True}, None, {'sort_by' : '+vp_num'})
+
+            # compute distance to all vps
+            vpdist = {}
+            for v in vpkeys:
+                row = self.server.db[v]
+                vpdist[v] = self.server._run_proc('corr', v, row, arg)[0]
+                # time.sleep(1)
+
+            #choose the lowest distance vantage point
+            closest_vpk = min(vpkeys,key=lambda v:vpdist[v])
+            closest_vpk_dist_col = 'd_vp-' + str(vpkeys.index(closest_vpk))
+            # print(closest_vpk,closest_vpk_dist_col)
 
 
-        # find all time series within 2*d(query, nearest_vp_to_query)
-        # this is an augmented select to the same proc in correlation
-        md = {closest_vpk_dist_col: {'<=': 2*vpdist[closest_vpk]}}
-        loids, fields = self.server.db.select(md, None, None)
+            # find all time series within 2*d(query, nearest_vp_to_query)
+            # this is an augmented select to the same proc in correlation
+            md = {closest_vpk_dist_col: {'<=': 2*vpdist[closest_vpk]}}
+            loids, fields = self.server.db.select(md, None, None)
 
-        print("Find Similar :: Select retured {} rows".format(len(loids)))
+            print("Find Similar :: Select retured {} rows".format(len(loids)))
 
-        # find distances to all timeseries within this circle around the Vantage
-        # Point
-        results={}
-        for pk in loids:
-            row = self.server.db[pk]
-            results[pk] = self._run_proc('corr', pk, row, arg)[0]
+            # find distances to all timeseries within this circle around the Vantage
+            # Point
+            results={}
+            for pk in loids:
+                row = self.server.db[pk]
+                results[pk] = self.server._run_proc('corr', pk, row, arg)[0]
 
-        # find the smallest distance amongst this ( or k smallest)
-        n = min(results.keys(),key=lambda p: results[p])
+            # find the smallest distance amongst this ( or k smallest)
+            n = min(results.keys(),key=lambda p: results[p])
 
-        return TSDBOp_Return(TSDBStatus.OK, op['op'], {n:results[n]})
-        # return TSDBOp_Return(TSDBStatus.OK, op['op'], None)
+            return TSDBOp_Return(TSDBStatus.OK, op['op'], {n:results[n]})
 
 
     def _add_trigger(self, op):#DNY: Trigger is "if something happens, run this particular process", similar to a stored procedure.
@@ -188,11 +203,6 @@ class TSDBProtocol(asyncio.Protocol):
         self.server.triggers[trigger_onwhat].append((trigger_proc, storedproc, trigger_arg, trigger_target))
         return TSDBOp_Return(TSDBStatus.OK, op['op'])
 
-    def _run_proc(self, proc, pk, row, arg):
-        mod = import_module('procs.'+proc)
-        storedproc = getattr(mod,'proc_main')
-        return storedproc(pk, row, arg)
-
     def _remove_trigger(self, op):
         trigger_proc = op['proc']
         trigger_onwhat = op['onwhat']
@@ -211,6 +221,14 @@ class TSDBProtocol(asyncio.Protocol):
                 task = asyncio.ensure_future(t(pk, row, arg))
                 task.add_done_callback(trigger_callback_maker(pk, target, self.server.db.upsert_meta))
 
+    def _make_vp_tree(self, op):
+        # get all the pks
+        pks, fields = self.server.db.select({},['vp'],None)
+        vps = [p for p,d in zip(pks, fields) if d['vp']]
+        # print("pks", pks)
+        # print("vps", vps)
+        self.server.vptree = vptrees.VPTree(pks, vps, self.server._dist_vp_pks)
+        return TSDBOp_Return(TSDBStatus.OK, op['op'])
 
     def connection_made(self, conn):
         "Connection established"
@@ -246,6 +264,8 @@ class TSDBProtocol(asyncio.Protocol):
                     response = self._delete_ts(op)
                 elif isinstance(op, TSDBOp_FindSimilar):
                     response = self._find_similar(op)
+                elif isinstance(op, TSDBOp_MakeVPTree):
+                    response = self._make_vp_tree(op)
                 else:
                     response = TSDBOp_Return(TSDBStatus.UNKNOWN_ERROR, op['op'])
             except Exception as e:
@@ -296,6 +316,30 @@ class TSDBServer(object):
         self.db = db
         self.triggers = defaultdict(list)
         self.autokeys = {}
+        self.vptree = None
+
+    def _dist_vp_pks(self, vp, pks):
+
+        # get the info on this vp
+        row = self.db[vp]
+
+        # get the distance to all other keys
+        dist_col = 'd_vp-'+str(row['vp_num'])
+        loids, fields = self.db.select({},[dist_col],None)
+
+        return [fields[loids.index(p)][dist_col] for p in pks]
+
+    def _dist_vp_arg(self, vp, arg):
+
+        # get the info on this vp
+        row = self.db[vp]
+        d = self._run_proc('corr', vp, row, arg)[0]
+        return d
+
+    def _run_proc(self, proc, pk, row, arg):
+        mod = import_module('procs.'+proc)
+        storedproc = getattr(mod,'proc_main')
+        return storedproc(pk, row, arg)
 
     def exception_handler(self, loop, context):
         print('S> EXCEPTION:', str(context))

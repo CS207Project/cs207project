@@ -406,7 +406,8 @@ class PersistentDB(BaseDB):
         elif isinstance(fields_to_ret,list):
             for p in pks_out:
                 values_dict = self._get_meta_dict(p)
-                d = {field:value for field, value in values_dict.items() if field in fields_to_ret}
+                d = {field:values_dict[field] if field in values_dict else 'NA' for field in fields_to_ret}
+                # d = {field:value for field, value in values_dict.items() if field in fields_to_ret}
                 if self.pkfield in fields_to_ret:
                     d[self.pkfield] = p
                 data_list_out.append(d)

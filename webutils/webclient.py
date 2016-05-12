@@ -24,7 +24,8 @@ class WebClient:
             'add_trigger' : ['POST', '/tsdb/add/trigger'],
             'remove_trigger' : ['POST', '/tsdb/delete/trigger'],
             'upsert_meta' : ['POST', '/tsdb/add/metadata'],
-            'delete_ts' : ['POST', '/tsdb/delete/ts']
+            'delete_ts' : ['POST', '/tsdb/delete/ts'],
+            'make_vp_tree' : ['GET', '/tsdb/add/vptree'],
         }
     def _dispatch_request(self, verb, endpoint, arg):
         if verb == 'GET':
@@ -73,6 +74,11 @@ class WebClient:
         json_query = json.dumps({'where': where, 'fields': fields,
                                 'additional': additional})
         verb, endpoint = self.endpoints['select']
+        return self._dispatch_request(verb, endpoint, json_query)
+
+    def make_vp_tree(self):
+        json_query = json.dumps({})
+        verb, endpoint = self.endpoints['make_vp_tree']
         return self._dispatch_request(verb, endpoint, json_query)
 
     def augselect(self, proc, target, where = {}, additional = None, arg = None):

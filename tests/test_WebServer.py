@@ -8,22 +8,6 @@ import numpy as np
 import requests
 import json
 
-identity = lambda x: x
-to_int = lambda x:int(x)
-to_float = lambda x:float(x)
-to_bool = lambda x:bool(x)
-
-schema = {
-  'pk': {'convert': identity, 'index': None},  #will be indexed anyways
-  'ts': {'convert': identity, 'index': None},
-  'order': {'convert': to_int, 'index': 1},
-  'blarg': {'convert': to_int, 'index': 1},
-  'useless': {'convert': identity, 'index': None},
-  'mean': {'convert': to_float, 'index': 1},
-  'std': {'convert': to_float, 'index': 1},
-  'vp': {'convert': to_bool, 'index': 1}
-}
-
 TS_LENGTH = 100
 NUMVPS = 5
 
@@ -117,6 +101,7 @@ class WebServerTests(unittest.TestCase):
                           make_add_trigger('corr', 'insert_ts', ["d_vp-{}".format(i)], tsdict[self.vpkeys[i]]))
             # change the metadata for the vantage points to have meta['vp']=True
             metadict[self.vpkeys[i]]['vp']=True
+            metadict[self.vpkeys[i]]['vp_num']=i
         # Having set up the triggers, now inser the time series, and upsert the metadata
         for k in tsdict:
             requests.post(self.server_url+'/add/ts',

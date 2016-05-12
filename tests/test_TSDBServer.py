@@ -23,19 +23,22 @@ class TSDBServerTest(unittest.TestCase):
           'mean': {'convert': to_float, 'index': 1},
           'std': {'convert': to_float, 'index': 1},
           'vp': {'convert': to_bool, 'index': 1},
+          'vp_num': {'convert': to_int, 'index': 1},
           'd_vp-1': {'convert': float, 'index': 1}
         }
         self.db = DictDB(schema,'pk',3)
         self.server = TSDBServer(self.db)
         self.prot = TSDBProtocol(self.server)
         self.des = Deserializer()
-        self.vpkeys = ['one']
 
         msg = TSDBOp_AddTrigger('corr','insert_ts',['d_vp-1'],ts.TimeSeries([1,2,3],[1,4,9]))
         status, payload =  self._mockSendingMessage(msg)
 
         msg = TSDBOp_InsertTS('one', ts.TimeSeries([1, 2, 3],[1,4,9]))
         status, payload = self._mockSendingMessage(msg)
+
+        msg = TSDBOp_UpsertMeta('one', {'vp': True, 'vp_num': 1})
+        status, payload =  self._mockSendingMessage(msg)
 
         msg = TSDBOp_InsertTS('two',ts.TimeSeries([1, 2, 3],[4, 9, 16]))
         status, payload = self._mockSendingMessage(msg)
@@ -59,8 +62,8 @@ class TSDBServerTest(unittest.TestCase):
                 self.des.append(args[0])
                 decodedResponse  = self.des.deserialize()
                 obj = TSDBOp_Return.from_json(decodedResponse)
-                # print("object!!!")
-                # print(obj)
+                print("object!!!")
+                print(obj)
                 status = obj['status']  # until proven otherwise.
                 payload = obj['payload']  # until proven otherwise.
                 break
@@ -157,7 +160,7 @@ class TSDBServerTest(unittest.TestCase):
     def test_find_similar(self):
 
         query = ts.TimeSeries([1, 2, 3],[4, 0, 3])
-        msg = TSDBOp_FindSimilar(query,self.vpkeys)
+        msg = TSDBOp_FindSimilar(query)
         status, payload =  self._mockSendingMessage(msg)
 
         near = list(payload.keys())[0]

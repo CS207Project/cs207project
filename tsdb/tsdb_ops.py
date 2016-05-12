@@ -163,18 +163,26 @@ class TSDBOp_FindSimilar(TSDBOp):
     """Find the timeseries in the DB closest to this one based on the predefined
     distance metric
     """
-    def __init__(self, arg, vpkeys):
+    def __init__(self, arg):
         super().__init__('find_similar')
         self['arg'] = arg
-        self['vpkeys'] = vpkeys
 
     @classmethod
     def from_json(cls, json_dict):
         # print("in TSDBOp_FindSimilar: ", type(json_dict))
         arg = json_dict['arg']
-        vpkeys = json_dict['vpkeys']
         # print("extracted")
-        return cls(json_dict['arg'], json_dict['vpkeys'])
+        return cls(json_dict['arg'])
+
+class TSDBOp_MakeVPTree(TSDBOp):
+    """Make a vantage point tree given the current state of the database
+    """
+    def __init__(self):
+        super().__init__('make_vp_tree')
+
+    @classmethod
+    def from_json(cls, json_dict):
+        return cls()
 
 # This simplifies reconstructing TSDBOp instances from network data.
 typemap = {
@@ -185,5 +193,6 @@ typemap = {
   'add_trigger': TSDBOp_AddTrigger,
   'remove_trigger': TSDBOp_RemoveTrigger,
   'delete_ts': TSDBOp_DeleteTS,
-  'find_similar': TSDBOp_FindSimilar
+  'find_similar': TSDBOp_FindSimilar,
+  'make_vp_tree': TSDBOp_MakeVPTree
 }
