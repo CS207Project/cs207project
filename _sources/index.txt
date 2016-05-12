@@ -139,7 +139,9 @@ Remove a trigger from the database.
 
 vii. FIND SIMILAR
 ------------------
-Find the timeseries in our database that is most similar to the query
+Find the timeseries in our database that is most similar to the query. If a
+vantage point tree has been made it will be used. If not regular vantage points
+will be used.
 
 - Endpoint: **/tsdb/find_similar**
 - Verb: **POST**
@@ -147,7 +149,20 @@ Find the timeseries in our database that is most similar to the query
 
 ::
 
-    r = w.find_similar(query,vpkeys)
+    r = w.find_similar(query)
+
+
+vii. MAKE VP TREE
+------------------
+Make a vantage point tree with the current state of the database.
+
+- Endpoint: **/tsdb/add/vptree**
+- Verb: **GET**
+- Example:
+
+::
+
+    r = w.make_vp_tree()
 
 ----
 Note

@@ -177,13 +177,27 @@ This is called a trigger.</p>
 </div>
 <div class="section" id="vii-find-similar">
 <h4>vii. FIND SIMILAR<a class="headerlink" href="#vii-find-similar" title="Permalink to this headline">¶</a></h4>
-<p>Find the timeseries in our database that is most similar to the query</p>
+<p>Find the timeseries in our database that is most similar to the query. If a
+vantage point tree has been made it will be used. If not regular vantage points
+will be used.</p>
 <ul class="simple">
 <li>Endpoint: <strong>/tsdb/find_similar</strong></li>
 <li>Verb: <strong>POST</strong></li>
 <li>Example:</li>
 </ul>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">find_similar</span><span class="p">(</span><span class="n">query</span><span class="p">,</span><span class="n">vpkeys</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">find_similar</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="vii-make-vp-tree">
+<h4>vii. MAKE VP TREE<a class="headerlink" href="#vii-make-vp-tree" title="Permalink to this headline">¶</a></h4>
+<p>Make a vantage point tree with the current state of the database.</p>
+<ul class="simple">
+<li>Endpoint: <strong>/tsdb/add/vptree</strong></li>
+<li>Verb: <strong>GET</strong></li>
+<li>Example:</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">make_vp_tree</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -221,6 +235,7 @@ information on PyScaffold see <a class="reference external" href="http://pyscaff
 <li><a class="reference internal" href="#v-insert-trigger">v. INSERT TRIGGER</a></li>
 <li><a class="reference internal" href="#vi-remove-trigger">vi. REMOVE TRIGGER</a></li>
 <li><a class="reference internal" href="#vii-find-similar">vii. FIND SIMILAR</a></li>
+<li><a class="reference internal" href="#vii-make-vp-tree">vii. MAKE VP TREE</a></li>
 </ul>
 </li>
 </ul>
