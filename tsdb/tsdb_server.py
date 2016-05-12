@@ -132,14 +132,14 @@ class TSDBProtocol(asyncio.Protocol):
         """
         arg = op['arg']
         vpkeys = op['vpkeys']
-        pks = self.server.db.select({}, None, None)
+        pks, _ = self.server.db.select({}, None, None)
 
         # distance function
         def dist_func(vp, pks):
-            row = self.server.db[vp]
-            return self._run_proc('corr', vp, row, arg)[0]
+            #row = self.server.db[vp]
+            return self._run_proc('corr', vp, pks, arg)[0]
 
-        # create tree (proof of concept)
+        # create tree every time (proof of concept)
         vptree = VPTree(pks, vpkeys, dist_func)
 
         # print("in find simialar ---->", vpkeys)
@@ -172,17 +172,16 @@ class TSDBProtocol(asyncio.Protocol):
 
         # # find the smallest distance amongst this ( or k smallest)
         # n = min(results.keys(),key=lambda p: results[p])
-
-        def dist_arg(vp, arg2):
-            row = self.server.db[vp]
-            return self._run_proc('corr', vp, row, arg)[0]
+        # ------------------------------------------------
+        # def dist_arg(vp, arg2):
+        #     row = self.server.db[vp]
+        #     return self._run_proc('corr', vp, row, arg)[0]
 
         t = VPTree(pks, vpkeys, dist_func)
 
         group = t.getCloseSubset(arg, dist_arg)
 
-        # find distances to all timeseries within this circle around the Vantage
-        # Point
+        # find distances to all timeseries within this circle around the Vantage Point
         results={}
         for pk in group:
             row = self.server.db[pk]
