@@ -282,16 +282,41 @@ BitmapIndex: Bitmap index for low cardinality columns</dd>
 </dl>
 <dl class="class">
 <dt id="tsdb.indices.BitmapIndex">
-<em class="property">class </em><code class="descclassname">tsdb.indices.</code><code class="descname">BitmapIndex</code><span class="sig-paren">(</span><em>values</em>, <em>fieldName='default'</em>, <em>database_name='default'</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.BitmapIndex" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#tsdb.baseclasses.BaseIndex" title="tsdb.baseclasses.BaseIndex"><code class="xref py py-class docutils literal"><span class="pre">tsdb.baseclasses.BaseIndex</span></code></a></p>
+<em class="property">class </em><code class="descclassname">tsdb.indices.</code><code class="descname">BitmapIndex</code><span class="sig-paren">(</span><em>values</em>, <em>pk_len=4</em>, <em>fieldName='default'</em>, <em>database_name='default'</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.BitmapIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="tsdb.indices.BitmapIndex.allKeys">
+<code class="descname">allKeys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.BitmapIndex.allKeys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.indices.BitmapIndex.deleteIndex">
+<code class="descname">deleteIndex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.BitmapIndex.deleteIndex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.indices.BitmapIndex.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.BitmapIndex.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="tsdb.indices.BitmapIndex.getEqual">
 <code class="descname">getEqual</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.BitmapIndex.getEqual" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="tsdb.indices.BitmapIndex.getNotEq">
+<code class="descname">getNotEq</code><span class="sig-paren">(</span><em>fieldValue</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.BitmapIndex.getNotEq" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="tsdb.indices.BitmapIndex.insert">
 <code class="descname">insert</code><span class="sig-paren">(</span><em>fieldValue</em>, <em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.BitmapIndex.insert" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tsdb.indices.BitmapIndex.remove">
+<code class="descname">remove</code><span class="sig-paren">(</span><em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.BitmapIndex.remove" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -432,16 +457,6 @@ based on submitted operator</p>
 
 </dd></dl>
 
-<dl class="function">
-<dt id="tsdb.indices.bool_to_str">
-<code class="descclassname">tsdb.indices.</code><code class="descname">bool_to_str</code><span class="sig-paren">(</span><em>bool_array</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.bool_to_str" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="tsdb.indices.str_to_bool">
-<code class="descclassname">tsdb.indices.</code><code class="descname">str_to_bool</code><span class="sig-paren">(</span><em>string_line</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.indices.str_to_bool" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </div>
 <div class="section" id="module-tsdb.persistentdb">
 <span id="tsdb-persistentdb-module"></span><h2>tsdb.persistentdb module<a class="headerlink" href="#module-tsdb.persistentdb" title="Permalink to this headline">¶</a></h2>
@@ -462,6 +477,12 @@ using Binary Trees and BitMasks.</p>
 <dt id="tsdb.persistentdb.PersistentDB.__len__">
 <code class="descname">__len__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistentdb.PersistentDB.__len__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dunder function to return length of timeseries db</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tsdb.persistentdb.PersistentDB.add_vp">
+<code class="descname">add_vp</code><span class="sig-paren">(</span><em>vp_id</em>, <em>pk</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistentdb.PersistentDB.add_vp" title="Permalink to this definition">¶</a></dt>
+<dd><p>method to add vp labels to db, and save to disk</p>
 </dd></dl>
 
 <dl class="method">
@@ -489,6 +510,12 @@ Follows logic of &#8216;upsert_meta&#8217; for deletion and removal from indices
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tsdb.persistentdb.PersistentDB.delete_vp">
+<code class="descname">delete_vp</code><span class="sig-paren">(</span><em>vp_id</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistentdb.PersistentDB.delete_vp" title="Permalink to this definition">¶</a></dt>
+<dd><p>method to delete vp labels from db, and save to disk</p>
 </dd></dl>
 
 <dl class="method">
@@ -521,6 +548,12 @@ Follows logic of &#8216;upsert_meta&#8217; for deletion and removal from indices
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tsdb.persistentdb.PersistentDB.load_vps">
+<code class="descname">load_vps</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.persistentdb.PersistentDB.load_vps" title="Permalink to this definition">¶</a></dt>
+<dd><p>method to load vantage point labels from disk</p>
 </dd></dl>
 
 <dl class="method">
@@ -671,17 +704,13 @@ returned. You can sort or limit the number of results that you receive.</li>
 
 <dl class="method">
 <dt id="tsdb.tsdb_client.TSDBClient.find_similar">
-<code class="descname">find_similar</code><span class="sig-paren">(</span><em>arg</em>, <em>vpkeys</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_client.TSDBClient.find_similar" title="Permalink to this definition">¶</a></dt>
+<code class="descname">find_similar</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_client.TSDBClient.find_similar" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send the server a request to find the closest ts to this one</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>arg</strong> (<a class="reference internal" href="timeseries.html#module-timeseries.TimeSeries" title="timeseries.TimeSeries"><em>TimeSeries</em></a>) &#8211; reference time series</li>
-<li><strong>vpkeys</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; Vantage Points keys</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>arg</strong> (<a class="reference internal" href="timeseries.html#module-timeseries.TimeSeries" title="timeseries.TimeSeries"><em>TimeSeries</em></a>) &#8211; reference time series</td>
 </tr>
 </tbody>
 </table>
@@ -703,6 +732,12 @@ returned. You can sort or limit the number of results that you receive.</li>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tsdb.tsdb_client.TSDBClient.make_vp_tree">
+<code class="descname">make_vp_tree</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_client.TSDBClient.make_vp_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a Vantage Point Tree given the current state of the database</p>
 </dd></dl>
 
 <dl class="method">
@@ -864,7 +899,7 @@ data is sent back to the user.</p>
 
 <dl class="class">
 <dt id="tsdb.tsdb_ops.TSDBOp_FindSimilar">
-<em class="property">class </em><code class="descclassname">tsdb.tsdb_ops.</code><code class="descname">TSDBOp_FindSimilar</code><span class="sig-paren">(</span><em>arg</em>, <em>vpkeys</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp_FindSimilar" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">tsdb.tsdb_ops.</code><code class="descname">TSDBOp_FindSimilar</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp_FindSimilar" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#tsdb.tsdb_ops.TSDBOp" title="tsdb.tsdb_ops.TSDBOp"><code class="xref py py-class docutils literal"><span class="pre">tsdb.tsdb_ops.TSDBOp</span></code></a></p>
 <p>Find the timeseries in the DB closest to this one based on the predefined
 distance metric</p>
@@ -882,6 +917,18 @@ distance metric</p>
 <dl class="classmethod">
 <dt id="tsdb.tsdb_ops.TSDBOp_InsertTS.from_json">
 <em class="property">classmethod </em><code class="descname">from_json</code><span class="sig-paren">(</span><em>json_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp_InsertTS.from_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tsdb.tsdb_ops.TSDBOp_MakeVPTree">
+<em class="property">class </em><code class="descclassname">tsdb.tsdb_ops.</code><code class="descname">TSDBOp_MakeVPTree</code><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp_MakeVPTree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tsdb.tsdb_ops.TSDBOp" title="tsdb.tsdb_ops.TSDBOp"><code class="xref py py-class docutils literal"><span class="pre">tsdb.tsdb_ops.TSDBOp</span></code></a></p>
+<p>Make a vantage point tree given the current state of the database</p>
+<dl class="classmethod">
+<dt id="tsdb.tsdb_ops.TSDBOp_MakeVPTree.from_json">
+<em class="property">classmethod </em><code class="descname">from_json</code><span class="sig-paren">(</span><em>json_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#tsdb.tsdb_ops.TSDBOp_MakeVPTree.from_json" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

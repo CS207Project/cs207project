@@ -42,9 +42,15 @@
             
   <div class="section" id="module-go_server">
 <span id="go-server-module"></span><h1>go_server module<a class="headerlink" href="#module-go_server" title="Permalink to this headline">¶</a></h1>
-<p>This is a utility file that starts a dictionary based in-memory database server
-with some default settings. It is meant to be an example of how to start our system
-and also servers as a way for us to test our code.</p>
+<p>This is a utility file that starts a dictionary based in-memory database
+with a given timeseries length and a given number of vantage points.
+It is meant to be an example of how to start our system and also
+servers as a way for us to test our code.</p>
+<dl class="docutils">
+<dt>Takes two arguments:</dt>
+<dd>-len : length of timeseries
+-vps : number of vantage points</dd>
+</dl>
 <p>IF YOU EDIT THIS FILE TESTS MIGHT BREAK. IT IS MEANT AS A DEMO ONLY.</p>
 <dl class="function">
 <dt id="go_server.identity">

@@ -190,13 +190,23 @@
   </dt>
 
       
+  <dt><a href="api/tsdb.html#tsdb.persistentdb.PersistentDB.add_vp">add_vp() (tsdb.persistentdb.PersistentDB method)</a>
+  </dt>
+
+      
   <dt><a href="api/pype.html#pype.symtab.SymbolTable.addsym">addsym() (pype.symtab.SymbolTable method)</a>
   </dt>
 
       
-  <dt><a href="api/tsdb.html#tsdb.indices.TreeIndex.allKeys">allKeys() (tsdb.indices.TreeIndex method)</a>
+  <dt><a href="api/tsdb.html#tsdb.indices.BitmapIndex.allKeys">allKeys() (tsdb.indices.BitmapIndex method)</a>
   </dt>
 
+      <dd><dl>
+        
+  <dt><a href="api/tsdb.html#tsdb.indices.TreeIndex.allKeys">(tsdb.indices.TreeIndex method)</a>
+  </dt>
+
+      </dl></dd>
       
   <dt><a href="api/webserver.html#webserver.web_server.WebServer.app">app (webserver.web_server.WebServer attribute)</a>
   </dt>
@@ -293,18 +303,14 @@
   <dt><a href="api/tsdb.html#tsdb.baseclasses.BaseIndex">BaseIndex (class in tsdb.baseclasses)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="api/pype.html#pype.ast.ASTAssignmentExpr.binding">binding (pype.ast.ASTAssignmentExpr attribute)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="api/tsdb.html#tsdb.indices.BitmapIndex">BitmapIndex (class in tsdb.indices)</a>
-  </dt>
-
-      
-  <dt><a href="api/tsdb.html#tsdb.indices.bool_to_str">bool_to_str() (in module tsdb.indices)</a>
   </dt>
 
   </dl></td>
@@ -424,9 +430,19 @@
   </dt>
 
       
-  <dt><a href="api/tsdb.html#tsdb.indices.TreeIndex.deleteIndex">deleteIndex() (tsdb.indices.TreeIndex method)</a>
+  <dt><a href="api/tsdb.html#tsdb.persistentdb.PersistentDB.delete_vp">delete_vp() (tsdb.persistentdb.PersistentDB method)</a>
   </dt>
 
+      
+  <dt><a href="api/tsdb.html#tsdb.indices.BitmapIndex.deleteIndex">deleteIndex() (tsdb.indices.BitmapIndex method)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="api/tsdb.html#tsdb.indices.TreeIndex.deleteIndex">(tsdb.indices.TreeIndex method)</a>
+  </dt>
+
+      </dl></dd>
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
@@ -581,6 +597,10 @@
   </dt>
 
         
+  <dt><a href="api/tsdb.html#tsdb.tsdb_ops.TSDBOp_MakeVPTree.from_json">(tsdb.tsdb_ops.TSDBOp_MakeVPTree class method)</a>
+  </dt>
+
+        
   <dt><a href="api/tsdb.html#tsdb.tsdb_ops.TSDBOp_RemoveTrigger.from_json">(tsdb.tsdb_ops.TSDBOp_RemoveTrigger class method)</a>
   </dt>
 
@@ -604,9 +624,15 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="api/tsdb.html#tsdb.indices.TreeIndex.get">get() (tsdb.indices.TreeIndex method)</a>
+  <dt><a href="api/tsdb.html#tsdb.indices.BitmapIndex.get">get() (tsdb.indices.BitmapIndex method)</a>
   </dt>
 
+      <dd><dl>
+        
+  <dt><a href="api/tsdb.html#tsdb.indices.TreeIndex.get">(tsdb.indices.TreeIndex method)</a>
+  </dt>
+
+      </dl></dd>
       
   <dt><a href="api/pype.html#pype.fgir.Flowgraph.get_var">get_var() (pype.fgir.Flowgraph method)</a>
   </dt>
@@ -656,9 +682,15 @@
   </dt>
 
       
-  <dt><a href="api/tsdb.html#tsdb.indices.TreeIndex.getNotEq">getNotEq() (tsdb.indices.TreeIndex method)</a>
+  <dt><a href="api/tsdb.html#tsdb.indices.BitmapIndex.getNotEq">getNotEq() (tsdb.indices.BitmapIndex method)</a>
   </dt>
 
+      <dd><dl>
+        
+  <dt><a href="api/tsdb.html#tsdb.indices.TreeIndex.getNotEq">(tsdb.indices.TreeIndex method)</a>
+  </dt>
+
+      </dl></dd>
       
   <dt><a href="api/go_server.html#module-go_server">go_server (module)</a>
   </dt>
@@ -879,12 +911,12 @@
   <dt><a href="api/pype.html#pype.pcode.PCodeOp.librarymethod">librarymethod() (pype.pcode.PCodeOp static method)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="api/pype.html#pype.fgir.FGNodeType.literal">literal (pype.fgir.FGNodeType attribute)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="api/pype.html#pype.pcode.PCodeOp.literal">literal() (pype.pcode.PCodeOp static method)</a>
   </dt>
@@ -895,6 +927,10 @@
 
       
   <dt><a href="api/tsdb.html#tsdb.indices.PKIndex.load_pickle">load_pickle() (tsdb.indices.PKIndex method)</a>
+  </dt>
+
+      
+  <dt><a href="api/tsdb.html#tsdb.persistentdb.PersistentDB.load_vps">load_vps() (tsdb.persistentdb.PersistentDB method)</a>
   </dt>
 
       
@@ -938,15 +974,29 @@
 
       </dl></dd>
       
-  <dt><a href="api/vptrees.html#vptrees.vptrees.VPTree.makeVPTree">makeVPTree() (vptrees.vptrees.VPTree method)</a>
+  <dt><a href="api/tsdb.html#tsdb.tsdb_client.TSDBClient.make_vp_tree">make_vp_tree() (tsdb.tsdb_client.TSDBClient method)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="api/webutils.html#webutils.webclient.WebClient.make_vp_tree">(webutils.webclient.WebClient method)</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt><a href="api/webserver.html#webserver.web_server.Handlers.make_vp_tree_handler">make_vp_tree_handler() (webserver.web_server.Handlers method)</a>
   </dt>
 
       
-  <dt><a href="api/timeseries.html#timeseries.TimeSeries.TimeSeries.mean">mean() (timeseries.TimeSeries.TimeSeries method)</a>
+  <dt><a href="api/vptrees.html#vptrees.vptrees.VPTree.makeVPTree">makeVPTree() (vptrees.vptrees.VPTree method)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="api/timeseries.html#timeseries.TimeSeries.TimeSeries.mean">mean() (timeseries.TimeSeries.TimeSeries method)</a>
+  </dt>
+
       
   <dt><a href="api/timeseries.html#timeseries.TimeSeries.TimeSeries.median">median() (timeseries.TimeSeries.TimeSeries method)</a>
   </dt>
@@ -1323,6 +1373,10 @@
 
       <dd><dl>
         
+  <dt><a href="api/tsdb.html#tsdb.indices.BitmapIndex.remove">(tsdb.indices.BitmapIndex method)</a>
+  </dt>
+
+        
   <dt><a href="api/tsdb.html#tsdb.indices.PKIndex.remove">(tsdb.indices.PKIndex method)</a>
   </dt>
 
@@ -1447,10 +1501,6 @@
 
       
   <dt><a href="api/timeseries.html#timeseries.TimeSeries.TimeSeries.std">std() (timeseries.TimeSeries.TimeSeries method)</a>
-  </dt>
-
-      
-  <dt><a href="api/tsdb.html#tsdb.indices.str_to_bool">str_to_bool() (in module tsdb.indices)</a>
   </dt>
 
       
@@ -1641,6 +1691,10 @@
 
       
   <dt><a href="api/tsdb.html#tsdb.tsdb_ops.TSDBOp_InsertTS">TSDBOp_InsertTS (class in tsdb.tsdb_ops)</a>
+  </dt>
+
+      
+  <dt><a href="api/tsdb.html#tsdb.tsdb_ops.TSDBOp_MakeVPTree">TSDBOp_MakeVPTree (class in tsdb.tsdb_ops)</a>
   </dt>
 
       

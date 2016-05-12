@@ -212,6 +212,26 @@ to [d_vp-1, d_vp-2, ...] in the correct order <strong>REQUIRED</strong></p>
 </dd></dl>
 
 <dl class="method">
+<dt id="webserver.web_server.Handlers.make_vp_tree_handler">
+<code class="descname">make_vp_tree_handler</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="headerlink" href="#webserver.web_server.Handlers.make_vp_tree_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handler for Make VP Tree</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>request</strong> (<em>aiotttp.request</em>) &#8211; <p>request object with details of the request that was sent to the server</p>
+<p>request.GET[&#8216;query&#8217;] should exist or an error is returned <strong>REQUIRED</strong></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">JSON encoded results of the select</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">web.Response</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="webserver.web_server.Handlers.remove_trigger_handler">
 <code class="descname">remove_trigger_handler</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="headerlink" href="#webserver.web_server.Handlers.remove_trigger_handler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Handler for remove trigger</p>
