@@ -89,7 +89,7 @@ class BitmapIndexTests(unittest.TestCase):
         del self.space_index
         self.space_index = BitmapIndex(values = ['comet','alien','satellite'],\
                             database_name='testing',fieldName='outerspace')
-        self.assertEqual(set(self.getEqual('alien')), set())
+        self.assertEqual(set(self.space_index.getEqual('alien')), set())
 
 if __name__ == '__main__':
     unittest.main()
