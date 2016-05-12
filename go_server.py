@@ -29,7 +29,8 @@ schema = {
   'useless': {'convert': identity, 'index': None},
   'mean': {'convert': to_float, 'index': 1},
   'std': {'convert': to_float, 'index': 1},
-  'vp': {'convert': to_bool, 'index': 1}
+  'vp': {'convert': to_bool, 'index': 1},
+  'vp_num': {'convert': to_int, 'index': 1},
 }
 
 TS_LENGTH = 100

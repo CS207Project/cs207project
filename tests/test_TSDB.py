@@ -99,6 +99,7 @@ class TSDBTests(asynctest.TestCase):
             await client.add_trigger('corr', 'insert_ts', ["d_vp-{}".format(i)], tsdict[self.vpkeys[i]])
             # change the metadata for the vantage points to have meta['vp']=True
             metadict[self.vpkeys[i]]['vp']=True
+            metadict[self.vpkeys[i]]['vp_num']=i
         # Having set up the triggers, now inser the time series, and upsert the metadata
         for k in tsdict:
             print(tsdict[k])
@@ -155,8 +156,17 @@ class TSDBTests(asynctest.TestCase):
         #we first create a query time series.
         _, query = tsmaker(0.5, 0.2, 0.1)
 
-        # find nearestwanted directly
-        _ , results = await client.find_similar(query, self.vpkeys)
+        # find nearestwanted directly with VPTree
+        _ , results = await client.find_similar(query)
+        nearestwanted = list(results)[0]
+        print("Nearest :", nearestwanted)
+        self.assertEqual(nearestwanted,'ts-0')
+
+        # make the VP Tree
+        await client.make_vp_tree()
+
+        # find nearestwanted directly w/ VP Tree
+        _ , results = await client.find_similar(query)
         nearestwanted = list(results)[0]
         print("Nearest :", nearestwanted)
         self.assertEqual(nearestwanted,'ts-0')

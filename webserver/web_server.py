@@ -79,6 +79,36 @@ class Handlers:
         finally:
             return web.Response(body=json.dumps(payload).encode('utf-8'))
 
+    async def make_vp_tree_handler(self,request):
+        """Handler for Make VP Tree
+
+        Parameters
+        ----------
+        request : aiotttp.request
+            request object with details of the request that was sent to the server
+
+            request.GET['query'] should exist or an error is returned **REQUIRED**
+
+        Returns
+        -------
+        web.Response
+            JSON encoded results of the select
+        """
+        try:
+            if 'query' not in request.GET:
+                raise ValueError("'query' must be sent with a select",request.GET)
+
+            json_query = json.loads(request.GET['query'])
+            status,payload = await self.client.make_vp_tree()
+
+        except Exception as error:
+            payload = {"msg": "Could not parse request. Please see documentation."}
+            payload["type"] = str(type(error))
+            payload["args"] = str(error.args)
+
+        finally:
+            return web.Response(body=json.dumps(payload).encode('utf-8'))
+
     async def augselect_handler(self,request):
         """Handler for Augmented Select
 
@@ -367,6 +397,7 @@ class WebServer:
         self.app = web.Application()
         self.app.router.add_route('GET', '/tsdb', self.handler.homepage_handler)
         self.app.router.add_route('GET', '/tsdb/select',self.handler.select_handler)
+        self.app.router.add_route('GET', '/add/vptree',self.handler.make_vp_tree_handler)
         self.app.router.add_route('POST', '/tsdb/augselect',self.handler.augselect_handler)
         self.app.router.add_route('POST', '/tsdb/find_similar', self.handler.find_similar_handler)
         self.app.router.add_route('POST', '/tsdb/add/ts', self.handler.add_ts_handler)

@@ -151,7 +151,8 @@ class DictDB(BaseDB):
             for p in pks_out:
                 values_dict = self.rows[p]
                 data_list_out.append(
-                    {field:value for field,value in values_dict.items() if field in fields_to_ret})
+                    {field:values_dict[field] if field in values_dict else 'NA' for field in fields_to_ret})
+                    #{field:value for field,value in values_dict.items() if field in fields_to_ret})
 
         # something went wrong
         else:

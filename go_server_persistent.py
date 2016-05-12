@@ -31,7 +31,8 @@ schema = {
   'blarg': {'type': 'int',    'index': 2,    'values': [1, 2]},
   'mean':  {'type': 'float',  'index': 1},
   'std':   {'type': 'float',  'index': 1},
-  'vp':    {'type': 'bool',   'index': 2,    'values': [0,1]}
+  'vp':    {'type': 'bool',   'index': 2,    'values': [0,1]},
+  'vp_num':    {'type': 'int',   'index': 1}
 }
 
 TS_LENGTH = 100

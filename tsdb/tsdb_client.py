@@ -130,7 +130,7 @@ class TSDBClient(object):
         status, payload =  await self._send(msg.to_json())
         return TSDBStatus(status), payload
 
-    async def find_similar(self, arg, vpkeys):
+    async def find_similar(self, arg):
         """Send the server a request to find the closest ts to this one
 
         Parameters
@@ -138,10 +138,15 @@ class TSDBClient(object):
 
         arg : TimeSeries
             reference time series
-        vpkeys : list
-            Vantage Points keys
         """
-        msg = TSDBOp_FindSimilar(arg, vpkeys)
+        msg = TSDBOp_FindSimilar(arg)
+        status, payload =  await self._send(msg.to_json())
+        return TSDBStatus(status), payload
+
+    async def make_vp_tree(self):
+        """Make a Vantage Point Tree given the current state of the database
+        """
+        msg = TSDBOp_MakeVPTree()
         status, payload =  await self._send(msg.to_json())
         return TSDBStatus(status), payload
 
