@@ -163,8 +163,8 @@ class TSDBProtocol(asyncio.Protocol):
 
         # print("Find Similar :: Select retured {} rows".format(len(loids)))
 
-        # # find distances to all timeseries within this circle around the Vantage
-        # # Point
+        # # # find distances to all timeseries within this circle around the Vantage
+        # # # Point
         # results={}
         # for pk in loids:
         #     row = self.server.db[pk]
@@ -181,10 +181,17 @@ class TSDBProtocol(asyncio.Protocol):
 
         group = t.getCloseSubset(arg, dist_arg)
 
-        n = min(group)
+        # find distances to all timeseries within this circle around the Vantage
+        # Point
+        results={}
+        for pk in group:
+            row = self.server.db[pk]
+            results[pk] = self._run_proc('corr', pk, row, arg)[0]
 
-        #return TSDBOp_Return(TSDBStatus.OK, op['op'], {n:results[n]})
-        return TSDBOp_Return(TSDBStatus.OK, op['op'], None)
+        n = min(results.keys(),key=lambda p: results[p])
+
+        return TSDBOp_Return(TSDBStatus.OK, op['op'], {n:results[n]})
+        #return TSDBOp_Return(TSDBStatus.OK, op['op'], None)
 
 
     def _add_trigger(self, op):#DNY: Trigger is "if something happens, run this particular process", similar to a stored procedure.
