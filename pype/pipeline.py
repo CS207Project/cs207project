@@ -7,6 +7,10 @@ from .optimize import *
 from .pcode import PCodeGenerator
 
 class Pipeline(object):
+    """
+    A Pipeline class to injest text, generate pcodes from it
+    and allow the user to access them by component name.
+    """
     def __init__(self, source):
         self.pcodes = {}
         with open(source) as f:
@@ -27,19 +31,23 @@ class Pipeline(object):
     #     # Translation
     #     ir = ast.mod_walk( LoweringVisitor(syms) )
     #     return ir
-    # 
+    #
     def optimize_AssignmentEllision(self):
         self.ir.flowgraph_pass( AssignmentEllision() )
-    
+
     def optimize_DeadCodeElimination(self):
         self.ir.flowgraph_pass( DeadCodeElimination() )
-    
+
     def optimize(self):
         # Optimization
         self.optimize_AssignmentEllision()
         self.optimize_DeadCodeElimination()
 
     def compile(self, file): # bob's version
+        """
+        Read from file and perform semantic analysis, translation,
+        optimization, and PCode generation.
+        """
         input = file.read()
 
         # Lexing, parsing, AST construction

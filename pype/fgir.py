@@ -1,3 +1,38 @@
+"""
+Implements an FGIR Class.
+(Flow Graph Intermediate Representation)
+Represents input in flow graph nodes.
+
+Submodules
+----------
+FlowGraph :
+    Attributes :
+        `name` : string type object
+        `variables` : dict
+        `nodes` : dict
+        `inputs` : list
+        `outputs` : list
+
+    Methods :
+        `new_node`
+        `get_var`
+        `set_var`
+        `add_input`
+        `add_output`
+        `dotfile`
+        `pre`
+        `post`
+        `topological_sort`
+        `topo_visitnode`
+
+FGIR :
+    Methods :
+        flowgraph_pass
+        node_pass
+        topological_node_pass
+        topological_flowgraph_pass
+
+"""
 import enum
 
 FGNodeType = enum.Enum('FGNodeType','component libraryfunction librarymethod input output assignment literal forward unknown')
