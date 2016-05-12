@@ -63,10 +63,10 @@ class WebClient:
         verb, endpoint = self.endpoints['delete_ts']
         return self._dispatch_request(verb, endpoint, json_query)
 
-    def find_similar(self, arg, vpkeys):
+    def find_similar(self, arg):
         if hasattr(arg,'to_json'):
             arg = arg.to_json()
-        json_query = json.dumps({'arg':arg,'vpkeys': vpkeys})
+        json_query = json.dumps({'arg':arg})
         verb, endpoint = self.endpoints['find_similar']
         return self._dispatch_request(verb, endpoint, json_query)
 

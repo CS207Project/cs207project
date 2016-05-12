@@ -101,13 +101,18 @@ class Handlers:
             json_query = json.loads(request.GET['query'])
             status,payload = await self.client.make_vp_tree()
 
+            if status ==TSDBStatus.OK:
+                textResp = "WriteSuccessful"
+            else:
+                raise Exception("Write Failed")
+
         except Exception as error:
-            payload = {"msg": "Could not parse request. Please see documentation."}
-            payload["type"] = str(type(error))
-            payload["args"] = str(error.args)
+            textResp = {"msg": "Could not parse request. Please see documentation."}
+            textResp["type"] = str(type(error))
+            textResp["args"] = str(error.args)
 
         finally:
-            return web.Response(body=json.dumps(payload).encode('utf-8'))
+            return web.Response(body=json.dumps(textResp).encode('utf-8'))
 
     async def augselect_handler(self,request):
         """Handler for Augmented Select
@@ -178,9 +183,8 @@ class Handlers:
         try:
             json_query = await request.json()
             arg = json_query['arg']
-            vpkeys = json_query['vpkeys']
 
-            status,payload = await self.client.find_similar(arg,vpkeys)
+            status,payload = await self.client.find_similar(arg)
         except Exception as error:
             payload = {"msg": "Could not parse request. Please see documentation."}
             payload["type"] = str(type(error))
@@ -397,7 +401,7 @@ class WebServer:
         self.app = web.Application()
         self.app.router.add_route('GET', '/tsdb', self.handler.homepage_handler)
         self.app.router.add_route('GET', '/tsdb/select',self.handler.select_handler)
-        self.app.router.add_route('GET', '/add/vptree',self.handler.make_vp_tree_handler)
+        self.app.router.add_route('GET', '/tsdb/add/vptree',self.handler.make_vp_tree_handler)
         self.app.router.add_route('POST', '/tsdb/augselect',self.handler.augselect_handler)
         self.app.router.add_route('POST', '/tsdb/find_similar', self.handler.find_similar_handler)
         self.app.router.add_route('POST', '/tsdb/add/ts', self.handler.add_ts_handler)
