@@ -11,22 +11,19 @@ class PrettyPrint(ASTVisitor):
 
 class CheckSingleAssignment(ASTVisitor):
     def __init__(self):
-        self.globalAssignments = set()
-        self.localAssignments = set()
+        super().__init__()
+        self.frames = {}
+        self.component = None
+
     def visit(self, node):
-        if isinstance(node, ASTProgram):
-            for child in node.children:
-                self.visit( child )
-        elif isinstance(node, ASTComponent):
-            self.localAssignments = set() # wipe the local set for each component
-            self.globalAssignments.add(node.name.name)
-            for child in node.children:
-                if isinstance(child, ASTAssignmentExpr):
-                    if ((child.binding.name in self.globalAssignments) or
-                        (child.binding.name in self.localAssignments)):
-                        raise SyntaxError("Double Assignment of {} not allowed".format(child.binding.name))
-                    else:
-                        self.localAssignments.add(child.binding.name)
+        if isinstance(node, ASTComponent):
+            self.component = node.name.name
+            self.frames[node.name.name] = set()
+        elif isinstance(node, ASTAssignmentExpr):
+            if node.binding.name in self.frames[self.component]:
+                raise ValueError("Double Assignment of {} not allowed".format(node.binding.name))
+            else:
+                self.frames[self.component].add(node.binding.name)
 
 class CheckSingleIOExpression(ASTVisitor):
     def __init__(self):

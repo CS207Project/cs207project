@@ -35,12 +35,14 @@ t_ignore = ' \t\r\f\v'
 
 # Write one rule for IDs and reserved keywords. Section 4.3 has an example.
 def t_ID(t):
+    "Rule for IDs and reserved keywords."
     r'[a-zA-Z_][a-zA-Z_0-9]*'
     t.type = reserved.get(t.value,'ID')    # Check for reserved words
     return t
 
 # Ignore comments. Comments in PyPE are just like in Python. Section 4.5.
 def t_COMMENT(t):
+    "Rule to ignore comments. There is no return value."
     r'\#.*'
     pass
     # No return value. Token discarded
@@ -48,6 +50,7 @@ def t_COMMENT(t):
 # Write a rule for newlines that track line numbers. Section 4.6.
 # Define a rule so we can track line numbers
 def t_newline(t):
+    "Rule for newlines that track line numbers."
     r'\n+'
     t.lexer.lineno += len(t.value)
 
@@ -56,6 +59,7 @@ def t_newline(t):
 #     input is the input text string
 #     token is a token instance
 def find_column(input,token):
+    "Given the string and the token instance, find the column location."
     last_cr = input.rfind('\n',0,token.lexpos)
     if last_cr < 0:
         last_cr = 0
@@ -64,6 +68,7 @@ def find_column(input,token):
 
 # Error handling rule
 def t_error(t):
+    "Spit error and skip when illegal character is found."
     print("Illegal character '%s'" % t.value[0],"in line {}".format(t.lineno) , "and column {}".format(find_column(t.lexer.lexdata, t)))
     t.lexer.skip(1)
     #print(vars(t.lexer)['lexdata'])

@@ -138,12 +138,7 @@ def p_parameter_list(p):
 #             If you're interested, read section 6.8, but it requires a fairly deep
 #             understanding of LR parsers and the language specification.
 def p_error(p): #TODO
-    print("\n\n")
-    print("error occured")
-    print(p)
-    print(vars(p).keys())
-    print("\n\n")
-    #p.parser.skip(1) figure out how to skip token
+    print("Syntax error at ",  str(p.lineno),  ": ",  p.value)
 
 start = 'program'
 # parser = ply.yacc.yacc() # To get more information, add debug=True

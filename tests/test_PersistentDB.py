@@ -220,7 +220,7 @@ class PersistentDBTests(unittest.TestCase):
 
         self.db.close()
         self.db = PersistentDB(pk_field='pk', db_name='testing', ts_length=self.tsLength, testing=True)
-        self.assertTrue('vp-1' in self.db.vps)       
+        self.assertTrue('vp-1' in self.db.vps)
 
 if __name__ == '__main__':
     unittest.main()
