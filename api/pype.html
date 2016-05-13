@@ -232,6 +232,43 @@ The visitor may modify attributes, but may not add or delete nodes.</p>
 </div>
 <div class="section" id="module-pype.fgir">
 <span id="pype-fgir-module"></span><h2>pype.fgir module<a class="headerlink" href="#module-pype.fgir" title="Permalink to this headline">¶</a></h2>
+<p>Implements an FGIR Class.
+(Flow Graph Intermediate Representation)
+Represents input in flow graph nodes.</p>
+<div class="section" id="id1">
+<h3>Submodules<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt>FlowGraph :</dt>
+<dd><dl class="first last docutils">
+<dt>Attributes :</dt>
+<dd><cite>name</cite> : string type object
+<cite>variables</cite> : dict
+<cite>nodes</cite> : dict
+<cite>inputs</cite> : list
+<cite>outputs</cite> : list</dd>
+<dt>Methods :</dt>
+<dd><cite>new_node</cite>
+<cite>get_var</cite>
+<cite>set_var</cite>
+<cite>add_input</cite>
+<cite>add_output</cite>
+<cite>dotfile</cite>
+<cite>pre</cite>
+<cite>post</cite>
+<cite>topological_sort</cite>
+<cite>topo_visitnode</cite></dd>
+</dl>
+</dd>
+<dt>FGIR :</dt>
+<dd><dl class="first last docutils">
+<dt>Methods :</dt>
+<dd>flowgraph_pass
+node_pass
+topological_node_pass
+topological_flowgraph_pass</dd>
+</dl>
+</dd>
+</dl>
 <dl class="class">
 <dt id="pype.fgir.FGIR">
 <em class="property">class </em><code class="descclassname">pype.fgir.</code><code class="descname">FGIR</code><a class="headerlink" href="#pype.fgir.FGIR" title="Permalink to this definition">¶</a></dt>
@@ -373,12 +410,14 @@ The visitor may modify attributes, but may not add or delete nodes.</p>
 </dd></dl>
 
 </div>
+</div>
 <div class="section" id="module-pype.lexer">
 <span id="pype-lexer-module"></span><h2>pype.lexer module<a class="headerlink" href="#module-pype.lexer" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="pype.lexer.find_column">
 <code class="descclassname">pype.lexer.</code><code class="descname">find_column</code><span class="sig-paren">(</span><em>input</em>, <em>token</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.lexer.find_column" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Given the string and the token instance, find the column location.</p>
+</dd></dl>
 
 <dl class="data">
 <dt id="pype.lexer.lexer">
@@ -389,7 +428,7 @@ data = &#8216;&#8217;&#8217;
 3 + 4 * 10</p>
 <blockquote>
 <div><ul class="simple">
-<li>-20 <a href="#id1"><span class="problematic" id="id2">*</span></a>2 + a</li>
+<li>-20 <a href="#id2"><span class="problematic" id="id3">*</span></a>2 + a</li>
 </ul>
 </div></blockquote>
 <p># Give the lexer some input
@@ -411,24 +450,25 @@ print(tok.type)</p>
 <dl class="function">
 <dt id="pype.lexer.t_COMMENT">
 <code class="descclassname">pype.lexer.</code><code class="descname">t_COMMENT</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.lexer.t_COMMENT" title="Permalink to this definition">¶</a></dt>
-<dd><p>#.*</p>
+<dd><p>Rule to ignore comments. There is no return value.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="pype.lexer.t_ID">
 <code class="descclassname">pype.lexer.</code><code class="descname">t_ID</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.lexer.t_ID" title="Permalink to this definition">¶</a></dt>
-<dd><p>[<a href="#id3"><span class="problematic" id="id4">a-zA-Z_</span></a>][a-zA-Z_0-9]*</p>
+<dd><p>Rule for IDs and reserved keywords.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="pype.lexer.t_error">
 <code class="descclassname">pype.lexer.</code><code class="descname">t_error</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.lexer.t_error" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Spit error and skip when illegal character is found.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="pype.lexer.t_newline">
 <code class="descclassname">pype.lexer.</code><code class="descname">t_newline</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.lexer.t_newline" title="Permalink to this definition">¶</a></dt>
-<dd><p>n+</p>
+<dd><p>Rule for newlines that track line numbers.</p>
 </dd></dl>
 
 </div>
@@ -802,10 +842,14 @@ a PCode object should be an method of PCodeOp.</p>
 <dt id="pype.pipeline.Pipeline">
 <em class="property">class </em><code class="descclassname">pype.pipeline.</code><code class="descname">Pipeline</code><span class="sig-paren">(</span><em>source</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.pipeline.Pipeline" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>A Pipeline class to injest text, generate pcodes from it
+and allow the user to access them by component name.</p>
 <dl class="method">
 <dt id="pype.pipeline.Pipeline.compile">
 <code class="descname">compile</code><span class="sig-paren">(</span><em>file</em><span class="sig-paren">)</span><a class="headerlink" href="#pype.pipeline.Pipeline.compile" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Read from file and perform semantic analysis, translation,
+optimization, and PCode generation.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pype.pipeline.Pipeline.optimize">
@@ -1033,7 +1077,10 @@ a PCode object should be an method of PCodeOp.</p>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
 <li><a class="reference internal" href="#module-pype.ast">pype.ast module</a></li>
 <li><a class="reference internal" href="#module-pype.error">pype.error module</a></li>
-<li><a class="reference internal" href="#module-pype.fgir">pype.fgir module</a></li>
+<li><a class="reference internal" href="#module-pype.fgir">pype.fgir module</a><ul>
+<li><a class="reference internal" href="#id1">Submodules</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-pype.lexer">pype.lexer module</a></li>
 <li><a class="reference internal" href="#module-pype.lextab">pype.lextab module</a></li>
 <li><a class="reference internal" href="#module-pype.lib_import">pype.lib_import module</a></li>
