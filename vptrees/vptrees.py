@@ -51,7 +51,7 @@ class VPTree:
     def dot(self):
         """Create a graphviz dot file to visualize the tree
         """
-        d = Digraph(comment="VP Tree")
+        d = Digraph(comment="VP Tree", format="png")
         for parent, left, right in self.root.preorder():
 
             if isinstance(parent,VPTreeNonLeaf):
@@ -139,8 +139,8 @@ class VPTree:
 if __name__ == "__main__":
     np.random.seed(12345)
 
-    points = {'a'+str(i) : np.random.normal(0,10) for i in range(100)}
-    vps = ['a1','a5','a40','a39','a99','a75','a2']
+    points = {'a'+str(i) : np.random.normal(0,10) for i in range(20)}
+    vps = ['a1','a5','a2']
 
     def dist(vp,pks):
         x = points[vp]
@@ -156,7 +156,7 @@ if __name__ == "__main__":
     d = t.dot()
 
     # print graphiz graph
-    d.render("test",view=T)
+    d.render("test",view=True)
 
     ########## check if this is working
     query = np.random.normal(0,10) # query point
