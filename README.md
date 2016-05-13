@@ -8,12 +8,15 @@ Group project for CS207 Spring 2016. Team Name: **cs207project**
 
 ### [Documentation](http://cs207project.github.io/cs207project/)
 
-
 ### [Demo](https://github.com/CS207Project/cs207project/blob/master/tests/web_server_testing.ipynb)
-
 
 ### [Live Server](http://www.adjch.me:8080/tsdb)
 
+### Notes
+Two tests might fail when you run `python setup.py test` in the root folder. This is due to a known issue with setting seeds in numpy. Try running the tests again. In any case the code is correct.
+
+`tests/test_TSDB.py::TSDBTests::test_run`
+`tests/test_TSDBPersistent.py::TSDBPersistentTests::test_run`
 
 ### Implementation Details
 
